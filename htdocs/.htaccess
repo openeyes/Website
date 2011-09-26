@@ -1,0 +1,3 @@
+Redirect /demo/login.php http://www.aylwards.co.uk/demo/login.php
+Redirect /demo/ http://www.aylwards.co.uk/demo/login.php
+Redirect /demo http://www.aylwards.co.uk/demo/login.php
