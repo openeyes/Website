@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+
+    <!--   Javascript  -->	
+	<script language="JavaScript" src="../../javascript/elements.js" type="text/javascript"></script>  
+    <script type="text/javascript">
+        
+        // Runs on page load
+        function init()
+        {
+        }
+        
+        // Swap drop downs
+        function surg(_value)
+        {
+        	if (_value == "Cataract surgery")
+        	{
+        		document.getElementById("nosurg").style.display = "none";
+        		document.getElementById("anes").style.display = "inline";
+        		document.getElementById("mode").style.display = "inline";
+        	}
+        	else
+        	{
+        		document.getElementById("nosurg").style.display = "inline";
+        		document.getElementById("anes").style.display = "none";
+        		document.getElementById("mode").style.display = "none";
+        	}
+        }
+	            
+    </script>
+
+</head>
+
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+
+		<!-- Logo -->
+		<img id="logo" src="../../images/OpenEyes_logo.png" align="left" alt="OpenEyes - an open source electronic patient record" />
+		
+		<!-- Navigation bar -->
+		<div id="main_nav">
+			<ul>
+				<li><a id="home" href="../../index.html">Home</a></li>
+				<li><a id="news" href="../../news.html">News</a></li>
+				<li><a id="screenshots" href="../../screenshots.html">Screenshots</a></li>
+				<li><a id="documentation" href="../../documentation.html">Documentation</a></li>
+				<li><a id="contributors" href="../../contributors.html">Contributors</a></li>
+				<li><a id="development_selected" href="../../development.html">Development</a></li>
+				<li><a id="contact" href="../../contact.html">Contact us</a></li>
+			</ul>
+		</div>
+		
+		<!-- Text -->
+		<h2>Cataract management plan element</h2>
+
+		<!-- Description -->
+		<div class="section">
+			<h4>Description:</h4>
+			<p>This element provides the management plan, and is intended to be positioned at the end of the cataract assessment page.</p>
+			<p>Status: <b>Alpha</b></p>
+		</div>
+
+		<!-- Edit mode section -->
+		<div class="section" style="height:80px;" align="left">
+					
+			<h4>Edit mode:</h4>
+				
+			<!-- Eye -->
+			<select style="width:80px;">
+				<option>Eye:</option>
+				<option value="Right">Right</option>
+				<option value="Left">Left</option>
+				<option value="Bilateral">Bilateral</option>
+			</select>
+
+			<!-- Plan -->
+			<select style="width:140px;" onchange="surg(this.value);">
+				<option>Plan:</option>
+				<option value="Cataract surgery">Cataract surgery</option>
+				<option value="Surgery not planned">Surgery not planned</option>
+			</select>
+			
+			<!-- Reason for no surgery -->
+			<select id="nosurg" style="width:200px;">
+				<option>Reason:</option>
+				<option value="Managing well">Managing well</option>
+				<option value="Anterior segment investigation">Anterior segment investigation</option>
+				<option value="Posterior segment investigation">Posterior segment investigation</option>
+			</select>
+
+			<!-- Anaesthetic -->
+			<select id="anes" style="width:100px;">
+				<option>Anaesthetic:</option>
+				<option value="LA">LA</option>
+				<option value="LAS">LAS</option>
+				<option value="GA">GA</option>
+			</select>
+			
+			<!-- Mode -->
+			<select id="mode" style="width:100px;">
+				<option>Admission:</option>
+				<option value="Day case">Day case</option>
+				<option value="Inpatient">Inpatient</option>
+			</select>
+						
+		</div>
+
+		
+		<!-- Display mode section -->
+		<div class="section" style="height:80px;" align="left">
+		
+			<!-- Use exactly half the maximum event width -->
+			<div style ="width:540; float:left;">
+				<h4>Display mode:</h4>
+				<p><b>Plan:</b> Right cataract surgery LA Day case</p>
+			</div>
+	
+		<!-- End of Display mode section -->
+		</div>	
+
+		<!-- Steering Group -->			
+		<div class="section" align="left">
+			<h4>Steering Group:</h4>
+			<p>Cataract</p>
+		</div>
+		
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,324 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+
+    <!--   Javascript  -->	
+	<script language="JavaScript" src="../../scripts/elements.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../scripts/ED_Drawing.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../scripts/ED_General.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../scripts/ED_AntSeg.js" type="text/javascript"></script>
+    <script type="text/javascript">
+            
+        // Variables assigned to each drawingEdit on this page
+        var drawingEdit;
+        var drawingDisplay;
+                            
+        // Runs on page load
+        function init()
+        {
+            // Get reference to canvas
+            var canvas = document.getElementById('canvas');
+            
+            // Create blank drawing
+            drawingEdit = new ED.Drawing(canvas, ED.eye.Right, 'RPS');
+
+			// Set focus to canvas
+            canvas.focus();
+            
+            // Display canvas
+            var canvasDisplay = document.getElementById('canvasDisplay');
+            drawingDisplay = new ED.Drawing(canvasDisplay, ED.eye.Right, 'RPS');
+            drawingDisplay.addDoodle('AntSeg');
+            drawingDisplay.addDoodle('PhakoIncision');
+            drawingDisplay.addDoodle('SidePort');
+            drawingDisplay.addDoodle('IrisHook');
+            drawingDisplay.addDoodle('IrisHook');
+            drawingDisplay.addDoodle('IrisHook');
+            drawingDisplay.addDoodle('IrisHook');
+            drawingDisplay.addDoodle('PCIOL');
+            drawingDisplay.deselectDoodles();
+            
+	         // Function to detect changes in parameters (eg from mouse dragging)
+	        drawingEdit.parameterListener = function()
+	        {
+	            // Get reference to form inputs
+	            var incisionSiteInput = document.getElementById('incisionSite');
+	            var incisionLengthInput = document.getElementById('incisionLength');
+	            var incisionMeridianInput = document.getElementById('incisionMeridian');
+	            var incisionTypeInput = document.getElementById('incisionType');
+	            
+	            // Check doodle of appropriate classname is selected
+	            if (drawingEdit.selectedDoodle != null && drawingEdit.selectedDoodle.className == 'PhakoIncision')
+	            {
+	                incisionSiteInput.value = drawingEdit.selectedDoodle.getParameter('incisionSite');
+	                incisionLengthInput.value = drawingEdit.selectedDoodle.getParameter('incisionLength');
+	                incisionMeridianInput.value = drawingEdit.selectedDoodle.getParameter('incisionMeridian');
+	                incisionTypeInput.value = drawingEdit.selectedDoodle.getParameter('incisionType');
+	            }
+	        }
+                   
+            // Template
+            drawingEdit.addDoodle('AntSeg');
+            drawingEdit.addDoodle('PhakoIncision');
+            drawingEdit.deselectDoodles();
+            
+            // Draw doodles
+            drawingEdit.drawAllDoodles();
+        }
+                  
+       	function addToReport()
+        {
+        	// Get text from the applet and force into string type
+			var text = drawingEdit.report();
+		
+			// Use a RegEx to remove final comma and space
+			text = text.replace(/, +$/, '');
+			
+			// Get reference to report textarea
+			var repText = document.getElementById('opnote');
+			
+			// ***TEMP***
+			repText.value = "";
+			
+			// If text there already, make it lower case and add a comma before
+			if (repText.value.length > 0)
+			{
+				text = ", " + text.toLowerCase();
+			}
+
+			// Add to existing text in text area
+			repText.value += text;
+		}
+	            
+    </script>
+
+</head>
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+
+		<!-- Logo -->
+		<img id="logo" src="../../images/OpenEyes_logo.png" align="left" alt="OpenEyes - an open source electronic patient record" />
+		
+		<!-- Navigation bar -->
+		<div id="main_nav">
+			<ul>
+				<li><a id="home" href="../../index.html">Home</a></li>
+				<li><a id="news" href="../../news.html">News</a></li>
+				<li><a id="screenshots" href="../../screenshots.html">Screenshots</a></li>
+				<li><a id="documentation" href="../../documentation.html">Documentation</a></li>
+				<li><a id="contributors" href="../../contributors.html">Contributors</a></li>
+				<li><a id="development_selected" href="../../development.html">Development</a></li>
+				<li><a id="contact" href="../../contact.html">Contact us</a></li>
+			</ul>
+		</div>
+		
+		<!-- Text -->
+		<h2>Cataract operation note element</h2>
+
+		<div class="section">
+			<h4>Description:</h4>
+			<p>This element facilitates the data input for the cataract operation note. As with other elements, users can either enter data manually, or using the diagram which is kept in sync with the data.</p>
+			<p>The list of complications is taken verbatim from the Royal College of Ophthalmologist's Cataract National Dataset. It is likely that some items (e.g. operation cancelled) might be better placed elsewhere in the system, for example as part of a booking event.</p>
+			<p>Status: <b>Alpha</b></p>
+		</div>
+
+		<!-- Edit mode section -->
+		<div class="section" style="height:360px;" align="left">
+			<h4>Edit mode:</h4>
+			
+			<!-- Drawing -->
+			<div style ="width:620px; float:left;">			
+
+				<!-- Canvas -->
+				<div style='float:left; width: 320px; height: 320px;'>
+	                <canvas id="canvas" class="canvasclass" width="300" height="300" tabindex="1"></canvas>
+				</div>
+			
+				<!-- Controls -->
+				<div style='float:right; width: 300px;height: 320px;'>
+				
+	            	<!-- Doodle toolbar -->
+					<div class="toolbar">
+						<button class="imgbutton" class="imgbutton" disabled="true" id="moveToFrontRPS" title="Move to front" onclick="drawingEdit.moveToFront(); return false;" ><img src="../../graphics//moveToFront.gif"/></button>
+		                <button class="imgbutton" disabled="true" id="moveToBackRPS" title="Move to back" onclick="drawingEdit.moveToBack(); return false;" ><img src="../../graphics//moveToBack.gif" /></button>
+		                <button class="imgbutton" disabled="true" id="deleteRPS" title="Delete" onclick="drawingEdit.deleteDoodle(); return false;" ><img src="../../graphics//delete.gif" /></button>
+		                <button class="imgbutton" disabled="true" id="lockRPS" title="Lock" onclick="drawingEdit.lock(); return false;" ><img src="../../graphics//lock.gif" /></button>
+		                <button class="imgbutton" disabled="true" id="unlockRPS" title="Unlock" onclick="drawingEdit.unlock(); return false;" ><img src="../../graphics//unlock.gif" /></button>
+		                <br />
+						<button class="imgbutton" id="phakoIncisionRPS" title="Cataract wound" onclick="drawingEdit.addDoodle('PhakoIncision'); return false;" ><img src="../../graphics//phakoIncision.gif" /></button>
+						<button class="imgbutton" id="sidePortRPS" title="Side port" onclick="drawingEdit.addDoodle('SidePort'); return false;" ><img src="../../graphics//sidePort.gif" /></button>                                
+						<button class="imgbutton" id="irishookRPS" title="Iris hook" onclick="drawingEdit.addDoodle('IrisHook'); return false;" ><img src="../../graphics//irisHook.gif" /></button>   
+						<button class="imgbutton" id="PCIOLRPS" title="Posterior Chamber IOL" onclick="drawingEdit.addDoodle('PCIOL'); return false;" ><img src="../../graphics//pcIOL.gif" /></button>
+	                    <button class="imgbutton" id="ACIOLRPS" title="Anterior Chamber IOL" onclick="drawingEdit.addDoodle('ACIOL'); return false;" ><img src="../../graphics//acIOL.gif" /></button>
+	                    <button class="imgbutton" id="PIRPS" title="Peripheral Iridectomy" onclick="drawingEdit.addDoodle('PI'); return false;" ><img src="../../graphics//pi.gif" /></button>
+                        <button class="imgbutton" id="sutureRPS" title="Mattress Suture" onclick="drawingEdit.addDoodle('MattressSuture'); return false;" ><img src="../../graphics//mattressSuture.gif" /></button>   	                    
+	                </div>
+				
+					<table cellspacing="0" width="120" >
+					<tbody>		
+						<tr>
+							<td align="left" width="20%"><p class="lable" >Incision site:</p></td>
+							<td align="left" width="60%">
+						        <select name="incision" id="incisionSite" onclick="drawingEdit.setParameterForDoodle('PhakoIncision', 'incisionSite', this.value);" >
+						            <option value="Corneal">Corneal</option>
+						            <option value="Limbal">Limbal</option>
+						            <option value="Scleral">Scleral</option>
+						        </select>
+					        </td>
+						</tr>
+						<tr>
+							<td align="left"><p class="lable" >Length</p></td>
+							<td align="left">
+ 								<input type="text" id="incisionLength" onchange="drawingEdit.setParameterForDoodle('PhakoIncision', 'incisionLength', this.value);"/>
+					        </td>
+						</tr>			
+						<tr>
+							<td align="left"><p class="lable" >Meridian:</p></td>
+							<td align="left">
+								<input type="text" id="incisionMeridian" onchange="drawingEdit.setParameterForDoodle('PhakoIncision', 'incisionMeridian', this.value);"/>
+					        </td>
+						</tr>
+						<tr>
+							<td align="left"><p class="lable" >Type:</p></td>
+							<td align="left">
+						        <select name="incisionType" id="incisionType" onclick="drawingEdit.setParameterForDoodle('PhakoIncision', 'incisionType', this.value);" >
+						            <option value="Pocket">Pocket</option>
+						            <option value="Section">Section</option>
+						        </select>
+        					 </td>
+						</tr>
+						</tbody>	
+					</table>
+					
+					<button class="actbutton" title="Creates a written report of the operation" onclick="addToReport(); return false;" >Report</button>
+					
+					<textarea name="opnote" id="opnote"></textarea>
+				</div>
+				
+			</div>
+			
+			<!-- Complications -->
+			<div style ="width:460px; float:left;">
+				<p>Complications:</p>
+				<table cellspacing="0" width="460" >
+					<tbody>
+						<tr>
+							<td align="left" width="45%"><p class="complable">Wound burn:</p></td>
+							<td align="left" width="5%">
+								<input class="checkbox" type="checkbox" id="chk_phwb"/>
+					        </td>
+							<td align="left" width="45%"><p class="complable" >Corneal oedema:</p></td>
+							<td align="left" width="5%">
+								<input class="checkbox" type="checkbox" id="chk_phco"/>
+					        </td>
+						</tr>
+						<tr>
+							<td align="left" width="20%"><p class="complable" >Iris trauma:</p></td>
+							<td align="left" width="5%">
+								<input class="checkbox" type="checkbox" id="chk_phwb"/>
+					        </td>
+							<td align="left" width="20%"><p class="complable" >Iris prolapse:</p></td>
+							<td align="left" width="5%">
+								<input class="checkbox" type="checkbox" id="chk_phco"/>
+					        </td>
+						</tr>
+						<tr>
+							<td align="left" width="20%"><p class="complable" >Zonular dialysis:</p></td>
+							<td align="left" width="5%">
+								<input class="checkbox" type="checkbox" id="chk_phwb"/>
+					        </td>
+							<td align="left" width="20%"><p class="complable" >Zonular rupture:</p></td>
+							<td align="left" width="5%">
+								<input class="checkbox" type="checkbox" id="chk_phco"/>
+					        </td>
+						</tr>
+						<tr>					        
+							<td align="left" width="20%"><p class="complable" >PC rupture:</p></td>
+							<td align="left" width="5%">
+								<input class="checkbox" type="checkbox" id="chk_phwb"/>
+					        </td>
+							<td align="left" width="20%"><p class="complable" >Vitreous loss:</p></td>
+							<td align="left" width="5%">
+								<input class="checkbox" type="checkbox" id="chk_phco"/>
+					        </td>
+						</tr>
+						<tr>
+							<td align="left" width="20%"><p class="complable" >Decentred IOL:</p></td>
+							<td align="left" width="5%">
+								<input class="checkbox" type="checkbox" id="chk_phwb"/>
+					        </td>
+							<td align="left" width="20%"><p class="complable" >IOL into vitreous:</p></td>
+							<td align="left" width="5%">
+								<input class="checkbox" type="checkbox" id="chk_phco"/>
+					        </td>
+						</tr>
+						<tr>
+							<td align="left" width="20%"><p class="complable" >IOL exchange:</p></td>
+							<td align="left" width="5%">
+								<input class="checkbox" type="checkbox" id="chk_phwb"/>
+					        </td>
+							<td align="left" width="20%"><p class="complable" >Other IOL prob:</p></td>
+							<td align="left" width="5%">
+								<input class="checkbox" type="checkbox" id="chk_phco"/>
+					        </td>
+						</tr>
+						<tr>
+							<td align="left" width="20%"><p class="complable" >Dropped nucleus:</p></td>
+							<td align="left" width="5%">
+								<input class="checkbox" type="checkbox" id="chk_phdn"/>
+					        </td>
+					  		<td align="left" width="20%"><p class="complable" >Choroidal haem:</p></td>
+							<td align="left" width="5%">
+								<input class="checkbox" type="checkbox" id="chk_phwb"/>
+					        </td>
+						</tr>
+						<tr>
+							<td align="left" width="20%"><p class="complable" >Op cancelled:</p></td>
+							<td align="left" width="5%">
+								<input class="checkbox" type="checkbox" id="chk_phco"/>
+					        </td>
+						</tr>													       										
+					</tbody>
+				</table>				
+			</div>
+		
+		<!-- End of edit mode div -->
+		</div>						
+
+		<!-- Display mode section -->
+		<div class="section" style="height:270px;" align="left">
+		
+			<!-- Overall width -->
+			<div style ="width:540; float:left;">
+				<h4>Display mode:</h4>
+				<div style="float:left; width: 220px; height: 220px;">
+					<canvas class="display" id="canvasDisplay" width="200" height="200" tabindex="1"></canvas>
+				</div>
+				<div style="float:right; width: 320px; height: 220px;">
+					<p>Corneal pocket incision at 12 o'clock, sideport at 9 o'clock, iris hooks used at 11, 2, 5, and 8 o'clock. Posterior chamber IOL in bag</p>
+				</div>
+			</div>
+	
+		</div>	
+
+		<!-- Steering Group -->			
+		<div class="section" align="left">
+			<h4>Steering Group:</h4>
+			<p>Cataract</p>
+		</div>
+		
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+
+    <!--   Javascript  -->	
+   	<script language="JavaScript" src="../../scripts/elements.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../scripts/ED_Drawing.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../scripts/ED_General.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../scripts/ED_AntSeg.js" type="text/javascript"></script>	 
+    <script type="text/javascript">
+    
+        // Assign a global variable for each drawingEdit on the page
+        var drawingEdit;
+        var drawingDisplay;
+                                        
+        // Runs on page load
+        function init()
+        {
+            // Get reference to the drawingEdit canvas
+            var canvasEdit = document.getElementById('canvasEdit');
+            
+            // Create a drawingEdit
+            drawingEdit = new ED.Drawing(canvasEdit, ED.eye.Right, 'RPS');
+            
+            // Preload any images
+            drawingEdit.preLoadImagesFrom('../../graphics/');
+            
+            // Set focus to canvasEdit element
+            canvasEdit.focus();
+            
+            // Wait for drawingEdit object to be ready before adding objects or drawingEdits
+            drawingEdit.onLoaded = function()
+            {
+                drawingEdit.addDoodle('AntSeg');
+                resetEdit();
+            }
+            
+            // Get reference to the drawingEdit canvas
+            var canvasDisplay = document.getElementById('canvasDisplay');
+            
+            // Create a drawing
+            drawingDisplay = new ED.Drawing(canvasDisplay, ED.eye.Right, 'RPS');
+            
+            // Preload any images
+            drawingDisplay.preLoadImagesFrom('../../graphics/');
+            
+            // Wait for drawing object to be ready before adding objects or drawingEdits
+            drawingDisplay.onLoaded = function()
+            {
+                drawingDisplay.addDoodle('AntSeg');
+                drawingDisplay.addDoodle('PI');
+                drawingDisplay.addDoodle('CornealScar');
+                drawingDisplay.deselectDoodles();          
+                drawingDisplay.drawAllDoodles();
+            }
+        }
+        
+        // Clears edit drawing and resets template
+        function resetEdit()
+        {
+        	drawingEdit.deleteAllDoodles();
+            drawingEdit.deselectDoodles();          
+            drawingEdit.drawAllDoodles();
+            
+            // Clear diagnosis menu and text area
+            document.getElementById('diagnosisSelect').selectedIndex = 0;
+            document.getElementById('posteriorsegment').value = "";
+        }
+        
+        function addToReport()
+        {
+        	// Get text from the drawingEdit and force into string type
+			var text = drawingEdit.report();
+		
+			// Use a RegEx to remove final comma and space
+			text = text.replace(/, +$/, '');
+			
+			// Get reference to report textarea
+			var repText = document.getElementById('posteriorsegment');
+			
+			// ***TEMP***
+			repText.value = "";
+			
+			// If text there already, make it lower case and add a comma before
+			if (repText.value.length > 0)
+			{
+				text = ", " + text.toLowerCase();
+			}
+
+			// Add to existing text in text area
+			repText.value += text;
+			
+			// Get diagnostic code
+			var code = drawingEdit.diagnosis();
+		
+			if (code > 0)
+			{
+				// Set principal eye and diagnosis select values
+				document.getElementById("diagnosisSelect").value = code;
+			}
+			else
+			{
+				document.getElementById("diagnosisSelect").value = 0;
+			}
+		}
+	            
+    </script>
+
+</head>
+
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+
+		<!-- Logo -->
+		<img id="logo" src="../../images/OpenEyes_logo.png" align="left" alt="OpenEyes - an open source electronic patient record" />
+		
+		<!-- Navigation bar -->
+		<div id="main_nav">
+			<ul>
+				<li><a id="home" href="../../index.html">Home</a></li>
+				<li><a id="news" href="../../news.html">News</a></li>
+				<li><a id="screenshots" href="../../screenshots.html">Screenshots</a></li>
+				<li><a id="documentation" href="../../documentation.html">Documentation</a></li>
+				<li><a id="contributors" href="../../contributors.html">Contributors</a></li>
+				<li><a id="development_selected" href="../../development.html">Development</a></li>
+				<li><a id="contact" href="../../contact.html">Contact us</a></li>
+			</ul>
+		</div>
+		
+		<!-- Text -->
+		<h2>Cornea Anterior Segment Examination</h2>
+
+		<div class="section">
+			<h4>Description:</h4>
+			<p>This element allows editing and display of anterior segment findings for the specialty of Cornea. Clicking on the 'doodle' buttons adds them to the drawing. When the drawing is finished, clicking the report button will create a text description of the findings, and also select a diagnosis from a drop down list of common corneal diagnoses</p>
+			<p>Status: <b>Alpha</b></p>
+		</div>
+
+		<!-- Edit mode section -->
+		<div class="section" style="height:440px;" align="left">
+		            
+			<!-- Overall width -->
+			<div style ="width:620; float:left;">			
+			<h4>Edit mode:</h4>
+			
+        	<!-- Doodle toolbar -->
+			<div class="toolbar">
+				<button class="imgbutton" class="imgbutton" disabled="true" id="moveToFrontRPS" title="Move to front" onclick="drawingEdit.moveToFront(); return false;" ><img src="../../graphics/moveToFront.gif"/></button>
+                <button class="imgbutton" disabled="true" id="moveToBackRPS" title="Move to back" onclick="drawingEdit.moveToBack(); return false;" ><img src="../../graphics/moveToBack.gif" /></button>
+                <button class="imgbutton" disabled="true" id="deleteRPS" title="Delete" onclick="drawingEdit.deleteDoodle(); return false;" ><img src="../../graphics/delete.gif" /></button>
+                <button class="imgbutton" disabled="true" id="lockRPS" title="Lock" onclick="drawingEdit.lock(); return false;" ><img src="../../graphics/lock.gif" /></button>
+                <button class="imgbutton" disabled="true" id="unlockRPS" title="Unlock" onclick="drawingEdit.unlock(); return false;" ><img src="../../graphics/unlock.gif" /></button>
+                <br />
+                
+                <!-- Doodle selection toolbar -->
+                <button class="imgbutton" id="NuclearCataractRPS" title="Nuclear Cataract" onclick="drawingEdit.addDoodle('NuclearCataract'); return false;" ><img src="../../graphics/nuclearCataract.gif" /></button>
+                <button class="imgbutton" id="CorticalCataractRPS" title="Cortical Cataract" onclick="drawingEdit.addDoodle('CorticalCataract'); return false;" ><img src="../../graphics/corticalCataract.gif" /></button>
+                <button class="imgbutton" id="PostSubcapCataractRPS" title="Posterior Subcapsular Cataract" onclick="drawingEdit.addDoodle('PostSubcapCataract'); return false;" ><img src="../../graphics/postSubcapCataract.gif" /></button>
+                <button class="imgbutton" id="PCIOLRPS" title="Posterior Chamber IOL" onclick="drawingEdit.addDoodle('PCIOL'); return false;" ><img src="../../graphics/pcIOL.gif" /></button>
+                <button class="imgbutton" id="ACIOLRPS" title="Anterior Chamber IOL" onclick="drawingEdit.addDoodle('ACIOL'); return false;" ><img src="../../graphics/acIOL.gif" /></button>
+                <button class="imgbutton" id="BlebRPS" title="Trabeculectomy bleb" onclick="drawingEdit.addDoodle('Bleb'); return false;" ><img src="../../graphics/bleb.gif" /></button>
+                <button class="imgbutton" id="PIRPS" title="Peripheral Iridectomy" onclick="drawingEdit.addDoodle('PI'); return false;" ><img src="../../graphics/pi.gif" /></button>
+                 <button class="imgbutton" id="FuchsRPS" title="Fuch's Endothelial Dystrophy" onclick="drawingEdit.addDoodle('Fuchs'); return false;" ><img src="../../graphics/fuchs.gif" /></button>
+                 <button class="imgbutton" id="RKRPS" title="Radial keratotomy" onclick="drawingEdit.addDoodle('RK'); return false;" ><img src="../../graphics/rk.gif" /></button> 
+                 <button class="imgbutton" id="LasikFlapRPS" title="Lasik Flap" onclick="drawingEdit.addDoodle('LasikFlap'); return false;" ><img src="../../graphics/lasikFlap.gif" /></button>                            
+                 <button class="imgbutton" id="CornealScarRPS" title="Corneal Scar" onclick="drawingEdit.addDoodle('CornealScar'); return false;" ><img src="../../graphics/cornealScar.gif" /></button>
+                <br /> 		                
+            </div>
+
+				<!-- Canvas -->
+				<div style='float:left; width: 320px; height: 320px;'>
+	                <canvas id="canvasEdit" class="canvasEditclass" width="300" height="300" tabindex="1"></canvas>
+				</div>
+			
+				<!-- Controls -->
+				<div style='float:right; width: 300px;height: 320px;'>
+				
+					<button class="actbutton" title="Extracts description and diagnosis from drawingEdit" onclick="addToReport(); return false;" >Report</button>
+					<button class="actbutton" title="Clear drawing and start again" onclick="resetEdit(); return false;" >Clear</button>
+					<p class="lable">Description:</p>
+					<textarea id="posteriorsegment"></textarea>
+					
+					<!-- Select for diagnosis -->
+					<p class="lable">Diagnosis:</p>
+					<select id="diagnosisSelect" title="Common diagnoses for Cornea">
+						<option value="0">Corneal diagnoses</option>
+						<option value="193576003">Cortical cataract</option>
+						<option value="53889007">Nuclear cataract</option>
+						<option value="315353005">Posterior subcapsular cataract</option>
+						<option value="193839007">Fuchs' corneal dystrophy</option>
+						<option value="95726001">Corneal scar</option>
+					</select>					
+
+				</div>
+			</div>
+		</div>						
+
+		<!-- Display mode section -->
+		<div class="section" style="height:200px;" align="left">
+		
+			<!-- Overall width -->
+			<div style ="width:540; float:left;">
+				<h4>Display mode:</h4>
+				<div style="float:left; width: 170px; height: 120px;">
+					<!-- Canvas -->
+					<div style='float:left; width: 370px; height: 320px;'>
+		                <canvas id="canvasDisplay" class="canvasEditclass" width="150" height="150" tabindex="1" style=" border: none;"></canvas>
+					</div>
+				</div>
+				<div style="float:right; width: 320px; height: 120px;">
+					<p>Peripheral iridectomy at 12 o'clock, small corneal scar involving visual axis</p>
+				</div>
+			</div>
+	
+		<!-- End of Display mode section -->
+		</div>	
+
+		<!-- Steering Group -->			
+		<div class="section" align="left">
+			<h4>Steering Group:</h4>
+			<p>Cornea</p>
+		</div>
+		
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+</body>
+</html>
