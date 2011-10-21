@@ -134,6 +134,9 @@ ED.findOffset = function(obj)
  * @property {Point} lastMousePosition Last position of mouse in canvas coordinates
  * @property {Image} image Optional background image
  * @property {Int} doubleClickMilliSeconds Duration of double click
+ * @property {Bool} newPointOnClick Flag indicating whether a mouse click will create a new PointInLine doodle
+ * @property {Bool} completeLine Flag indicating whether to draw an additional line to the first PointInLine doodle
+ * @property {Float} scale Scaling of transformation from canvas to doodle planes, preserving aspect ration and maximising doodle plnae
  * @param {Canvas} _canvas Canvas element 
  * @param {Eye} _eye Right or left eye
  * @param {String} _IDSuffix String suffix to identify HTML elements related to this drawing
@@ -156,6 +159,18 @@ ED.Drawing = function(_canvas, _eye, _IDSuffix)
 	this.lastMousePosition = new ED.Point(0, 0);
     this.doubleClickMilliSeconds = 250;
     this.onLoadedHasRun = false;
+    this.newPointOnClick = false;
+    this.completeLine = false;
+    
+    // Fit canvas make maximum use of doodle plane
+    if (this.canvas.width >= this.canvas.height)
+    {
+        this.scale = this.canvas.width/1001;
+    }
+    else
+    {
+        this.scale = this.canvas.height/1001;
+    }
     
     // Array of images to be preloaded (Add new images here)
     this.imageArray = new Array();
@@ -168,7 +183,7 @@ ED.Drawing = function(_canvas, _eye, _IDSuffix)
     
 	// Set transform to map from doodle to canvas plane
 	this.transform.translate(this.canvas.width/2, this.canvas.height/2);
-	this.transform.scale(this.canvas.width/1001, this.canvas.height/1001);
+	this.transform.scale(this.scale, this.scale);
 	
 	// Set inverse transform to map the other way
 	this.inverseTransform = this.transform.createInverse();
@@ -382,8 +397,48 @@ ED.Drawing.prototype.json = function()
  * Draws all doodles for this drawing
  */ 
 ED.Drawing.prototype.drawAllDoodles = function()
-{	
-	// Draw each doodle
+{
+    // Draw any connecting lines
+
+    var ctx = this.context;
+    ctx.beginPath();
+    var started = false;
+    var startPoint;
+    
+    for (var i = 0; i < this.doodleArray.length; i++)
+    {
+        if (this.doodleArray[i].isPointInLine)
+        {
+            // Start or draw line
+            if (!started)
+            {
+                ctx.moveTo(this.doodleArray[i].originX, this.doodleArray[i].originY);
+                started = true;
+                startPoint = new ED.Point(this.doodleArray[i].originX, this.doodleArray[i].originY);
+            }
+            else
+            {
+                ctx.lineTo(this.doodleArray[i].originX, this.doodleArray[i].originY);
+            }
+        }
+    }
+    
+    // Optionally add line to start
+    if (this.completeLine && typeof(startPoint) != 'undefined')
+    {
+        ctx.lineTo(startPoint.x, startPoint.y);
+    }
+    
+    // Draw lines
+    if (started)
+    {
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = "rgba(20,20,20,1)";
+        ctx.stroke();
+    }
+
+    
+	// Draw doodles
 	for (var i = 0; i < this.doodleArray.length; i++)
 	{
 		// Save context (draw method of each doodle may alter it)
@@ -420,7 +475,7 @@ ED.Drawing.prototype.mousedown = function(_point)
 	var found = false;
 	this.selectedDoodle = null;
 
-	// Cycle through doodles from front to back
+	// Cycle through doodles from front to back doing hit test
 	for (var i = this.doodleArray.length - 1; i > -1; i--)
 	{
 		if (!found)
@@ -470,10 +525,19 @@ ED.Drawing.prototype.mousedown = function(_point)
 		// Ensure drag flagged is off for each doodle
 		this.doodleArray[i].isBeingDragged = false;
 	}
+    
+    
+    if (this.newPointOnClick && !found)
+    {
+        var mousePosDoodlePlane = this.inverseTransform.transformPoint(_point);
+        
+        var newPointInLine = this.addDoodle('PointInLine');
+        newPointInLine.originX = mousePosDoodlePlane.x;
+        newPointInLine.originY = mousePosDoodlePlane.y;
+    }
 	
 	// Repaint
 	this.repaint();
-
 }
 
 /**
@@ -853,7 +917,7 @@ ED.Drawing.prototype.deleteDoodle = function()
 		// Go through doodles removing any that are selected (should be just one)
 		for (var i = 0; i < this.doodleArray.length; i++)
 		{
-			if (this.doodleArray[i].isSelected && this.doodleArray[i].isDeletable)
+			if (this.doodleArray[i].isSelected)
 			{
                 // Deselect doodle
                 this.selectedDoodle = null;
@@ -1080,39 +1144,6 @@ ED.Drawing.prototype.lastDoodleOfClass = function(_className)
 }
 
 /**
- * Deletes all doodles that are deletable
- */
-ED.Drawing.prototype.deleteAllDoodles = function()
-{
-	// Go through doodle array (backwards because of splice function)
-	for (var i = this.doodleArray.length - 1; i >= 0; i--)
-	{
-        // Find doodles of given class name
-        if (this.doodleArray[i].isDeletable)
-        {
-            // If it happens to be selected, deselect it
-            if (this.doodleArray[i].isSelected)
-            {
-                // Deselect doodle
-                this.selectedDoodle = null;
-            }
-            
-            // Remove item for removal
-            this.doodleArray.splice(i,1);
-        }
-	}
-    
-    // Re-assign ordinal numbers to array
-    for (var i = 0; i < this.doodleArray.length; i++)
-    {
-        this.doodleArray[i].order = i;
-    }
-    
-	// Refresh canvas
-	this.repaint();
-}
-
-/**
  * Deletes doodles of one class from the drawing
  *
  * @param {String} _className Classname of doodle
@@ -1126,7 +1157,7 @@ ED.Drawing.prototype.deleteDoodlesOfClass = function(_className)
         if (this.doodleArray[i].className == _className)
         {
             // If it happens to be selected, deselect it
-            if (this.doodleArray[i].isSelected && this.doodleArray[i].isDeletable)
+            if (this.doodleArray[i].isSelected)
             {
                 // Deselect doodle
                 this.selectedDoodle = null;
@@ -1176,8 +1207,6 @@ ED.Drawing.prototype.setParameterForDoodle = function(_class, _parameter, _value
 
 /**
  * Returns a string containing a description of the drawing
- *
- * @returns {String} Description of the drawing
  */
 ED.Drawing.prototype.report = function()
 {
@@ -1254,35 +1283,6 @@ ED.Drawing.prototype.report = function()
 }
 
 /**
- * Returns a SNOMED diagnostic code derived from the drawing, returns zero if no code
- *
- * @returns {Int} SnoMed code of doodle with highest postion in hierarchy
- */
-ED.Drawing.prototype.diagnosis = function()
-{
-    var positionInHierarchy = 0;
-    var returnCode = 0;
-    
-    // Loop through doodles with diagnoses, taking one highest in hierarchy
-	for (var i = 0; i < this.doodleArray.length; i++)
-    {
-        var doodle = this.doodleArray[i];
-        var code = doodle.snomedCode();
-        if (code > 0)
-        {
-            var codePosition = doodle.diagnosticHierarchy();
-            if (codePosition > positionInHierarchy)
-            {
-                positionInHierarchy = codePosition;
-                returnCode = code;
-            }
-        }
-    }
-    
-    return returnCode;
-}
-
-/**
  * Changes value of eye
  *
  * @param {String} _eye Eye to change to
@@ -1310,7 +1310,7 @@ ED.Drawing.prototype.clear = function()
 	
 	// Set context transform to map from doodle plane to canvas plane	
 	this.context.translate(this.canvas.width/2, this.canvas.height/2);
-	this.context.scale(this.canvas.width/1001, this.canvas.height/1001);	
+	this.context.scale(this.scale, this.scale);	
 }
 
 /**
@@ -1324,7 +1324,16 @@ ED.Drawing.prototype.repaint = function()
     // Draw background image (In doodle space because of transform)
     if (typeof(this.image) != 'undefined')
     {
-        this.context.drawImage(this.image, -500, -500, 1000, 1000);
+        if (this.image.width >= this.image.height)
+        {
+            var height = 1000 * this.image.height/this.image.width;
+            this.context.drawImage(this.image, -500, -height/2, 1000, height);
+        }
+        else
+        {
+            var width = 1000 * this.image.width/this.image.height;
+            this.context.drawImage(this.image, -width/2, -500, width, 1000);
+        }
     }
 	
 	// Redraw all doodles
@@ -1380,6 +1389,26 @@ ED.Drawing.prototype.innerAngle = function(_pointA, _pointM, _pointB)
 	var b = new ED.Point(_pointB.x - _pointM.x, _pointB.y - _pointM.y);
 	
 	return a.clockwiseAngleTo(b);
+}
+
+/**
+ * Toggles drawing state for drawing points in line
+ *
+ */
+ED.Drawing.prototype.togglePointInLine = function()
+{
+    if (this.newPointOnClick)
+    {
+        this.newPointOnClick = false;
+        this.completeLine = true;
+        this.deselectDoodles();
+        this.repaint();
+    }
+    else
+    {
+        this.newPointOnClick = true;
+        this.completeLine = false;
+    }
 }
 
 /**
@@ -1628,7 +1657,6 @@ ED.Report.prototype.isMacOff = function()
  * @property {AffineTransform} transform Affine transform which handles the doodle's position, scale and rotation
  * @property {AffineTransform} inverseTransform The inverse of transform
  * @property {Bool} isSelectable True if doodle is locked (ie non-selectable)
- * @property {Bool} isDeletable True if doodle can be deleted 
  * @property {Bool} isOrientated True if doodle should always point to the centre (default = false)
  * @property {Bool} isScaleable True if doodle can be scaled. If false, doodle increases its arc angle
  * @property {Bool} isSqueezable True if scaleX and scaleY can be independently modifed (ie no fixed aspect ratio)
@@ -1638,6 +1666,8 @@ ED.Report.prototype.isMacOff = function()
  * @property {Bool} isUnique True if only one doodle of this class allowed in a drawing
  * @property {Bool} isArcSymmetrical True if changing arc does not change rotation
  * @property {Bool} addAtBack True if new doodles are added to the back of the drawing (ie first in array)
+ * @property {Bool} isPointInLine True if centre of all doodles with this property should be connected by a line segment
+ * @property {Bool} snapToGrid True if doodle should snap to a grid in doodle plane 
  * @property {Float} radius Distance from centre of doodle space, calculated for doodles with isRotable true
  * @property {Range} rangeOfScale Range of allowable scales
  * @property {Range} rangeOfArc Range of allowable Arcs
@@ -1651,7 +1681,8 @@ ED.Report.prototype.isMacOff = function()
  * @property {Bool} isFilled True if boundary path is filled as well as stroked
  * @property {Array} handleArray Array containing handles to be rendered
  * @property {Point} leftExtremity Point at left most extremity of doodle (used to calculate arc)
- * @property {Point} rightExtremity Point at right most extremity of doodle (used to calculate arc) 
+ * @property {Point} rightExtremity Point at right most extremity of doodle (used to calculate arc)
+ * @property {Int} gridSpacing Separation of grid elements
  * @param {Drawing} _drawing
  * @param {Int} _originX
  * @param {Int} _originY
@@ -1718,7 +1749,6 @@ ED.Doodle = function(_drawing, _originX, _originY, _apexX, _apexY, _scaleX, _sca
 		
 		// Dragging defaults - set individual values in subclasses
 		this.isSelectable = true;
-		this.isDeletable = true;
 		this.isOrientated = false;
 		this.isScaleable = true;
 		this.isSqueezable = false;
@@ -1728,12 +1758,15 @@ ED.Doodle = function(_drawing, _originX, _originY, _apexX, _apexY, _scaleX, _sca
         this.isUnique = false;
         this.isArcSymmetrical = false;
         this.addAtBack = false;
+        this.isPointInLine = false;
+        this.snapToGrid = false;
         this.radius = 0;
 		this.rangeOfScale = new ED.Range(+0.5, +4.0);
 		this.rangeOfArc = new ED.Range(Math.PI/6, Math.PI*2);
 		this.rangeOfApexX = new ED.Range(-500, +500);
 		this.rangeOfApexY = new ED.Range(-500, +500);
         this.rangeOfRadius = new ED.Range(100, 450);
+        this.gridSpacing = 100;
 		
 		// Flags and other properties
 		this.isBeingDragged = false;
@@ -1757,7 +1790,7 @@ ED.Doodle = function(_drawing, _originX, _originY, _apexX, _apexY, _scaleX, _sca
         this.rightExtremity = new ED.Point(0,-100);
         
 		// Set dragging default settings
-		this.setPropertyDefaults();
+		this.setDraggingDefaults();
 	}
 }
 
@@ -1769,9 +1802,9 @@ ED.Doodle.prototype.setHandles = function()
 }
 
 /**
- * Sets default properties (overridden by subclasses)
+ * Sets default dragging attributes (overridden by subclasses)
  */
-ED.Doodle.prototype.setPropertyDefaults = function()
+ED.Doodle.prototype.setDraggingDefaults = function()
 {
 }
 
@@ -1795,7 +1828,7 @@ ED.Doodle.prototype.setParameterDefaults = function()
     var canvasTop = new ED.Point(0, -100);
         
     if (this.isMoveable)
-    {
+    {        
         // Move doodle to new position
         this.originX += _x;
         this.originY += _y;
@@ -1836,13 +1869,28 @@ ED.Doodle.prototype.draw = function(_point)
 	var ctx = this.drawing.context;
 	
 	// Augment transform with properties of this doodle
-	ctx.translate(this.originX, this.originY);
+    if (this.snapToGrid)
+    {
+        ctx.translate(Math.round(this.originX/this.gridSpacing) * this.gridSpacing, Math.round(this.originY/this.gridSpacing) * this.gridSpacing);
+    }
+    else
+    {
+        ctx.translate(this.originX, this.originY);
+    }
 	ctx.rotate(this.rotation);
 	ctx.scale(this.scaleX, this.scaleY);
 	
 	// Mirror with internal transform
 	this.transform.setToTransform(this.drawing.transform);
-	this.transform.translate(this.originX, this.originY);
+    if (this.snapToGrid)
+    {
+        this.transform.translate(Math.round(this.originX/this.gridSpacing) * this.gridSpacing, Math.round(this.originY/this.gridSpacing) * this.gridSpacing);
+    }
+    else
+    {
+        this.transform.translate(this.originX, this.originY);
+    }
+	
 	this.transform.rotate(this.rotation);
 	this.transform.scale(this.scaleX, this.scaleY);
 	
@@ -2064,7 +2112,7 @@ ED.Doodle.prototype.clockHour = function()
 {
     var clockHour;
     
-    if (this.isRotatable)
+    if (this.isRotable)
     {
         clockHour = ((this.rotation * 6/Math.PI) + 12) % 12;
     }

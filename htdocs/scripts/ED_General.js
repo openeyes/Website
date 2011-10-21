@@ -570,3 +570,104 @@ ED.Slider.prototype.description = function()
 	return returnString;
 }
 
+/**
+ * An example to be used as a template
+ *
+ * @class PointInLine
+ * @property {String} className Name of doodle subclass
+ * @param {Drawing} _drawing
+ * @param {Int} _originX
+ * @param {Int} _originY
+ * @param {Int} _apexX
+ * @param {Int} _apexY
+ * @param {Float} _scaleX
+ * @param {Float} _scaleY
+ * @param {Float} _arc
+ * @param {Float} _rotation
+ * @param {Int} _order
+ */
+ED.PointInLine = function(_drawing, _originX, _originY, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order)
+{
+	// Call superclass constructor
+	ED.Doodle.call(this, _drawing, _originX, _originY, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order);
+	
+	// Set classname
+	this.className = "PointInLine";
+}
+
+/**
+ * Sets superclass and constructor
+ */
+ED.PointInLine.prototype = new ED.Doodle;
+ED.PointInLine.prototype.constructor = ED.PointInLine;
+ED.PointInLine.superclass = ED.Doodle.prototype;
+
+/**
+ * Sets handle attributes
+ */
+ED.PointInLine.prototype.setHandles = function()
+{
+}
+
+/**
+ * Sets default dragging attributes
+ */
+ED.PointInLine.prototype.setDraggingDefaults = function()
+{
+	this.isSelectable = true;
+	this.isOrientated = false;
+	this.isScaleable = false;
+	this.isSqueezable = false;
+	this.isMoveable = true;
+	this.isRotatable = false;
+    this.isPointInLine = true;
+}
+
+/**
+ * Sets default parameters
+ */
+ED.PointInLine.prototype.setParameterDefaults = function()
+{
+	this.originY = -300;
+}
+
+/**
+ * Draws doodle or performs a hit test if a Point parameter is passed
+ *
+ * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+ */
+ED.PointInLine.prototype.draw = function(_point)
+{
+	// Get context
+	var ctx = this.drawing.context;
+	
+	// Call draw method in superclass
+	ED.PointInLine.superclass.draw.call(this, _point);
+	
+	// Boundary path
+	ctx.beginPath();
+	
+	// Round hole
+	ctx.arc(0,0,8,0,Math.PI*2,true);
+    
+	// Close path
+	ctx.closePath();
+	
+	// Set line attributes
+	ctx.lineWidth = 4;
+	ctx.fillStyle =  "rgba(20,20,20,1)";
+	ctx.strokeStyle = "rgba(20,20,20,1)";
+	
+	// Draw boundary path (also hit testing)
+	this.drawBoundary(_point);
+	
+	// Other stuff here
+	if (this.drawFunctionMode == ED.drawFunctionMode.Draw)
+	{
+	}
+	
+	// Return value indicating successful hittest
+	return this.isClicked;
+}
+
+

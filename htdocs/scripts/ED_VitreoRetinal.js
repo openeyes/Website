@@ -82,18 +82,19 @@ ED.Square.prototype.setHandles = function()
 /**
  * Sets default dragging attributes
  */
-ED.Square.prototype.setPropertyDefaults = function()
+ED.Square.prototype.setDraggingDefaults = function()
 {
 	this.isSelectable = true;
 	this.isOrientated = false;
 	this.isScaleable = false;
 	this.isSqueezable = false;
-	this.isMoveable = false;
+	this.isMoveable = true;
 	this.isRotatable = false;
 	this.rangeOfScale = new ED.Range(+1, +4);
 	this.rangeOfArc = new ED.Range(Math.PI/6, Math.PI*2);
 	this.rangeOfApexX = new ED.Range(-0, +0);
 	this.rangeOfApexY = new ED.Range(-400, +100);
+    this.snapToGrid = true;
 }
 
 /**
@@ -207,10 +208,9 @@ ED.Fundus.superclass = ED.Doodle.prototype;
 /**
  * Sets default dragging attributes
  */
-ED.Fundus.prototype.setPropertyDefaults = function()
+ED.Fundus.prototype.setDraggingDefaults = function()
 {
 	this.isSelectable = false;
-    this.isDeletable = false;
 }
 
 /**
@@ -349,7 +349,7 @@ ED.UTear.prototype.setHandles = function()
 /**
  * Sets default dragging attributes
  */
-ED.UTear.prototype.setPropertyDefaults = function()
+ED.UTear.prototype.setDraggingDefaults = function()
 {
 	this.isSelectable = true;
 	this.isOrientated = true;
@@ -450,26 +450,6 @@ ED.UTear.prototype.description = function()
 }
 
 /**
- * Returns the SnoMed code of the doodle
- *
- * @returns {Int} SnoMed code of entity representated by doodle
- */
-ED.UTear.prototype.snomedCode = function()
-{
-	return 95690009;
-}
-
-/**
- * Returns a number indicating position in a hierarchy of diagnoses from 0 to 9 (highest)
- *
- * @returns {Int} Position in diagnostic hierarchy
- */
-ED.UTear.prototype.diagnosticHierarchy = function()
-{
-	return 5;
-}
-
-/**
  * Round hole
  *
  * @class RoundHole
@@ -512,7 +492,7 @@ ED.RoundHole.prototype.setHandles = function()
 /**
  * Sets default dragging attributes
  */
-ED.RoundHole.prototype.setPropertyDefaults = function()
+ED.RoundHole.prototype.setDraggingDefaults = function()
 {
 	this.isSelectable = true;
 	this.isOrientated = false;
@@ -602,7 +582,7 @@ ED.RoundHole.prototype.description = function()
     if (this.scaleX > 1.5) returnString = "Large ";
     
     // Round hole
-	returnString += "Round hole at ";
+	returnString += "Round hole ";
 	
     // Location (clockhours)
 	returnString += this.clockHour() + " o'clock";
@@ -675,7 +655,7 @@ ED.RRD.prototype.setHandles = function()
 /**
  * Sets default dragging attributes
  */
-ED.RRD.prototype.setPropertyDefaults = function()
+ED.RRD.prototype.setDraggingDefaults = function()
 {
 	this.isSelectable = true;
 	this.isOrientated = false;
@@ -914,7 +894,7 @@ ED.Buckle.prototype.setHandles = function()
 /**
  * Sets default dragging attributes
  */
-ED.Buckle.prototype.setPropertyDefaults = function()
+ED.Buckle.prototype.setDraggingDefaults = function()
 {
 	this.isSelectable = true;
 	this.isOrientated = false;
@@ -1048,7 +1028,7 @@ ED.Dialysis.prototype.setHandles = function()
 /**
  * Sets default dragging attributes
  */
-ED.Dialysis.prototype.setPropertyDefaults = function()
+ED.Dialysis.prototype.setDraggingDefaults = function()
 {
 	this.isSelectable = true;
 	this.isOrientated = false;
@@ -1226,7 +1206,7 @@ ED.GRT.prototype.setHandles = function()
 /**
  * Sets default dragging attributes
  */
-ED.GRT.prototype.setPropertyDefaults = function()
+ED.GRT.prototype.setDraggingDefaults = function()
 {
 	this.isSelectable = true;
 	this.isOrientated = false;
@@ -1425,7 +1405,7 @@ ED.MacularHole.prototype.setHandles = function()
 /**
  * Sets default dragging attributes
  */
-ED.MacularHole.prototype.setPropertyDefaults = function()
+ED.MacularHole.prototype.setDraggingDefaults = function()
 {
 	this.isSelectable = true;
 	this.isOrientated = false;
@@ -1575,7 +1555,7 @@ ED.StarFold.prototype.setHandles = function()
 /**
  * Sets default dragging attributes
  */
-ED.StarFold.prototype.setPropertyDefaults = function()
+ED.StarFold.prototype.setDraggingDefaults = function()
 {
 	this.isSelectable = true;
 	this.isOrientated = true;
@@ -1739,7 +1719,7 @@ ED.Lattice.prototype.setHandles = function()
 /**
  * Sets default dragging attributes
  */
-ED.Lattice.prototype.setPropertyDefaults = function()
+ED.Lattice.prototype.setDraggingDefaults = function()
 {
 	this.isSelectable = true;
 	this.isOrientated = false;
@@ -1863,7 +1843,7 @@ ED.Lattice.prototype.snomedCode = function()
  */
 ED.Lattice.prototype.diagnosticHierarchy = function()
 {
-	return 4;
+	return 2;
 }
 
 /**
@@ -1909,7 +1889,7 @@ ED.Cryo.prototype.setHandles = function()
 /**
  * Sets default dragging attributes
  */
-ED.Cryo.prototype.setPropertyDefaults = function()
+ED.Cryo.prototype.setDraggingDefaults = function()
 {
 	this.isSelectable = true;
 	this.isOrientated = false;
@@ -2032,21 +2012,21 @@ ED.LaserCircle.superclass = ED.Doodle.prototype;
  */
 ED.LaserCircle.prototype.setHandles = function()
 {
-	this.handleArray[2] = new ED.Handle(null, true, ED.Mode.Scale, false);
+	this.handleArray[2] = new ED.Handle(null, true, ED.Mode.Scale, true);
 }
 
 /**
  * Sets default dragging attributes
  */
-ED.LaserCircle.prototype.setPropertyDefaults = function()
+ED.LaserCircle.prototype.setDraggingDefaults = function()
 {
 	this.isSelectable = true;
 	this.isOrientated = false;
 	this.isScaleable = true;
-	this.isSqueezable = false;
+	this.isSqueezable = true;
 	this.isMoveable = true;
-	this.isRotatable = false;
-	this.rangeOfScale = new ED.Range(+0.5, +2);
+	this.isRotatable = true;
+	this.rangeOfScale = new ED.Range(+0.5, +4);
 	this.rangeOfArc = new ED.Range(Math.PI/6, Math.PI*2);
 	this.rangeOfApexX = new ED.Range(-0, +0);
 	this.rangeOfApexY = new ED.Range(-40, +30);
@@ -2194,7 +2174,7 @@ ED.AntPVR.prototype.setHandles = function()
 /**
  * Sets default dragging attributes
  */
-ED.AntPVR.prototype.setPropertyDefaults = function()
+ED.AntPVR.prototype.setDraggingDefaults = function()
 {
 	this.isSelectable = true;
 	this.isOrientated = false;
@@ -2353,7 +2333,7 @@ ED.Retinoschisis.prototype.setHandles = function()
 /**
  * Sets default dragging attributes
  */
-ED.Retinoschisis.prototype.setPropertyDefaults = function()
+ED.Retinoschisis.prototype.setDraggingDefaults = function()
 {
 	this.isSelectable = true;
 	this.isOrientated = false;
@@ -2562,7 +2542,7 @@ ED.OuterLeafBreak.prototype.setHandles = function()
 /**
  * Sets default dragging attributes
  */
-ED.OuterLeafBreak.prototype.setPropertyDefaults = function()
+ED.OuterLeafBreak.prototype.setDraggingDefaults = function()
 {
 	this.isSelectable = true;
 	this.isOrientated = false;
@@ -2695,7 +2675,7 @@ ED.InnerLeafBreak.prototype.setHandles = function()
 /**
  * Sets default dragging attributes
  */
-ED.InnerLeafBreak.prototype.setPropertyDefaults = function()
+ED.InnerLeafBreak.prototype.setDraggingDefaults = function()
 {
 	this.isSelectable = true;
 	this.isOrientated = false;
