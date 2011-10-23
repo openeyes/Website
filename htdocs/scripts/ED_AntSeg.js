@@ -1,9 +1,9 @@
 /**
  * @fileOverview Contains doodle Subclasses for the anterior segment drawing
  * @author <a href="mailto:bill.aylward@mac.com">Bill Aylward</a>
- * @version 0.91
+ * @version 0.92
  *
- * Modification date: 20th July 2011
+ * Modification date: 23rd Ootober 2011
  * Copyright 2011 OpenEyes
  * 
  * This file is part of OpenEyes.
@@ -27,14 +27,6 @@
  * @namespace Namespace for all EyeDraw classes
  */
 if (ED == null || typeof(ED) != "object") { var ED = new Object();}
-
-/**
- * Pre-load relevant pattern images
- */
-ED.pscImg = new Image();
-ED.pscImg.src = 'graphics/pscPattern.gif';
-ED.fuchsImg = new Image();
-ED.fuchsImg.src = 'graphics/fuchsPattern.gif';
 
 /**
  * Anterior segment with adjustable sized pupil
@@ -1332,7 +1324,6 @@ ED.PI.superclass = ED.Doodle.prototype;
  */
 ED.PI.prototype.setHandles = function()
 {
-    //this.handleArray[2] = new ED.Handle(null, true, ED.Mode.Scale, true);
 }
 
 /**
@@ -1396,7 +1387,7 @@ ED.PI.prototype.draw = function(_point)
 	if (this.drawFunctionMode == ED.drawFunctionMode.Draw)
 	{
 	}
-	
+
 	// Draw handles if selected
 	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
 	
@@ -2376,7 +2367,6 @@ ED.PhakoIncision.prototype.setParameter = function(_parameter, _value)
         case 'incisionMeridian':
             var angle = ((90 - _value) + 360) % 360;
             this.rotation = angle * Math.PI/180;
-            //console.log(this.rotation * 180/Math.PI + " : " + angle);
             break;
             
         // Incision type
@@ -2843,6 +2833,421 @@ ED.MattressSuture.prototype.draw = function(_point)
 ED.MattressSuture.prototype.description = function()
 {
     var returnString = "Mattress suture at ";
+    
+    returnString += this.clockHour() + " o'clock";
+    
+	return returnString;
+}
+
+
+/**
+ * Baerveldt tube
+ *
+ * @class Baerveldt
+ * @property {String} className Name of doodle subclass
+ * @param {Drawing} _drawing
+ * @param {Int} _originX
+ * @param {Int} _originY
+ * @param {Int} _apexX
+ * @param {Int} _apexY
+ * @param {Float} _scaleX
+ * @param {Float} _scaleY
+ * @param {Float} _arc
+ * @param {Float} _rotation
+ * @param {Int} _order
+ */
+ED.Baerveldt = function(_drawing, _originX, _originY, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order)
+{
+	// Call superclass constructor
+	ED.Doodle.call(this, _drawing, _originX, _originY, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order);
+	
+	// Set classname
+	this.className = "Baerveldt";
+}
+
+/**
+ * Sets superclass and constructor
+ */
+ED.Baerveldt.prototype = new ED.Doodle;
+ED.Baerveldt.prototype.constructor = ED.Baerveldt;
+ED.Baerveldt.superclass = ED.Doodle.prototype;
+
+/**
+ * Sets handle attributes
+ */
+ED.Baerveldt.prototype.setHandles = function()
+{
+	this.handleArray[4] = new ED.Handle(null, true, ED.Mode.Apex, false);
+}
+
+/**
+ * Sets default dragging attributes
+ */
+ED.Baerveldt.prototype.setPropertyDefaults = function()
+{
+	this.isSelectable = true;
+	this.isOrientated = true;
+	this.isScaleable = true;
+	this.isSqueezable = true;
+	this.isMoveable = true;
+	this.isRotatable = true;
+	this.rangeOfApexY = new ED.Range(+50, +300);
+	this.rangeOfApexX = new ED.Range(-0, +0);
+}
+
+/**
+ * Sets default parameters
+ */
+ED.Baerveldt.prototype.setParameterDefaults = function()
+{
+    this.originY = -250;
+    this.apexY = 240;
+    
+    // Tubes are usually STQ
+    if(this.drawing.eye == ED.eye.Right)
+    {
+        this.originX = -250;        
+        this.rotation = -Math.PI/4;
+    }
+    else
+    {
+        this.originX = 250;
+        this.rotation = Math.PI/4;
+    }
+}
+
+/**
+ * Draws doodle or performs a hit test if a Point parameter is passed
+ *
+ * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+ */
+ED.Baerveldt.prototype.draw = function(_point)
+{
+	// Get context
+	var ctx = this.drawing.context;
+	
+	// Call draw method in superclass
+	ED.Baerveldt.superclass.draw.call(this, _point);
+	
+	// Boundary path
+	ctx.beginPath();
+	
+    // Circular plate
+    ctx.arc(0, -100, 100, 0, Math.PI * 2, true);
+    
+    //Move down to apex point then back
+    ctx.moveTo(-20, 0);
+    ctx.lineTo(-20, this.apexY);
+    ctx.lineTo(20, this.apexY);
+    ctx.lineTo(20, 0);
+    ctx.closePath();
+    
+    // Set line attributes
+    ctx.lineWidth = 4;
+    
+    // Colour of outer line is dark gray
+    ctx.strokeStyle = "rgba(120,120,120,0.75)";
+    ctx.fillStyle = "rgba(120,120,120,0)";
+	
+	// Draw boundary path (also hit testing)
+	this.drawBoundary(_point);
+	
+	// Other stuff here
+	if (this.drawFunctionMode == ED.drawFunctionMode.Draw)
+	{
+	}
+	
+	// Coordinates of handles (in canvas plane)
+	this.handleArray[4].location = this.transform.transformPoint(new ED.Point(this.apexX, this.apexY));
+	
+	// Draw handles if selected
+	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
+    
+    // Calculate arc (Arc property not used naturally in this doodle)
+//    this.leftExtremity = this.transform.transformPoint(new ED.Point(-40,-40));
+//    this.rightExtremity = this.transform.transformPoint(new ED.Point(40,-40));    
+//    this.arc = this.calculateArc();
+	
+	// Return value indicating successful hittest
+	return this.isClicked;
+}
+
+/**
+ * Returns parameters
+ *
+ * @returns {String} value of parameter
+ */
+ED.Baerveldt.prototype.getParameter = function(_parameter)
+{
+    var returnValue;
+    var isRE = (this.drawing.eye == ED.eye.Right);
+    
+    switch (_parameter)
+    {
+        // Plate position
+        case 'platePosition':
+            var clockHour = this.clockHour();
+            
+            if (clockHour < 4 ) returnValue = isRE?'SNQ':'STQ';
+            else if (clockHour < 7 ) returnValue = isRE?'INQ':'ITQ';
+            else if (clockHour < 10 ) returnValue = isRE?'ITQ':'INQ';
+            else returnValue = isRE?'STQ':'SNQ';
+            break;
+            
+        case 'plateLimbusDistance':
+            var distance = Math.round((Math.sqrt(this.originX * this.originX + this.originY * this.originY) - 304)/20);
+            returnValue = distance.toFixed(1);
+            break;
+            
+        default:
+            returnValue = "";
+            break;
+    }
+    
+    return returnValue;
+}
+
+/**
+ * Sets derived parameters for this doodle
+ *
+ * @param {String} _parameter Name of parameter
+ * @param {String} _value New value of parameter
+ */
+ED.Baerveldt.prototype.setParameter = function(_parameter, _value)
+{
+    var isRE = (this.drawing.eye == ED.eye.Right);
+    switch (_parameter)
+    {
+        // Plate position
+        case 'platePosition':
+            switch (_value)
+            {
+                case 'STQ':
+                    if (isRE)
+                    {
+                        this.originX = -250;
+                        this.originY = -250;
+                        this.rotation = -Math.PI/4;
+                    }
+                    else
+                    {
+                        this.originX = 250;
+                        this.originY = -250;
+                        this.rotation = Math.PI/4;
+                    }
+                    break;
+                case 'ITQ':
+                    if (isRE)
+                    {
+                        this.originX = -250;
+                        this.originY = 250;
+                        this.rotation = -3*Math.PI/4;
+                    }
+                    else
+                    {
+                        this.originX = 250;
+                        this.originY = 250;
+                        this.rotation = 3*Math.PI/4;
+                    }
+                    break;
+                case 'SNQ':
+                    if (isRE)
+                    {
+                        this.originX = 250;
+                        this.originY = -250;
+                        this.rotation = Math.PI/4;
+                    }
+                    else
+                    {
+                        this.originX = -250;
+                        this.originY = -250;
+                        this.rotation = -Math.PI/4;
+                    }
+                    break;
+                case 'INQ':
+                    if (isRE)
+                    {
+                        this.originX = 250;
+                        this.originY = 250;
+                        this.rotation = 3*Math.PI/4;
+                    }
+                    else
+                    {
+                        this.originX = -250;
+                        this.originY = 250;
+                        this.rotation = -3*Math.PI/4;
+                    }
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case 'plateLimbusDistance':
+            
+            // Get angle to origin
+            var origin = new ED.Point(this.originX, this.originY);
+            var north = new ED.Point(0,-100);
+            var angle = 2 * Math.PI - origin.clockwiseAngleTo(north);
+            
+            // Calculate new radius
+            r = _value * 20 + 304;
+            
+            // Set doodle to new radius
+            var newOrigin = new ED.Point()
+            newOrigin.setWithPolars(r, angle);
+            this.originX = newOrigin.x;
+            this.originY = newOrigin.y;
+            
+            break;
+            
+        default:
+            break
+    }
+}
+
+
+/**
+ * Returns a string containing a text description of the doodle
+ *
+ * @returns {String} Description of doodle
+ */
+ED.Baerveldt.prototype.description = function()
+{
+    var returnString = "Baerveldt tube at ";
+    
+    returnString += this.clockHour() + " o'clock";
+    
+	return returnString;
+}
+
+/**
+ * Patch
+ *
+ * @class Patch
+ * @property {String} className Name of doodle subclass
+ * @param {Drawing} _drawing
+ * @param {Int} _originX
+ * @param {Int} _originY
+ * @param {Int} _apexX
+ * @param {Int} _apexY
+ * @param {Float} _scaleX
+ * @param {Float} _scaleY
+ * @param {Float} _arc
+ * @param {Float} _rotation
+ * @param {Int} _order
+ */
+ED.Patch = function(_drawing, _originX, _originY, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order)
+{
+	// Call superclass constructor
+	ED.Doodle.call(this, _drawing, _originX, _originY, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order);
+	
+	// Set classname
+	this.className = "Patch";
+}
+
+/**
+ * Sets superclass and constructor
+ */
+ED.Patch.prototype = new ED.Doodle;
+ED.Patch.prototype.constructor = ED.Patch;
+ED.Patch.superclass = ED.Doodle.prototype;
+
+/**
+ * Sets handle attributes
+ */
+ED.Patch.prototype.setHandles = function()
+{
+    this.handleArray[2] = new ED.Handle(null, true, ED.Mode.Scale, false);
+}
+
+/**
+ * Sets default dragging attributes
+ */
+ED.Patch.prototype.setPropertyDefaults = function()
+{
+	this.isSelectable = true;
+	this.isOrientated = true;
+	this.isScaleable = true;
+	this.isSqueezable = true;
+	this.isMoveable = true;
+	this.isRotatable = true;
+    this.rangeOfArc = new ED.Range(0, Math.PI);
+	this.rangeOfApexX = new ED.Range(-0, +0);
+	this.rangeOfApexY = new ED.Range(-334, -300);
+    this.rangeOfRadius = new ED.Range(250, 450);
+}
+
+/**
+ * Sets default parameters
+ */
+ED.Patch.prototype.setParameterDefaults = function()
+{
+    this.originY = -270;
+
+    // Patchs are usually temporal
+    if(this.drawing.eye == ED.eye.Right)
+    {
+        this.originX = -270;        
+        this.rotation = -Math.PI/4;
+    }
+    else
+    {
+        this.originX = 270;
+        this.rotation = Math.PI/4;
+    }
+}
+
+/**
+ * Draws doodle or performs a hit test if a Point parameter is passed
+ *
+ * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+ */
+ED.Patch.prototype.draw = function(_point)
+{
+	// Get context
+	var ctx = this.drawing.context;
+	
+	// Call draw method in superclass
+	ED.Patch.superclass.draw.call(this, _point);
+	    
+    // Boundary path
+	ctx.beginPath();
+    
+    ctx.rect(-75, -50, 150, 100);
+        
+	// Close path
+	ctx.closePath();
+    
+    // Colour of fill
+    ctx.fillStyle = "rgba(200,200,50,0.5)";
+    ctx.strokeStyle = "rgba(120,120,120,0)";
+    
+	// Draw boundary path (also hit testing)
+	this.drawBoundary(_point);
+	
+	// Other stuff here
+	if (this.drawFunctionMode == ED.drawFunctionMode.Draw)
+    {
+	}
+    
+    // Coordinates of handles (in canvas plane)
+    this.handleArray[2].location = this.transform.transformPoint(new ED.Point(75, -50));
+    
+	// Draw handles if selected
+	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
+	
+	// Return value indicating successful hittest
+	return this.isClicked;
+}
+
+/**
+ * Returns a string containing a text description of the doodle
+ *
+ * @returns {String} Description of doodle
+ */
+ED.Patch.prototype.description = function()
+{
+    var returnString = "Patch at ";
     
     returnString += this.clockHour() + " o'clock";
     

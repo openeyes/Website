@@ -1,0 +1,357 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+
+    <!--   Javascript  -->	
+	<script language="JavaScript" src="../../scripts/elements.js" type="text/javascript"></script>
+	<script language="JavaScript" src="../../scripts/ED_Drawing.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../scripts/ED_Strabismus.js" type="text/javascript"></script>
+    <script type="text/javascript">
+                            
+        var drawingRightEdit;
+        var drawingLeftEdit;
+                                        
+        function init()
+        {
+            // Get reference to the drawingEdit canvas elements
+            var canvasRightEdit = document.getElementById('canvasRightEdit');
+            var canvasLefttEdit = document.getElementById('canvasLefttEdit');
+            
+            // Create drawing objects
+            drawingRightEdit = new ED.Drawing(canvasRightEdit, ED.eye.Right, 'RPS');
+            drawingLeftEdit = new ED.Drawing(canvasLeftEdit, ED.eye.Left, 'LPS');
+            
+            // Preload any images
+            drawingRightEdit.preLoadImagesFrom('../../graphics/');
+            drawingLeftEdit.preLoadImagesFrom('../../graphics/');
+            
+            
+            // Wait for drawingEdit objects to be ready before adding objects or drawingEdits
+            drawingRightEdit.onLoaded = function()
+            {
+                drawingRightEdit.addDoodle('OrthopticEye');
+                drawingRightEdit.deselectDoodles();
+            }
+            drawingLeftEdit.onLoaded = function()
+            {
+                drawingLeftEdit.addDoodle('OrthopticEye');
+                drawingLeftEdit.deselectDoodles();
+            }
+                        
+            // Get reference to the drawingEdit canvas
+            //var canvasDisplay = document.getElementById('canvasDisplay');
+            
+            // Create a drawing
+            //drawingDisplay = new ED.Drawing(canvasDisplay, ED.eye.Right, 'RPS');
+            
+            // Preload any images
+            //drawingDisplay.preLoadImagesFrom('../../graphics/');
+            
+            // Wait for drawing object to be ready before adding objects or drawingEdits
+/*
+            drawingDisplay.onLoaded = function()
+            {
+                drawingDisplay.addDoodle('Fundus');
+                drawingDisplay.addDoodle('RRD');
+                drawingDisplay.addDoodle('UTear');
+                drawingDisplay.deselectDoodles();          
+                drawingDisplay.drawAllDoodles();
+            }
+*/
+        }
+        
+        function changePattern(_type)
+        {
+        	if (_type == 'A')
+        	{
+        		drawingRightEdit.deleteDoodlesOfClass('VPattern');
+        		drawingRightEdit.addDoodle('APattern');
+        		drawingLeftEdit.deleteDoodlesOfClass('VPattern');
+        		drawingLeftEdit.addDoodle('APattern');
+        	}
+        	else if (_type == 'V')
+        	{
+        		drawingRightEdit.deleteDoodlesOfClass('APattern');
+        		drawingRightEdit.addDoodle('VPattern');
+        		drawingLeftEdit.deleteDoodlesOfClass('APattern');
+        		drawingLeftEdit.addDoodle('VPattern');
+        	}
+        	else
+        	{
+        		drawingRightEdit.deleteDoodlesOfClass('APattern');
+        		drawingLeftEdit.deleteDoodlesOfClass('APattern');
+        		drawingRightEdit.deleteDoodlesOfClass('VPattern');
+        		drawingLeftEdit.deleteDoodlesOfClass('VPattern');
+        	}
+        }
+
+	            
+    </script>
+
+</head>
+
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+
+		<!-- Logo -->
+		<img id="logo" src="../../images/OpenEyes_logo.png" align="left" alt="OpenEyes - an open source electronic patient record" />
+		
+		<!-- Navigation bar -->
+		<div id="main_nav">
+			<ul>
+				<li><a id="home" href="../../index.html">Home</a></li>
+				<li><a id="news" href="../../news.html">News</a></li>
+				<li><a id="screenshots" href="../../screenshots.html">Screenshots</a></li>
+				<li><a id="documentation" href="../../documentation.html">Documentation</a></li>
+				<li><a id="contributors" href="../../contributors.html">Contributors</a></li>
+				<li><a id="development_selected" href="../../development.html">Development</a></li>
+				<li><a id="contact" href="../../contact.html">Contact us</a></li>
+			</ul>
+		</div>
+		
+		<!-- Element Title and Description -->
+		<h2>Orthoptic Examination</h2>
+		<div class="section">
+			<h4>Description:</h4>
+			<p>This element allows the input and display of the diagrammatic form of an Orthoptic examination as described in the BIOS Guidelines for the diagrammatic documentation of strabismus.</p>
+			<p>Status: <b>Alpha</b></p>
+		</div>
+
+		<!-- Edit mode section -->
+		<div class="section" style="height:320px;" align="left">
+			<h4>Edit mode:</h4>
+
+			<!-- Button bar and spacers -->			
+			<div style="float:left; width:1080px; height: 40px;">
+			
+				<span style="width: 208px; display: inline-block;"></span>
+			    <button class="imgbutton" disabled="true" id="deleteRPS" title="Delete" onclick="drawingRightEdit.deleteDoodle(); return false;" ><img src="../../graphics/delete.gif" /></button>
+	            <button class="imgbutton" id="shading" title="Shading" onclick="drawingRightEdit.addDoodle('Shading'); return false;" ><img src="../../graphics/shading.gif" /></button>                           
+	            <button class="imgbutton" id="upshoot" title="Upshoot" onclick="drawingRightEdit.addDoodle('UpShootFromLeft'); return false;" ><img src="../../graphics/upShootFromLeft.gif" /></button>
+	            <button class="imgbutton" id="updrif" title="Updrift" onclick="drawingRightEdit.addDoodle('UpDriftFromLeft'); return false;" ><img src="../../graphics/upDriftFromLeft.gif" /></button>
+	            
+				<span style="width: 85px; display: inline-block;"></span>
+			    <button class="imgbutton" id="deleteRPS" title="'A' pattern" onclick="changePattern('A'); return false;" ><img src="../../graphics/aPattern.gif" /></button>
+	            <button class="imgbutton" id="shading" title="'V'pattern" onclick="changePattern('V'); return false;" ><img src="../../graphics/vPattern.gif" /></button>
+	            <button class="imgbutton" id="shading" title="No pattern" onclick="changePattern('N'); return false;" ><img src="../../graphics/noPattern.gif" /></button>
+	      
+				<span style="width: 88px; display: inline-block;"></span>
+			    <button class="imgbutton" disabled="true" id="deleteLPS" title="Delete" onclick="drawingLeftEdit.deleteDoodle(); return false;" ><img src="../../graphics/delete.gif" /></button>
+	            <button class="imgbutton" id="shading" title="Shading" onclick="drawingLeftEdit.addDoodle('Shading'); return false;" ><img src="../../graphics/shading.gif" /></button>                           
+	            <button class="imgbutton" id="upshoot" title="Upshoot" onclick="drawingLeftEdit.addDoodle('UpShootFromLeft'); return false;" ><img src="../../graphics/upShootFromLeft.gif" /></button>
+	            <button class="imgbutton" id="updrif" title="Updrift" onclick="drawingLeftEdit.addDoodle('UpDriftFromLeft'); return false;" ><img src="../../graphics/upDriftFromLeft.gif" /></button>
+	                                      	            
+			</div>
+						
+			<!-- Column 1 -->
+			<div style="float:left; width: 120px; height: 220px;">
+				<input type="text" class="coverTest">
+				<input type="text" class="coverTest">
+				<input type="text" class="coverTest">
+			</div>
+			
+			<!-- Column 2 -->
+			<div style="float:left; width: 60px; height: 220px;">
+				<select class="ocularMovement">
+					<option>-4</option>
+					<option>-3</option>
+					<option>-2</option>
+					<option>-1</option>
+					<option selected="true">0</option>
+					<option>1</option>
+					<option>2</option>
+					<option>3</option>
+					<option>4</option>
+				</select>
+				<select class="ocularMovement">
+					<option>-4</option>
+					<option>-3</option>
+					<option>-2</option>
+					<option>-1</option>
+					<option selected="true">0</option>
+					<option>1</option>
+					<option>2</option>
+					<option>3</option>
+					<option>4</option>
+				</select>
+				<select class="ocularMovement">
+					<option>-4</option>
+					<option>-3</option>
+					<option>-2</option>
+					<option>-1</option>
+					<option selected="true">0</option>
+					<option>1</option>
+					<option>2</option>
+					<option>3</option>
+					<option>4</option>
+				</select>				
+			</div>				   				
+
+			<!-- Column 3 -->
+			<div style="float:left; width: 220px; height: 220px;">
+				<canvas id="canvasRightEdit" width="200" height="200"></canvas>					
+			</div>
+			
+			<!-- Column 4 -->
+			<div style="float:left; width: 60px; height: 220px;">
+				<select class="ocularMovement">
+					<option>-4</option>
+					<option>-3</option>
+					<option>-2</option>
+					<option>-1</option>
+					<option selected="true">0</option>
+					<option>1</option>
+					<option>2</option>
+					<option>3</option>
+					<option>4</option>
+				</select>
+				<select class="ocularMovement">
+					<option>-4</option>
+					<option>-3</option>
+					<option>-2</option>
+					<option>-1</option>
+					<option selected="true">0</option>
+					<option>1</option>
+					<option>2</option>
+					<option>3</option>
+					<option>4</option>
+				</select>
+				<select class="ocularMovement">
+					<option>-4</option>
+					<option>-3</option>
+					<option>-2</option>
+					<option>-1</option>
+					<option selected="true">0</option>
+					<option>1</option>
+					<option>2</option>
+					<option>3</option>
+					<option>4</option>
+				</select>			
+			</div>	
+
+			<!-- Column 5 -->
+			<div style="float:left; width: 120px; height: 220px;">
+				<input type="text" class="coverTest">
+				<input type="text" class="coverTest">
+				<input type="text" class="coverTest">
+			</div>
+
+			<!-- Column 6 -->
+			<div style="float:left; width: 60px; height: 220px;">
+				<select class="ocularMovement">
+					<option>-4</option>
+					<option>-3</option>
+					<option>-2</option>
+					<option>-1</option>
+					<option selected="true">0</option>
+					<option>1</option>
+					<option>2</option>
+					<option>3</option>
+					<option>4</option>
+				</select>
+				<select class="ocularMovement">
+					<option>-4</option>
+					<option>-3</option>
+					<option>-2</option>
+					<option>-1</option>
+					<option selected="true">0</option>
+					<option>1</option>
+					<option>2</option>
+					<option>3</option>
+					<option>4</option>
+				</select>
+				<select class="ocularMovement">
+					<option>-4</option>
+					<option>-3</option>
+					<option>-2</option>
+					<option>-1</option>
+					<option selected="true">0</option>
+					<option>1</option>
+					<option>2</option>
+					<option>3</option>
+					<option>4</option>
+				</select>				
+			</div>				   				
+
+			<!-- Column 7 -->
+			<div style="float:left; width: 220px; height: 220px;">
+				<canvas id="canvasLeftEdit" width="200" height="200"></canvas>							
+			</div>
+			
+			<!-- Column 8 -->
+			<div style="float:left; width: 60px; height: 220px;">
+				<select class="ocularMovement">
+					<option>-4</option>
+					<option>-3</option>
+					<option>-2</option>
+					<option>-1</option>
+					<option selected="true">0</option>
+					<option>1</option>
+					<option>2</option>
+					<option>3</option>
+					<option>4</option>
+				</select>
+				<select class="ocularMovement">
+					<option>-4</option>
+					<option>-3</option>
+					<option>-2</option>
+					<option>-1</option>
+					<option selected="true">0</option>
+					<option>1</option>
+					<option>2</option>
+					<option>3</option>
+					<option>4</option>
+				</select>
+				<select class="ocularMovement">
+					<option>-4</option>
+					<option>-3</option>
+					<option>-2</option>
+					<option>-1</option>
+					<option selected="true">0</option>
+					<option>1</option>
+					<option>2</option>
+					<option>3</option>
+					<option>4</option>
+				</select>				
+			</div>	
+
+			<!-- Column 9 -->
+			<div style="float:left; width: 120px; height: 220px;">
+				<input type="text" class="coverTest">
+				<input type="text" class="coverTest">
+				<input type="text" class="coverTest">
+			</div>
+						
+		<!-- End of Edit mode section -->
+		</div>					
+
+		<!-- Display mode section -->
+		<div class="section" style="height:270px;" align="left">
+			<h4>Display mode:</h4>
+			<p>Under construction</p>
+			
+
+		<!-- End of Display mode section -->
+		</div>	
+
+		<!-- Steering Group -->			
+		<div class="section" align="left">
+			<h4>Steering Group:</h4>
+			<p>Strabismus</p>
+		</div>
+		
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+</body>
+</html>

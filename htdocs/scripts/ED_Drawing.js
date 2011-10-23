@@ -1,9 +1,9 @@
 /**
  * @fileOverview Contains the core classes for EyeDraw
  * @author <a href="mailto:bill.aylward@mac.com">Bill Aylward</a>
- * @version 0.92
+ * @version 0.93
  *
- * Modification date: 26th August 2011
+ * Modification date: 23th October 2011
  * Copyright 2011 OpenEyes
  * 
  * This file is part of OpenEyes.
@@ -137,6 +137,7 @@ ED.findOffset = function(obj)
  * @property {Bool} newPointOnClick Flag indicating whether a mouse click will create a new PointInLine doodle
  * @property {Bool} completeLine Flag indicating whether to draw an additional line to the first PointInLine doodle
  * @property {Float} scale Scaling of transformation from canvas to doodle planes, preserving aspect ration and maximising doodle plnae
+ * @property {Float} globalScaleFactor Factor used to scale all added doodles to this drawing, defaults to 1
  * @param {Canvas} _canvas Canvas element 
  * @param {Eye} _eye Right or left eye
  * @param {String} _IDSuffix String suffix to identify HTML elements related to this drawing
@@ -161,6 +162,7 @@ ED.Drawing = function(_canvas, _eye, _IDSuffix)
     this.onLoadedHasRun = false;
     this.newPointOnClick = false;
     this.completeLine = false;
+    this.globalScaleFactor = 1;
     
     // Fit canvas make maximum use of doodle plane
     if (this.canvas.width >= this.canvas.height)
@@ -917,7 +919,7 @@ ED.Drawing.prototype.deleteDoodle = function()
 		// Go through doodles removing any that are selected (should be just one)
 		for (var i = 0; i < this.doodleArray.length; i++)
 		{
-			if (this.doodleArray[i].isSelected)
+			if (this.doodleArray[i].isSelected && this.doodleArray[i].isDeletable)
 			{
                 // Deselect doodle
                 this.selectedDoodle = null;
@@ -1047,6 +1049,10 @@ ED.Drawing.prototype.addDoodle = function(_className)
         // New doodles are selected by default
         this.selectedDoodle = newDoodle;
         
+        // Apply global scale factor
+        newDoodle.scaleX = newDoodle.scaleX * this.globalScaleFactor;
+        newDoodle.scaleY = newDoodle.scaleY * this.globalScaleFactor;
+        
         // If drawable, also go into drawing mode
         if (newDoodle.isDrawable)
         {
@@ -1144,6 +1150,39 @@ ED.Drawing.prototype.lastDoodleOfClass = function(_className)
 }
 
 /**
+ * Deletes all doodles that are deletable
+ */
+ED.Drawing.prototype.deleteAllDoodles = function()
+{
+	// Go through doodle array (backwards because of splice function)
+	for (var i = this.doodleArray.length - 1; i >= 0; i--)
+	{
+        // Find doodles of given class name
+        if (this.doodleArray[i].isDeletable)
+        {
+            // If it happens to be selected, deselect it
+            if (this.doodleArray[i].isSelected)
+            {
+                // Deselect doodle
+                this.selectedDoodle = null;
+            }
+            
+            // Remove item for removal
+            this.doodleArray.splice(i,1);
+        }
+	}
+    
+    // Re-assign ordinal numbers to array
+    for (var i = 0; i < this.doodleArray.length; i++)
+    {
+        this.doodleArray[i].order = i;
+    }
+    
+	// Refresh canvas
+	this.repaint();
+}
+
+/**
  * Deletes doodles of one class from the drawing
  *
  * @param {String} _className Classname of doodle
@@ -1157,7 +1196,7 @@ ED.Drawing.prototype.deleteDoodlesOfClass = function(_className)
         if (this.doodleArray[i].className == _className)
         {
             // If it happens to be selected, deselect it
-            if (this.doodleArray[i].isSelected)
+            if (this.doodleArray[i].isSelected && this.doodleArray[i].isDeletable)
             {
                 // Deselect doodle
                 this.selectedDoodle = null;
@@ -1207,6 +1246,8 @@ ED.Drawing.prototype.setParameterForDoodle = function(_class, _parameter, _value
 
 /**
  * Returns a string containing a description of the drawing
+ *
+ * @returns {String} Description of the drawing
  */
 ED.Drawing.prototype.report = function()
 {
@@ -1235,20 +1276,23 @@ ED.Drawing.prototype.report = function()
         }
         else
         {
-            // Get description
-            var description = doodle.description();
-            
-            // If its not an empty string, add to the return
-            if (description.length > 0)
+            if (doodle.willReport)
             {
-                // If text there already, make it lower case and add a comma before
-                if (returnString.length == 0)
+                // Get description
+                var description = doodle.description();
+                
+                // If its not an empty string, add to the return
+                if (description.length > 0)
                 {
-                    returnString += description;
-                }
-                else
-                {
-                    returnString = returnString + ", " + description.firstLetterToLowerCase();
+                    // If text there already, make it lower case and add a comma before
+                    if (returnString.length == 0)
+                    {
+                        returnString += description;
+                    }
+                    else
+                    {
+                        returnString = returnString + ", " + description.firstLetterToLowerCase();
+                    }
                 }
             }
         }
@@ -1280,6 +1324,36 @@ ED.Drawing.prototype.report = function()
 	
     // Return result
 	return returnString;
+}
+
+
+/**
+ * Returns a SNOMED diagnostic code derived from the drawing, returns zero if no code
+ *
+ * @returns {Int} SnoMed code of doodle with highest postion in hierarchy
+ */
+ED.Drawing.prototype.diagnosis = function()
+{
+    var positionInHierarchy = 0;
+    var returnCode = 0;
+    
+    // Loop through doodles with diagnoses, taking one highest in hierarchy
+	for (var i = 0; i < this.doodleArray.length; i++)
+    {
+        var doodle = this.doodleArray[i];
+        var code = doodle.snomedCode();
+        if (code > 0)
+        {
+            var codePosition = doodle.diagnosticHierarchy();
+            if (codePosition > positionInHierarchy)
+            {
+                positionInHierarchy = codePosition;
+                returnCode = code;
+            }
+        }
+    }
+    
+    return returnCode;
 }
 
 /**
@@ -1657,6 +1731,7 @@ ED.Report.prototype.isMacOff = function()
  * @property {AffineTransform} transform Affine transform which handles the doodle's position, scale and rotation
  * @property {AffineTransform} inverseTransform The inverse of transform
  * @property {Bool} isSelectable True if doodle is locked (ie non-selectable)
+ * @property {Bool} isDeletable True if doodle can be deleted 
  * @property {Bool} isOrientated True if doodle should always point to the centre (default = false)
  * @property {Bool} isScaleable True if doodle can be scaled. If false, doodle increases its arc angle
  * @property {Bool} isSqueezable True if scaleX and scaleY can be independently modifed (ie no fixed aspect ratio)
@@ -1667,7 +1742,8 @@ ED.Report.prototype.isMacOff = function()
  * @property {Bool} isArcSymmetrical True if changing arc does not change rotation
  * @property {Bool} addAtBack True if new doodles are added to the back of the drawing (ie first in array)
  * @property {Bool} isPointInLine True if centre of all doodles with this property should be connected by a line segment
- * @property {Bool} snapToGrid True if doodle should snap to a grid in doodle plane 
+ * @property {Bool} snapToGrid True if doodle should snap to a grid in doodle plane
+ * @property {Bool} willReport True if doodle responds to a report request (can be used to suppress reports when not needed)
  * @property {Float} radius Distance from centre of doodle space, calculated for doodles with isRotable true
  * @property {Range} rangeOfScale Range of allowable scales
  * @property {Range} rangeOfArc Range of allowable Arcs
@@ -1749,6 +1825,7 @@ ED.Doodle = function(_drawing, _originX, _originY, _apexX, _apexY, _scaleX, _sca
 		
 		// Dragging defaults - set individual values in subclasses
 		this.isSelectable = true;
+		this.isDeletable = true;
 		this.isOrientated = false;
 		this.isScaleable = true;
 		this.isSqueezable = false;
@@ -1760,6 +1837,7 @@ ED.Doodle = function(_drawing, _originX, _originY, _apexX, _apexY, _scaleX, _sca
         this.addAtBack = false;
         this.isPointInLine = false;
         this.snapToGrid = false;
+        this.willReport = true;
         this.radius = 0;
 		this.rangeOfScale = new ED.Range(+0.5, +4.0);
 		this.rangeOfArc = new ED.Range(Math.PI/6, Math.PI*2);
@@ -1790,7 +1868,7 @@ ED.Doodle = function(_drawing, _originX, _originY, _apexX, _apexY, _scaleX, _sca
         this.rightExtremity = new ED.Point(0,-100);
         
 		// Set dragging default settings
-		this.setDraggingDefaults();
+		this.setPropertyDefaults();
 	}
 }
 
@@ -1802,9 +1880,9 @@ ED.Doodle.prototype.setHandles = function()
 }
 
 /**
- * Sets default dragging attributes (overridden by subclasses)
+ * Sets default properties (overridden by subclasses)
  */
-ED.Doodle.prototype.setDraggingDefaults = function()
+ED.Doodle.prototype.setPropertyDefaults = function()
 {
 }
 
@@ -2112,7 +2190,7 @@ ED.Doodle.prototype.clockHour = function()
 {
     var clockHour;
     
-    if (this.isRotable)
+    if (this.isRotatable && !this.isMoveable)
     {
         clockHour = ((this.rotation * 6/Math.PI) + 12) % 12;
     }

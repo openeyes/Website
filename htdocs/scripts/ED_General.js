@@ -612,7 +612,7 @@ ED.PointInLine.prototype.setHandles = function()
 /**
  * Sets default dragging attributes
  */
-ED.PointInLine.prototype.setDraggingDefaults = function()
+ED.PointInLine.prototype.setPropertyDefaults = function()
 {
 	this.isSelectable = true;
 	this.isOrientated = false;
