@@ -42,6 +42,19 @@
                 resetEdit();
             }
             
+           	// Function to detect changes in parameters (eg from mouse dragging)
+	        drawingEdit.parameterListener = function()
+	        {
+                // Get reference to form inputs
+                var cdRatio = document.getElementById('cdRatio');
+                
+                // Check doodle of appropriate classname is selected
+                if (drawingEdit.selectedDoodle != null && drawingEdit.selectedDoodle.className == 'PostPole')
+                {
+                    cdRatio.value = drawingEdit.selectedDoodle.getParameter('cdRatio');
+                }
+	        }
+            
             // Get reference to the drawingEdit canvas
             var canvasDisplay = document.getElementById('canvasDisplay');
             
@@ -75,6 +88,7 @@
         } 
                       	    
 	    // Updates Posterior segment parameters
+/*
 	    function updatePostSeg(_value)
         {
             // Get reference to doodle
@@ -85,6 +99,7 @@
             
             drawingEdit.repaint();
         }
+*/
         
         function addToReport()
         {
@@ -181,7 +196,7 @@
 							<tr>
 								<td align="left" width="40%"><p class="lable" >C/D ratio:</p></td>
 								<td align="left" width="60%">
-									<select name="cdratio" id="cdratio" onclick="updatePostSeg(this.value);" >
+									<select name="cdRatio" id="cdRatio" onclick="drawingEdit.setParameterForDoodle('PostPole', 'cdRatio', this.value);" >
 							            <option value=1>1.0</option>
 							            <option value=0.9>0.9</option>
 							            <option value=0.8>0.8</option>

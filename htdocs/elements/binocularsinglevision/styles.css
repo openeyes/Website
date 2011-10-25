@@ -8,77 +8,16 @@
 	float: left;
 }
 
-.lable {
-	width: 110px;
-	margin-right: 4px;
-	text-align: right;
-}
-
-p#RSS {
-	font-weight: bold;
-}
-
-#rightcolumn {
-	margin-left: 20px;
-}
-
-#opnote {
-	width: 220px;
-	height: 68px;
-	margin-top: 6px;
-}
-
-input.checkbox {
-	margin-top: 5px;
-	margin-right: 10px;
-}
-
-input {
-	height: 16px;
-	width: 50px;
-	margin: 0px;
-	margin-top: 6px;
-	padding: 0px;
-}
-
 /* Canvas element */
 canvas {
 	border: 1px solid gray;
     cursor: pointer;
-	margin-top: 10px;
-}
-
-canvas:focus {
-	outline: none;
-}
-
-canvas.display {
-	border: none;
-	cursor: auto;
-}
-
-.toolbar {
-	margin-top: 10px;
-}
-
-.section select {
-	width: 100px;
-	height: 20px;
-	margin-top: 10px;
 }
 
 /* email */
 a.email {
 	display: block;
 	width: 100px;
-}
-
-button.actbutton {
-	width: 100px;
-	height: 20px;
-	margin-top: 6px;
-	border: solid 1px;
-	background-color: #eeeeee;
 }
 
 button.imgbutton {
@@ -104,14 +43,6 @@ button:active {
 button:disabled {
 	background-color: #eeeeee;
 	border: solid 1px;
-}
-
-button.actbutton {
-	width: 100px;
-	height: 20px;
-	margin-top: 6px;
-	border: solid 1px;
-	background-color: #eeeeee;
 }
 
 button img {

@@ -1,0 +1,428 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+
+    <!--   Javascript  -->	
+	<script language="JavaScript" src="../../scripts/elements.js" type="text/javascript"></script>
+    <script type="text/javascript">
+                            
+        // Runs on page load
+        function init()
+        {
+        }
+	            
+    </script>
+
+</head>
+
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+
+		<!-- Logo -->
+		<img id="logo" src="../../images/OpenEyes_logo.png" align="left" alt="OpenEyes - an open source electronic patient record" />
+		
+		<!-- Navigation bar -->
+		<div id="main_nav">
+			<ul>
+				<li><a id="home" href="../../index.html">Home</a></li>
+				<li><a id="news" href="../../news.html">News</a></li>
+				<li><a id="screenshots" href="../../screenshots.html">Screenshots</a></li>
+				<li><a id="documentation" href="../../documentation.html">Documentation</a></li>
+				<li><a id="contributors" href="../../contributors.html">Contributors</a></li>
+				<li><a id="development_selected" href="../../development.html">Development</a></li>
+				<li><a id="contact" href="../../contact.html">Contact us</a></li>
+			</ul>
+		</div>
+		
+		<!-- Element Title and Description -->
+		<h2>Current refraction</h2>
+		<div class="section">
+			<h4>Description:</h4>
+			<p>This element records the current refraction of the patient, including the best corrected acuity, and the 'best ever' acuity.</p>
+			<p>Status: <b>Alpha</b></p>
+		</div>
+
+		<!-- Edit mode section -->
+		<div class="section" style="height:180px;" align="left">
+			<h4>Edit mode:</h4>
+						
+			<!-- Right eye -->
+			<div style ="width: 540px; height: 160px; float:left;">
+				<p>Right Eye:</p>
+				
+				<span class="vaLable">Sphere:</span>
+				<span class="vaLable">Cylinder:</span>				
+				<span class="vaLable">Axis:</span>
+				<span class="vaLable">Corrected VA:</span>
+				<span class="vaLable">Near VA:</span>
+				<span id="r_aid_lable" class="vaLable" style="display:none;">Correction:</span><br />
+				<select id="r_sph" class="vaSelect">
+					<option>-20.00</option>
+					<option>-19.50</option>
+					<option>-19.00</option>
+					<option>-18.50</option>
+					<option>-18.00</option>
+					<option>-17.50</option>
+					<option>-17.00</option>
+					<option>-16.50</option>
+					<option>-16.00</option>
+					<option>-15.50</option>
+					<option>-15.00</option>
+					<option>-14.50</option>
+					<option>-14.00</option>
+					<option>-13.50</option>
+					<option>-13.00</option>
+					<option>-12.50</option>
+					<option>-12.00</option>
+					<option>-11.50</option>
+					<option>-11.00</option>
+					<option>-10.50</option>
+					<option>-10.00</option>
+					<option>-9.75</option>
+					<option>-9.50</option>
+					<option>-9.25</option>
+					<option>-9.00</option>
+					<option>-8.75</option>
+					<option>-8.50</option>
+					<option>-8.25</option>
+					<option>-8.00</option>
+					<option>-7.75</option>
+					<option>-7.50</option>
+					<option>-7.25</option>
+					<option>-7.00</option>
+					<option>-6.75</option>
+					<option>-6.50</option>
+					<option>-6.25</option>
+					<option>-6.00</option>
+					<option>-5.75</option>
+					<option>-5.50</option>
+					<option>-5.25</option>
+					<option>-5.00</option>
+					<option>-4.75</option>
+					<option>-4.50</option>
+					<option>-4.25</option>
+					<option>-4.00</option>
+					<option>-3.75</option>
+					<option>-3.50</option>
+					<option>-3.25</option>
+					<option>-3.00</option>
+					<option>-2.75</option>
+					<option>-2.50</option>
+					<option>-2.25</option>
+					<option>-2.00</option>
+					<option>-1.75</option>
+					<option>-1.50</option>
+					<option>-1.25</option>
+					<option>-1.00</option>
+					<option>-0.75</option>
+					<option>-0.50</option>
+					<option>-0.25</option>
+					<option selected="true">0.00</option>
+					<option>+0.25</option>
+					<option>+0.50</option>
+					<option>+0.75</option>
+					<option>+1.00</option>
+					<option>+1.25</option>
+					<option>+1.50</option>
+					<option>+1.75</option>
+					<option>+2.00</option>
+					<option>+2.25</option>
+					<option>+2.50</option>
+					<option>+2.75</option>
+					<option>+3.00</option>
+					<option>+3.25</option>
+					<option>+3.50</option>
+					<option>+3.75</option>
+					<option>+4.00</option>
+					<option>+4.25</option>
+					<option>+4.50</option>
+					<option>+4.75</option>
+					<option>+5.00</option>
+					<option>+5.25</option>
+					<option>+5.50</option>
+					<option>+5.75</option>
+					<option>+6.00</option>
+					<option>+6.25</option>
+					<option>+6.50</option>
+					<option>+6.75</option>
+					<option>+7.00</option>
+					<option>+7.25</option>
+					<option>+7.50</option>
+					<option>+7.75</option>
+					<option>+8.00</option>
+					<option>+8.25</option>
+					<option>+8.50</option>
+					<option>+8.75</option>
+					<option>+9.00</option>
+					<option>+9.25</option>
+					<option>+9.50</option>
+					<option>+9.75</option>
+					<option>+10.00</option>
+					<option>+10.50</option>
+					<option>+11.00</option>
+					<option>+11.50</option>
+					<option>+12.00</option>
+					<option>+12.50</option>
+					<option>+13.00</option>
+					<option>+13.50</option>
+					<option>+14.00</option>
+					<option>+14.50</option>
+					<option>+15.00</option>
+					<option>+15.50</option>
+					<option>+16.00</option>
+					<option>+16.50</option>
+					<option>+17.00</option>
+					<option>+17.50</option>
+					<option>+18.00</option>
+					<option>+18.50</option>
+					<option>+19.00</option>
+					<option>+19.50</option>
+					<option>+20.00</option>
+				</select>
+				<select id="r_cyl" class="vaSelect">
+					<option>-20.00</option>
+					<option>-19.50</option>
+					<option>-19.00</option>
+					<option>-18.50</option>
+					<option>-18.00</option>
+					<option>-17.50</option>
+					<option>-17.00</option>
+					<option>-16.50</option>
+					<option>-16.00</option>
+					<option>-15.50</option>
+					<option>-15.00</option>
+					<option>-14.50</option>
+					<option>-14.00</option>
+					<option>-13.50</option>
+					<option>-13.00</option>
+					<option>-12.50</option>
+					<option>-12.00</option>
+					<option>-11.50</option>
+					<option>-11.00</option>
+					<option>-10.50</option>
+					<option>-10.00</option>
+					<option>-9.75</option>
+					<option>-9.50</option>
+					<option>-9.25</option>
+					<option>-9.00</option>
+					<option>-8.75</option>
+					<option>-8.50</option>
+					<option>-8.25</option>
+					<option>-8.00</option>
+					<option>-7.75</option>
+					<option>-7.50</option>
+					<option>-7.25</option>
+					<option>-7.00</option>
+					<option>-6.75</option>
+					<option>-6.50</option>
+					<option>-6.25</option>
+					<option>-6.00</option>
+					<option>-5.75</option>
+					<option>-5.50</option>
+					<option>-5.25</option>
+					<option>-5.00</option>
+					<option>-4.75</option>
+					<option>-4.50</option>
+					<option>-4.25</option>
+					<option>-4.00</option>
+					<option>-3.75</option>
+					<option>-3.50</option>
+					<option>-3.25</option>
+					<option>-3.00</option>
+					<option>-2.75</option>
+					<option>-2.50</option>
+					<option>-2.25</option>
+					<option>-2.00</option>
+					<option>-1.75</option>
+					<option>-1.50</option>
+					<option>-1.25</option>
+					<option>-1.00</option>
+					<option>-0.75</option>
+					<option>-0.50</option>
+					<option>-0.25</option>
+					<option selected="true">0.00</option>
+					<option>+0.25</option>
+					<option>+0.50</option>
+					<option>+0.75</option>
+					<option>+1.00</option>
+					<option>+1.25</option>
+					<option>+1.50</option>
+					<option>+1.75</option>
+					<option>+2.00</option>
+					<option>+2.25</option>
+					<option>+2.50</option>
+					<option>+2.75</option>
+					<option>+3.00</option>
+					<option>+3.25</option>
+					<option>+3.50</option>
+					<option>+3.75</option>
+					<option>+4.00</option>
+					<option>+4.25</option>
+					<option>+4.50</option>
+					<option>+4.75</option>
+					<option>+5.00</option>
+					<option>+5.25</option>
+					<option>+5.50</option>
+					<option>+5.75</option>
+					<option>+6.00</option>
+					<option>+6.25</option>
+					<option>+6.50</option>
+					<option>+6.75</option>
+					<option>+7.00</option>
+					<option>+7.25</option>
+					<option>+7.50</option>
+					<option>+7.75</option>
+					<option>+8.00</option>
+					<option>+8.25</option>
+					<option>+8.50</option>
+					<option>+8.75</option>
+					<option>+9.00</option>
+					<option>+9.25</option>
+					<option>+9.50</option>
+					<option>+9.75</option>
+					<option>+10.00</option>
+					<option>+10.50</option>
+					<option>+11.00</option>
+					<option>+11.50</option>
+					<option>+12.00</option>
+					<option>+12.50</option>
+					<option>+13.00</option>
+					<option>+13.50</option>
+					<option>+14.00</option>
+					<option>+14.50</option>
+					<option>+15.00</option>
+					<option>+15.50</option>
+					<option>+16.00</option>
+					<option>+16.50</option>
+					<option>+17.00</option>
+					<option>+17.50</option>
+					<option>+18.00</option>
+					<option>+18.50</option>
+					<option>+19.00</option>
+					<option>+19.50</option>
+					<option>+20.00</option>
+				</select>
+
+				<select id="r_axis" class="vaSelect">
+					<option>-180</option>
+					<option>-170</option>
+					<option>-160</option>
+					<option>-150</option>
+					<option>-140</option>
+					<option>-130</option>
+					<option>-120</option>
+					<option>-110</option>
+					<option>-100</option>
+					<option>-90</option>
+					<option>-80</option>
+					<option>-70</option>
+					<option>-60</option>
+					<option>-50</option>
+					<option>-40</option>
+					<option>-30</option>
+					<option>-20</option>
+					<option>-10</option>
+					<option selected="true">0</option>
+					<option>10</option>
+					<option>20</option>
+					<option>30</option>
+					<option>40</option>
+					<option>50</option>
+					<option>60</option>
+					<option>70</option>
+					<option>80</option>
+					<option>90</option>
+					<option>100</option>
+					<option>110</option>
+					<option>120</option>
+					<option>130</option>
+					<option>140</option>
+					<option>150</option>
+					<option>160</option>
+					<option>170</option>
+					<option>180</option>
+				</select>
+				<select id="r_va" class="vaSelect">
+					<option>NR</option>
+					<option>6/5</option>
+					<option>6/6</option>
+					<option>6/9</option>
+					<option>6/12</option>
+					<option>6/18</option>
+					<option>6/24</option>
+					<option>6/36</option>
+					<option>6/60</option>
+					<option>3/60</option>
+					<option>CF</option>	
+					<option>HM</option>
+					<option>PL</option>	
+					<option>NPL</option>				
+				</select>
+				<select id="r_va" class="vaSelect">
+					<option>NR</option>
+					<option>N4.5</option>
+					<option>N5</option>
+					<option>N8</option>
+					<option>N9</option>
+					<option>N10</option>
+					<option>N12</option>
+					<option>N14</option>
+					<option>N18</option>
+					<option>N24</option>
+					<option>N36</option>	
+					<option>N48</option>		
+				</select><br />
+			</div>
+
+			<!-- Left eye -->
+			<div style ="width:540px; float:left;">
+				<p>Left eye:</p>
+			</div>
+			
+		<!-- End of Edit mode section -->
+		</div>					
+
+		<!-- Display mode section -->
+		<div class="section" style="height:190px;" align="left">
+			<h4>Display mode:</h4>
+			
+			<!-- Right eye -->
+			<div style ="width:540px; float:left;">
+				<p>Right eye:</p>
+				<div style="float:left; width: 220px;">
+					<p>-2.5D/-1.25D @ 170° VA 6/6, N5</p>
+				</div>
+				<div style="float:right; width: 320px;">
+
+				</div>
+			</div>
+			
+			<!-- Left eye -->
+			<div style ="width:540px; float:left;">
+				<p>Left eye:</p>					
+			</div>				
+
+		<!-- End of Display mode section -->
+		</div>	
+
+		<!-- Steering Group -->			
+		<div class="section" align="left">
+			<h4>Steering Group:</h4>
+			<p>Cataract</p>
+		</div>
+		
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+</body>
+</html>

@@ -215,30 +215,54 @@ ED.PostPole.prototype.draw = function(_point)
  */
 ED.PostPole.prototype.description = function()
 {
-	return "Cup-disk ratio of " + this.getGrade();
+	return "Cup-disk ratio of " + this.getParameter('cdRatio');
 }
 
 /**
- * Returns c/d ratio of disk
+ * Returns parameters
  *
- * @returns {Float} c/d ratio of optic disk
+ * @returns {String} value of parameter
  */
-ED.PostPole.prototype.getGrade = function()
+ED.PostPole.prototype.getParameter = function(_parameter)
 {
-    var returnValue = -this.apexY/80;    
-    returnValue = returnValue.toFixed(1);
+    var returnValue;
+    var isRE = (this.drawing.eye == ED.eye.Right);
     
-    return +returnValue;
+    switch (_parameter)
+    {
+        // Plate position
+        case 'cdRatio':
+            returnValue = -this.apexY/80;    
+            returnValue = returnValue.toFixed(1);
+            break;
+            
+        default:
+            returnValue = "";
+            break;
+    }
+    
+    return returnValue;
 }
 
 /**
- * Sets c/d ratio of disk
+ * Sets derived parameters for this doodle
  *
- * @param {Float} c/d ratio of disk
+ * @param {String} _parameter Name of parameter
+ * @param {String} _value New value of parameter
  */
-ED.PostPole.prototype.setGrade = function(_grade)
+ED.PostPole.prototype.setParameter = function(_parameter, _value)
 {
-    this.apexY = -(+_grade * 80);
+    var isRE = (this.drawing.eye == ED.eye.Right);
+    switch (_parameter)
+    {
+        // CD ratio
+        case 'cdRatio':
+            this.apexY = -(+_value * 80);
+            break;
+            
+        default:
+            break
+    }
 }
 
 

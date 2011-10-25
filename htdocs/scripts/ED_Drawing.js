@@ -1,9 +1,9 @@
 /**
  * @fileOverview Contains the core classes for EyeDraw
  * @author <a href="mailto:bill.aylward@mac.com">Bill Aylward</a>
- * @version 0.92
+ * @version 0.93
  *
- * Modification date: 26th August 2011
+ * Modification date: 23th October 2011
  * Copyright 2011 OpenEyes
  * 
  * This file is part of OpenEyes.
@@ -134,6 +134,10 @@ ED.findOffset = function(obj)
  * @property {Point} lastMousePosition Last position of mouse in canvas coordinates
  * @property {Image} image Optional background image
  * @property {Int} doubleClickMilliSeconds Duration of double click
+ * @property {Bool} newPointOnClick Flag indicating whether a mouse click will create a new PointInLine doodle
+ * @property {Bool} completeLine Flag indicating whether to draw an additional line to the first PointInLine doodle
+ * @property {Float} scale Scaling of transformation from canvas to doodle planes, preserving aspect ration and maximising doodle plnae
+ * @property {Float} globalScaleFactor Factor used to scale all added doodles to this drawing, defaults to 1
  * @param {Canvas} _canvas Canvas element 
  * @param {Eye} _eye Right or left eye
  * @param {String} _IDSuffix String suffix to identify HTML elements related to this drawing
@@ -156,6 +160,19 @@ ED.Drawing = function(_canvas, _eye, _IDSuffix)
 	this.lastMousePosition = new ED.Point(0, 0);
     this.doubleClickMilliSeconds = 250;
     this.onLoadedHasRun = false;
+    this.newPointOnClick = false;
+    this.completeLine = false;
+    this.globalScaleFactor = 1;
+    
+    // Fit canvas make maximum use of doodle plane
+    if (this.canvas.width >= this.canvas.height)
+    {
+        this.scale = this.canvas.width/1001;
+    }
+    else
+    {
+        this.scale = this.canvas.height/1001;
+    }
     
     // Array of images to be preloaded (Add new images here)
     this.imageArray = new Array();
@@ -168,7 +185,7 @@ ED.Drawing = function(_canvas, _eye, _IDSuffix)
     
 	// Set transform to map from doodle to canvas plane
 	this.transform.translate(this.canvas.width/2, this.canvas.height/2);
-	this.transform.scale(this.canvas.width/1001, this.canvas.height/1001);
+	this.transform.scale(this.scale, this.scale);
 	
 	// Set inverse transform to map the other way
 	this.inverseTransform = this.transform.createInverse();
@@ -382,8 +399,48 @@ ED.Drawing.prototype.json = function()
  * Draws all doodles for this drawing
  */ 
 ED.Drawing.prototype.drawAllDoodles = function()
-{	
-	// Draw each doodle
+{
+    // Draw any connecting lines
+
+    var ctx = this.context;
+    ctx.beginPath();
+    var started = false;
+    var startPoint;
+    
+    for (var i = 0; i < this.doodleArray.length; i++)
+    {
+        if (this.doodleArray[i].isPointInLine)
+        {
+            // Start or draw line
+            if (!started)
+            {
+                ctx.moveTo(this.doodleArray[i].originX, this.doodleArray[i].originY);
+                started = true;
+                startPoint = new ED.Point(this.doodleArray[i].originX, this.doodleArray[i].originY);
+            }
+            else
+            {
+                ctx.lineTo(this.doodleArray[i].originX, this.doodleArray[i].originY);
+            }
+        }
+    }
+    
+    // Optionally add line to start
+    if (this.completeLine && typeof(startPoint) != 'undefined')
+    {
+        ctx.lineTo(startPoint.x, startPoint.y);
+    }
+    
+    // Draw lines
+    if (started)
+    {
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = "rgba(20,20,20,1)";
+        ctx.stroke();
+    }
+
+    
+	// Draw doodles
 	for (var i = 0; i < this.doodleArray.length; i++)
 	{
 		// Save context (draw method of each doodle may alter it)
@@ -420,7 +477,7 @@ ED.Drawing.prototype.mousedown = function(_point)
 	var found = false;
 	this.selectedDoodle = null;
 
-	// Cycle through doodles from front to back
+	// Cycle through doodles from front to back doing hit test
 	for (var i = this.doodleArray.length - 1; i > -1; i--)
 	{
 		if (!found)
@@ -470,10 +527,19 @@ ED.Drawing.prototype.mousedown = function(_point)
 		// Ensure drag flagged is off for each doodle
 		this.doodleArray[i].isBeingDragged = false;
 	}
+    
+    
+    if (this.newPointOnClick && !found)
+    {
+        var mousePosDoodlePlane = this.inverseTransform.transformPoint(_point);
+        
+        var newPointInLine = this.addDoodle('PointInLine');
+        newPointInLine.originX = mousePosDoodlePlane.x;
+        newPointInLine.originY = mousePosDoodlePlane.y;
+    }
 	
 	// Repaint
 	this.repaint();
-
 }
 
 /**
@@ -983,6 +1049,10 @@ ED.Drawing.prototype.addDoodle = function(_className)
         // New doodles are selected by default
         this.selectedDoodle = newDoodle;
         
+        // Apply global scale factor
+        newDoodle.scaleX = newDoodle.scaleX * this.globalScaleFactor;
+        newDoodle.scaleY = newDoodle.scaleY * this.globalScaleFactor;
+        
         // If drawable, also go into drawing mode
         if (newDoodle.isDrawable)
         {
@@ -1206,20 +1276,23 @@ ED.Drawing.prototype.report = function()
         }
         else
         {
-            // Get description
-            var description = doodle.description();
-            
-            // If its not an empty string, add to the return
-            if (description.length > 0)
+            if (doodle.willReport)
             {
-                // If text there already, make it lower case and add a comma before
-                if (returnString.length == 0)
+                // Get description
+                var description = doodle.description();
+                
+                // If its not an empty string, add to the return
+                if (description.length > 0)
                 {
-                    returnString += description;
-                }
-                else
-                {
-                    returnString = returnString + ", " + description.firstLetterToLowerCase();
+                    // If text there already, make it lower case and add a comma before
+                    if (returnString.length == 0)
+                    {
+                        returnString += description;
+                    }
+                    else
+                    {
+                        returnString = returnString + ", " + description.firstLetterToLowerCase();
+                    }
                 }
             }
         }
@@ -1252,6 +1325,7 @@ ED.Drawing.prototype.report = function()
     // Return result
 	return returnString;
 }
+
 
 /**
  * Returns a SNOMED diagnostic code derived from the drawing, returns zero if no code
@@ -1310,7 +1384,7 @@ ED.Drawing.prototype.clear = function()
 	
 	// Set context transform to map from doodle plane to canvas plane	
 	this.context.translate(this.canvas.width/2, this.canvas.height/2);
-	this.context.scale(this.canvas.width/1001, this.canvas.height/1001);	
+	this.context.scale(this.scale, this.scale);	
 }
 
 /**
@@ -1324,7 +1398,16 @@ ED.Drawing.prototype.repaint = function()
     // Draw background image (In doodle space because of transform)
     if (typeof(this.image) != 'undefined')
     {
-        this.context.drawImage(this.image, -500, -500, 1000, 1000);
+        if (this.image.width >= this.image.height)
+        {
+            var height = 1000 * this.image.height/this.image.width;
+            this.context.drawImage(this.image, -500, -height/2, 1000, height);
+        }
+        else
+        {
+            var width = 1000 * this.image.width/this.image.height;
+            this.context.drawImage(this.image, -width/2, -500, width, 1000);
+        }
     }
 	
 	// Redraw all doodles
@@ -1380,6 +1463,26 @@ ED.Drawing.prototype.innerAngle = function(_pointA, _pointM, _pointB)
 	var b = new ED.Point(_pointB.x - _pointM.x, _pointB.y - _pointM.y);
 	
 	return a.clockwiseAngleTo(b);
+}
+
+/**
+ * Toggles drawing state for drawing points in line
+ *
+ */
+ED.Drawing.prototype.togglePointInLine = function()
+{
+    if (this.newPointOnClick)
+    {
+        this.newPointOnClick = false;
+        this.completeLine = true;
+        this.deselectDoodles();
+        this.repaint();
+    }
+    else
+    {
+        this.newPointOnClick = true;
+        this.completeLine = false;
+    }
 }
 
 /**
@@ -1638,6 +1741,9 @@ ED.Report.prototype.isMacOff = function()
  * @property {Bool} isUnique True if only one doodle of this class allowed in a drawing
  * @property {Bool} isArcSymmetrical True if changing arc does not change rotation
  * @property {Bool} addAtBack True if new doodles are added to the back of the drawing (ie first in array)
+ * @property {Bool} isPointInLine True if centre of all doodles with this property should be connected by a line segment
+ * @property {Bool} snapToGrid True if doodle should snap to a grid in doodle plane
+ * @property {Bool} willReport True if doodle responds to a report request (can be used to suppress reports when not needed)
  * @property {Float} radius Distance from centre of doodle space, calculated for doodles with isRotable true
  * @property {Range} rangeOfScale Range of allowable scales
  * @property {Range} rangeOfArc Range of allowable Arcs
@@ -1651,7 +1757,8 @@ ED.Report.prototype.isMacOff = function()
  * @property {Bool} isFilled True if boundary path is filled as well as stroked
  * @property {Array} handleArray Array containing handles to be rendered
  * @property {Point} leftExtremity Point at left most extremity of doodle (used to calculate arc)
- * @property {Point} rightExtremity Point at right most extremity of doodle (used to calculate arc) 
+ * @property {Point} rightExtremity Point at right most extremity of doodle (used to calculate arc)
+ * @property {Int} gridSpacing Separation of grid elements
  * @param {Drawing} _drawing
  * @param {Int} _originX
  * @param {Int} _originY
@@ -1728,12 +1835,16 @@ ED.Doodle = function(_drawing, _originX, _originY, _apexX, _apexY, _scaleX, _sca
         this.isUnique = false;
         this.isArcSymmetrical = false;
         this.addAtBack = false;
+        this.isPointInLine = false;
+        this.snapToGrid = false;
+        this.willReport = true;
         this.radius = 0;
 		this.rangeOfScale = new ED.Range(+0.5, +4.0);
 		this.rangeOfArc = new ED.Range(Math.PI/6, Math.PI*2);
 		this.rangeOfApexX = new ED.Range(-500, +500);
 		this.rangeOfApexY = new ED.Range(-500, +500);
         this.rangeOfRadius = new ED.Range(100, 450);
+        this.gridSpacing = 100;
 		
 		// Flags and other properties
 		this.isBeingDragged = false;
@@ -1795,7 +1906,7 @@ ED.Doodle.prototype.setParameterDefaults = function()
     var canvasTop = new ED.Point(0, -100);
         
     if (this.isMoveable)
-    {
+    {        
         // Move doodle to new position
         this.originX += _x;
         this.originY += _y;
@@ -1836,13 +1947,28 @@ ED.Doodle.prototype.draw = function(_point)
 	var ctx = this.drawing.context;
 	
 	// Augment transform with properties of this doodle
-	ctx.translate(this.originX, this.originY);
+    if (this.snapToGrid)
+    {
+        ctx.translate(Math.round(this.originX/this.gridSpacing) * this.gridSpacing, Math.round(this.originY/this.gridSpacing) * this.gridSpacing);
+    }
+    else
+    {
+        ctx.translate(this.originX, this.originY);
+    }
 	ctx.rotate(this.rotation);
 	ctx.scale(this.scaleX, this.scaleY);
 	
 	// Mirror with internal transform
 	this.transform.setToTransform(this.drawing.transform);
-	this.transform.translate(this.originX, this.originY);
+    if (this.snapToGrid)
+    {
+        this.transform.translate(Math.round(this.originX/this.gridSpacing) * this.gridSpacing, Math.round(this.originY/this.gridSpacing) * this.gridSpacing);
+    }
+    else
+    {
+        this.transform.translate(this.originX, this.originY);
+    }
+	
 	this.transform.rotate(this.rotation);
 	this.transform.scale(this.scaleX, this.scaleY);
 	
@@ -2064,7 +2190,7 @@ ED.Doodle.prototype.clockHour = function()
 {
     var clockHour;
     
-    if (this.isRotatable)
+    if (this.isRotatable && !this.isMoveable)
     {
         clockHour = ((this.rotation * 6/Math.PI) + 12) % 12;
     }

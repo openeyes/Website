@@ -1,9 +1,9 @@
 /**
  * @fileOverview Contains doodle Subclasses for surgical retina
  * @author <a href="mailto:bill.aylward@mac.com">Bill Aylward</a>
- * @version 0.92
+ * @version 0.93
  *
- * Modification date: 26th August 2011
+ * Modification date: 23rd October 2011
  * Copyright 2011 OpenEyes
  * 
  * This file is part of OpenEyes.
@@ -88,12 +88,13 @@ ED.Square.prototype.setPropertyDefaults = function()
 	this.isOrientated = false;
 	this.isScaleable = false;
 	this.isSqueezable = false;
-	this.isMoveable = false;
+	this.isMoveable = true;
 	this.isRotatable = false;
 	this.rangeOfScale = new ED.Range(+1, +4);
 	this.rangeOfArc = new ED.Range(Math.PI/6, Math.PI*2);
 	this.rangeOfApexX = new ED.Range(-0, +0);
 	this.rangeOfApexY = new ED.Range(-400, +100);
+    this.snapToGrid = true;
 }
 
 /**
@@ -450,26 +451,6 @@ ED.UTear.prototype.description = function()
 }
 
 /**
- * Returns the SnoMed code of the doodle
- *
- * @returns {Int} SnoMed code of entity representated by doodle
- */
-ED.UTear.prototype.snomedCode = function()
-{
-	return 95690009;
-}
-
-/**
- * Returns a number indicating position in a hierarchy of diagnoses from 0 to 9 (highest)
- *
- * @returns {Int} Position in diagnostic hierarchy
- */
-ED.UTear.prototype.diagnosticHierarchy = function()
-{
-	return 5;
-}
-
-/**
  * Round hole
  *
  * @class RoundHole
@@ -602,7 +583,7 @@ ED.RoundHole.prototype.description = function()
     if (this.scaleX > 1.5) returnString = "Large ";
     
     // Round hole
-	returnString += "Round hole at ";
+	returnString += "Round hole ";
 	
     // Location (clockhours)
 	returnString += this.clockHour() + " o'clock";
@@ -1863,7 +1844,7 @@ ED.Lattice.prototype.snomedCode = function()
  */
 ED.Lattice.prototype.diagnosticHierarchy = function()
 {
-	return 4;
+	return 2;
 }
 
 /**
@@ -2032,7 +2013,7 @@ ED.LaserCircle.superclass = ED.Doodle.prototype;
  */
 ED.LaserCircle.prototype.setHandles = function()
 {
-	this.handleArray[2] = new ED.Handle(null, true, ED.Mode.Scale, false);
+	this.handleArray[2] = new ED.Handle(null, true, ED.Mode.Scale, true);
 }
 
 /**
@@ -2043,10 +2024,10 @@ ED.LaserCircle.prototype.setPropertyDefaults = function()
 	this.isSelectable = true;
 	this.isOrientated = false;
 	this.isScaleable = true;
-	this.isSqueezable = false;
+	this.isSqueezable = true;
 	this.isMoveable = true;
-	this.isRotatable = false;
-	this.rangeOfScale = new ED.Range(+0.5, +2);
+	this.isRotatable = true;
+	this.rangeOfScale = new ED.Range(+0.5, +4);
 	this.rangeOfArc = new ED.Range(Math.PI/6, Math.PI*2);
 	this.rangeOfApexX = new ED.Range(-0, +0);
 	this.rangeOfApexY = new ED.Range(-40, +30);

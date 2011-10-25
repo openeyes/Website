@@ -43,9 +43,10 @@ input {
 
 /* Canvas element */
 canvas {
-	border: 1px solid gray;
+/* 	border: 1px solid gray; */
     cursor: pointer;
 	margin-top: 10px;
+	margin-left: 10px;
 }
 
 canvas:focus {
@@ -154,3 +155,21 @@ span.squiggle {
 /*       display: list-item; */
 }
 
+/* Text box to enter search string */
+input.coverTest {
+	margin-left: 10px;
+	margin-top: 10px;
+	margin-bottom: 56px;
+	height: 14px;
+	width: 90px;
+	font-family: Courier;
+	font-size: 0.9em;
+	padding: 0.2em;
+}
+
+select.ocularMovement {
+	margin-left: 5px;
+	margin-top: 10px;
+	margin-bottom: 60px;
+	width: 50px;
+}
