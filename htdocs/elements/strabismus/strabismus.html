@@ -21,7 +21,7 @@
         {
             // Get reference to the drawingEdit canvas elements
             var canvasRightEdit = document.getElementById('canvasRightEdit');
-            var canvasLefttEdit = document.getElementById('canvasLefttEdit');
+            var canvasLeftEdit = document.getElementById('canvasLeftEdit');
             
             // Create drawing objects
             drawingRightEdit = new ED.Drawing(canvasRightEdit, ED.eye.Right, 'RPS');
@@ -66,6 +66,27 @@
 */
         }
         
+        // Add shoots or drifts
+        function shootOrDrift(_action, _eye)
+        {
+        	var doodle;
+        	
+        	if (_eye == 'Right')
+        	{
+        		doodle = drawingRightEdit.addDoodle(_action);
+	            doodle.originX = -doodle.quadrantPoint.x;
+	            doodle.originY = -doodle.quadrantPoint.y;
+	            drawingRightEdit.deselectDoodles();
+            }
+            else
+            {
+            	doodle = drawingLeftEdit.addDoodle(_action);
+	            doodle.originX = doodle.quadrantPoint.x;
+	            doodle.originY = -doodle.quadrantPoint.y;
+	            drawingLeftEdit.deselectDoodles();
+            }
+        }
+        
         function changePattern(_type)
         {
         	if (_type == 'A')
@@ -91,6 +112,22 @@
         	}
         }
 
+        // Returns true if browser is firefox
+        function isFirefox()
+        {
+            var index = 0;
+            var ua = window.navigator.userAgent;
+            index = ua.indexOf("Firefox");
+            
+            if (index > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
 	            
     </script>
 
@@ -125,7 +162,7 @@
 		</div>
 
 		<!-- Edit mode section -->
-		<div class="section" style="height:320px;" align="left">
+		<div class="section" style="height:450px;" align="left">
 			<h4>Edit mode:</h4>
 
 			<!-- Button bar and spacers -->			
@@ -134,8 +171,8 @@
 				<span style="width: 208px; display: inline-block;"></span>
 			    <button class="imgbutton" disabled="true" id="deleteRPS" title="Delete" onclick="drawingRightEdit.deleteDoodle(); return false;" ><img src="../../graphics/delete.gif" /></button>
 	            <button class="imgbutton" id="shading" title="Shading" onclick="drawingRightEdit.addDoodle('Shading'); return false;" ><img src="../../graphics/shading.gif" /></button>                           
-	            <button class="imgbutton" id="upshoot" title="Upshoot" onclick="drawingRightEdit.addDoodle('UpShootFromLeft'); return false;" ><img src="../../graphics/upShootFromLeft.gif" /></button>
-	            <button class="imgbutton" id="updrif" title="Updrift" onclick="drawingRightEdit.addDoodle('UpDriftFromLeft'); return false;" ><img src="../../graphics/upDriftFromLeft.gif" /></button>
+	            <button class="imgbutton" id="updriftR" title="Up/down drift" onclick="shootOrDrift('UpDrift', 'Right'); return false;" ><img src="../../graphics/upDriftFromRight.gif" /></button>
+	            <button class="imgbutton" id="upshootR" title="Up/down shoot" onclick="shootOrDrift('UpShoot', 'Right'); return false;" ><img src="../../graphics/upShootFromRight.gif" /></button>
 	            
 				<span style="width: 85px; display: inline-block;"></span>
 			    <button class="imgbutton" id="deleteRPS" title="'A' pattern" onclick="changePattern('A'); return false;" ><img src="../../graphics/aPattern.gif" /></button>
@@ -145,21 +182,27 @@
 				<span style="width: 88px; display: inline-block;"></span>
 			    <button class="imgbutton" disabled="true" id="deleteLPS" title="Delete" onclick="drawingLeftEdit.deleteDoodle(); return false;" ><img src="../../graphics/delete.gif" /></button>
 	            <button class="imgbutton" id="shading" title="Shading" onclick="drawingLeftEdit.addDoodle('Shading'); return false;" ><img src="../../graphics/shading.gif" /></button>                           
-	            <button class="imgbutton" id="upshoot" title="Upshoot" onclick="drawingLeftEdit.addDoodle('UpShootFromLeft'); return false;" ><img src="../../graphics/upShootFromLeft.gif" /></button>
-	            <button class="imgbutton" id="updrif" title="Updrift" onclick="drawingLeftEdit.addDoodle('UpDriftFromLeft'); return false;" ><img src="../../graphics/upDriftFromLeft.gif" /></button>
+	            <button class="imgbutton" id="upshoot" title="Upshoot" onclick="shootOrDrift('UpDrift', 'Left'); return false;" ><img src="../../graphics/upDriftFromLeft.gif" /></button>
+	            <button class="imgbutton" id="updrif" title="Updrift" onclick="shootOrDrift('UpShoot', 'Left'); return false;" ><img src="../../graphics/upShootFromLeft.gif" /></button>
 	                                      	            
 			</div>
 						
 			<!-- Column 1 -->
 			<div style="float:left; width: 120px; height: 220px;">
-				<input type="text" class="coverTest">
-				<input type="text" class="coverTest">
-				<input type="text" class="coverTest">
+				<p class="coverLabel">H</p><input type="text" class="coverTestHor">
+				<p class="coverLabel">V</p><input type="text" class="coverTestVer">
+				<p class="coverLabel">H</p><input type="text" class="coverTestHor">
+				<p class="coverLabel">V</p><input type="text" class="coverTestVer">
+				<p class="coverLabel">H</p><input type="text" class="coverTestHor">
+				<p class="coverLabel">V</p><input type="text" class="coverTestVer">
+				<p class="tiltTitle">Head Tilt Right:</p>
+				<p class="coverLabel">H</p><input type="text" class="coverTestHor">
+				<p class="coverLabel">V</p><input type="text" class="coverTestVer">
 			</div>
 			
 			<!-- Column 2 -->
 			<div style="float:left; width: 60px; height: 220px;">
-				<select class="ocularMovement">
+				<select class="ocularMovementRightTop">
 					<option>-4</option>
 					<option>-3</option>
 					<option>-2</option>
@@ -170,7 +213,7 @@
 					<option>3</option>
 					<option>4</option>
 				</select>
-				<select class="ocularMovement">
+				<select class="ocularMovementRight">
 					<option>-4</option>
 					<option>-3</option>
 					<option>-2</option>
@@ -181,7 +224,7 @@
 					<option>3</option>
 					<option>4</option>
 				</select>
-				<select class="ocularMovement">
+				<select class="ocularMovementRight">
 					<option>-4</option>
 					<option>-3</option>
 					<option>-2</option>
@@ -201,7 +244,7 @@
 			
 			<!-- Column 4 -->
 			<div style="float:left; width: 60px; height: 220px;">
-				<select class="ocularMovement">
+				<select class="ocularMovementLeftTop">
 					<option>-4</option>
 					<option>-3</option>
 					<option>-2</option>
@@ -212,7 +255,7 @@
 					<option>3</option>
 					<option>4</option>
 				</select>
-				<select class="ocularMovement">
+				<select class="ocularMovementLeft">
 					<option>-4</option>
 					<option>-3</option>
 					<option>-2</option>
@@ -223,7 +266,7 @@
 					<option>3</option>
 					<option>4</option>
 				</select>
-				<select class="ocularMovement">
+				<select class="ocularMovementLeft">
 					<option>-4</option>
 					<option>-3</option>
 					<option>-2</option>
@@ -238,14 +281,20 @@
 
 			<!-- Column 5 -->
 			<div style="float:left; width: 120px; height: 220px;">
-				<input type="text" class="coverTest">
-				<input type="text" class="coverTest">
-				<input type="text" class="coverTest">
+				<p class="coverLabel">H</p><input type="text" class="coverTestHor">
+				<p class="coverLabel">V</p><input type="text" class="coverTestVer">
+				<p class="coverLabel">H</p><input type="text" class="coverTestHor">
+				<p class="coverLabel">V</p><input type="text" class="coverTestVer">
+				<p class="coverLabel">H</p><input type="text" class="coverTestHor">
+				<p class="coverLabel">V</p><input type="text" class="coverTestVer">
+				<p class="nearTitle">Near:</p>
+				<p class="coverLabel">H</p><input type="text" class="coverTestHor">
+				<p class="coverLabel">V</p><input type="text" class="coverTestVer">
 			</div>
 
 			<!-- Column 6 -->
 			<div style="float:left; width: 60px; height: 220px;">
-				<select class="ocularMovement">
+				<select class="ocularMovementRightTop">
 					<option>-4</option>
 					<option>-3</option>
 					<option>-2</option>
@@ -256,7 +305,7 @@
 					<option>3</option>
 					<option>4</option>
 				</select>
-				<select class="ocularMovement">
+				<select class="ocularMovementRight">
 					<option>-4</option>
 					<option>-3</option>
 					<option>-2</option>
@@ -267,7 +316,7 @@
 					<option>3</option>
 					<option>4</option>
 				</select>
-				<select class="ocularMovement">
+				<select class="ocularMovementRight">
 					<option>-4</option>
 					<option>-3</option>
 					<option>-2</option>
@@ -287,7 +336,7 @@
 			
 			<!-- Column 8 -->
 			<div style="float:left; width: 60px; height: 220px;">
-				<select class="ocularMovement">
+				<select class="ocularMovementLeftTop">
 					<option>-4</option>
 					<option>-3</option>
 					<option>-2</option>
@@ -298,7 +347,7 @@
 					<option>3</option>
 					<option>4</option>
 				</select>
-				<select class="ocularMovement">
+				<select class="ocularMovementLeft">
 					<option>-4</option>
 					<option>-3</option>
 					<option>-2</option>
@@ -309,7 +358,7 @@
 					<option>3</option>
 					<option>4</option>
 				</select>
-				<select class="ocularMovement">
+				<select class="ocularMovementLeft">
 					<option>-4</option>
 					<option>-3</option>
 					<option>-2</option>
@@ -324,9 +373,15 @@
 
 			<!-- Column 9 -->
 			<div style="float:left; width: 120px; height: 220px;">
-				<input type="text" class="coverTest">
-				<input type="text" class="coverTest">
-				<input type="text" class="coverTest">
+				<p class="coverLabel">H</p><input type="text" class="coverTestHor">
+				<p class="coverLabel">V</p><input type="text" class="coverTestVer">
+				<p class="coverLabel">H</p><input type="text" class="coverTestHor">
+				<p class="coverLabel">V</p><input type="text" class="coverTestVer">
+				<p class="coverLabel">H</p><input type="text" class="coverTestHor">
+				<p class="coverLabel">V</p><input type="text" class="coverTestVer">
+				<p class="tiltTitle">Head Tilt Left:</p>
+				<p class="coverLabel">H</p><input type="text" class="coverTestHor">
+				<p class="coverLabel">V</p><input type="text" class="coverTestVer">
 			</div>
 						
 		<!-- End of Edit mode section -->

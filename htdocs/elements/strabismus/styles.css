@@ -155,21 +155,72 @@ span.squiggle {
 /*       display: list-item; */
 }
 
-/* Text box to enter search string */
-input.coverTest {
+/* Text boxes to enter cover test information */
+
+p.coverLabel {
+	display: inline;
 	margin-left: 10px;
+	width:10px;
+}
+
+p.tiltTitle {
+	margin-left: 10px;
+	margin-top: 30px;
+	width:100px;
+}
+
+p.nearTitle {
+	margin-left: 10px;
+	margin-top: 0px;
+	width:100px;
+}
+
+input.coverTestHor {
+	margin-left: 4px;
 	margin-top: 10px;
-	margin-bottom: 56px;
+	margin-bottom: 0px;
 	height: 14px;
-	width: 90px;
+	width: 80px;
 	font-family: Courier;
 	font-size: 0.9em;
 	padding: 0.2em;
 }
 
-select.ocularMovement {
-	margin-left: 5px;
-	margin-top: 10px;
-	margin-bottom: 60px;
+input.coverTestVer {
+	margin-left: 4px;
+	margin-top: 6px;
+	margin-bottom: 16px;
+	height: 14px;
+	width: 80px;
+	font-family: Courier;
+	font-size: 0.9em;
+	padding: 0.2em;
+}
+
+select.ocularMovementLeftTop {
+	margin-left: 0px;
+	margin-top: 50px;
+	margin-bottom: 0px;
+	width: 50px;
+}
+
+select.ocularMovementLeft {
+	margin-left: 0px;
+	margin-top: 32px;
+	margin-bottom: 0px;
+	width: 50px;
+}
+
+select.ocularMovementRightTop {
+	margin-left: 10px;
+	margin-top: 50px;
+	margin-bottom: 0px;
+	width: 50px;
+}
+
+select.ocularMovementRight {
+	margin-left: 10px;
+	margin-top: 32px;
+	margin-bottom: 0px;
 	width: 50px;
 }

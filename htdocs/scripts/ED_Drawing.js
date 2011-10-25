@@ -1743,6 +1743,7 @@ ED.Report.prototype.isMacOff = function()
  * @property {Bool} addAtBack True if new doodles are added to the back of the drawing (ie first in array)
  * @property {Bool} isPointInLine True if centre of all doodles with this property should be connected by a line segment
  * @property {Bool} snapToGrid True if doodle should snap to a grid in doodle plane
+ * @property {Bool} snapToQuadrant True if doodle should snap to a specific position in quadrant (defined in subclass)
  * @property {Bool} willReport True if doodle responds to a report request (can be used to suppress reports when not needed)
  * @property {Float} radius Distance from centre of doodle space, calculated for doodles with isRotable true
  * @property {Range} rangeOfScale Range of allowable scales
@@ -1837,6 +1838,7 @@ ED.Doodle = function(_drawing, _originX, _originY, _apexX, _apexY, _scaleX, _sca
         this.addAtBack = false;
         this.isPointInLine = false;
         this.snapToGrid = false;
+        this.snapToQuadrant = false;
         this.willReport = true;
         this.radius = 0;
 		this.rangeOfScale = new ED.Range(+0.5, +4.0);
@@ -1950,6 +1952,11 @@ ED.Doodle.prototype.draw = function(_point)
     if (this.snapToGrid)
     {
         ctx.translate(Math.round(this.originX/this.gridSpacing) * this.gridSpacing, Math.round(this.originY/this.gridSpacing) * this.gridSpacing);
+    }
+    else if (this.snapToQuadrant)
+    {
+        //ctx.translate(this.originX, this.originY);
+        ctx.translate(this.quadrantPoint.x * this.originX/Math.abs(this.originX), this.quadrantPoint.y * this.originY/Math.abs(this.originY));
     }
     else
     {

@@ -255,9 +255,9 @@ ED.Shading.prototype.draw = function(_point)
 
 
 /**
- * UpShootFromLeft
+ * UpShoot
  *
- * @class UpShootFromLeft
+ * @class UpShoot
  * @property {String} className Name of doodle subclass
  * @param {Drawing} _drawing
  * @param {Int} _originX
@@ -270,33 +270,33 @@ ED.Shading.prototype.draw = function(_point)
  * @param {Float} _rotation
  * @param {Int} _order
  */
-ED.UpShootFromLeft = function(_drawing, _originX, _originY, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order)
+ED.UpShoot = function(_drawing, _originX, _originY, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order)
 {
 	// Call superclass constructor
 	ED.Doodle.call(this, _drawing, _originX, _originY, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order);
 	
 	// Set classname
-	this.className = "UpShootFromLeft";
+	this.className = "UpShoot";
 }
 
 /**
  * Sets superclass and constructor
  */
-ED.UpShootFromLeft.prototype = new ED.Doodle;
-ED.UpShootFromLeft.prototype.constructor = ED.UpShootFromLeft;
-ED.UpShootFromLeft.superclass = ED.Doodle.prototype;
+ED.UpShoot.prototype = new ED.Doodle;
+ED.UpShoot.prototype.constructor = ED.UpShoot;
+ED.UpShoot.superclass = ED.Doodle.prototype;
 
 /**
  * Sets handle attributes
  */
-ED.UpShootFromLeft.prototype.setHandles = function()
+ED.UpShoot.prototype.setHandles = function()
 {
 }
 
 /**
  * Sets default dragging attributes
  */
-ED.UpShootFromLeft.prototype.setPropertyDefaults = function()
+ED.UpShoot.prototype.setPropertyDefaults = function()
 {
 	this.isSelectable = true;
 	this.isOrientated = false;
@@ -304,14 +304,15 @@ ED.UpShootFromLeft.prototype.setPropertyDefaults = function()
 	this.isSqueezable = false;
 	this.isMoveable = true;
 	this.isRotatable = false;
+    this.snapToQuadrant = true;
+    this.quadrantPoint = new ED.Point(370, 250);
 }
 
 /**
  * Sets default parameters
  */
-ED.UpShootFromLeft.prototype.setParameterDefaults = function()
+ED.UpShoot.prototype.setParameterDefaults = function()
 {
-    this.originX = 250;
 }
 
 /**
@@ -319,13 +320,17 @@ ED.UpShootFromLeft.prototype.setParameterDefaults = function()
  *
  * @param {Point} _point Optional point in canvas plane, passed if performing hit test
  */
-ED.UpShootFromLeft.prototype.draw = function(_point)
+ED.UpShoot.prototype.draw = function(_point)
 {
+    // Use scale to flip arrow into correct position for quadrant
+    this.scaleX = this.originX/Math.abs(this.originX);
+    this.scaleY = this.originY/Math.abs(this.originY);
+    
 	// Get context
 	var ctx = this.drawing.context;
 	
 	// Call draw method in superclass
-	ED.UpShootFromLeft.superclass.draw.call(this, _point);
+	ED.UpShoot.superclass.draw.call(this, _point);
     
 	// Boundary path
 	ctx.beginPath();
@@ -349,9 +354,9 @@ ED.UpShootFromLeft.prototype.draw = function(_point)
 	{
         // Arrow shaft
         ctx.beginPath();
-        ctx.moveTo(-100, 100);
-        ctx.lineTo(100, 100);
-        ctx.lineTo(100, -80);
+        ctx.moveTo(-100, -100);
+        ctx.lineTo(100, -100);
+        ctx.lineTo(100, 80);
         
         ctx.lineWidth = 6;
         ctx.lineJoin = 'miter';
@@ -360,9 +365,9 @@ ED.UpShootFromLeft.prototype.draw = function(_point)
         
         // Arrow head
         ctx.beginPath();
-        ctx.moveTo(100, -100);
-        ctx.lineTo(80, -70);
-        ctx.lineTo(120, -70);
+        ctx.moveTo(100, 100);
+        ctx.lineTo(80, 70);
+        ctx.lineTo(120, 70);
         ctx.closePath();
         
         ctx.fillStyle = "rgba(80, 80, 80, 1)";
@@ -381,17 +386,17 @@ ED.UpShootFromLeft.prototype.draw = function(_point)
  *
  * @returns {String} Description of doodle
  */
-ED.UpShootFromLeft.prototype.description = function()
+ED.UpShoot.prototype.description = function()
 {
-    var returnString = "UpShootFromLeft";
+    var returnString = "UpShoot";
 	
 	return returnString;
 }
 
 /**
- * UpDriftFromLeft
+ * UpDrift
  *
- * @class UpDriftFromLeft
+ * @class UpDrift
  * @property {String} className Name of doodle subclass
  * @param {Drawing} _drawing
  * @param {Int} _originX
@@ -404,33 +409,33 @@ ED.UpShootFromLeft.prototype.description = function()
  * @param {Float} _rotation
  * @param {Int} _order
  */
-ED.UpDriftFromLeft = function(_drawing, _originX, _originY, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order)
+ED.UpDrift = function(_drawing, _originX, _originY, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order)
 {
 	// Call superclass constructor
 	ED.Doodle.call(this, _drawing, _originX, _originY, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order);
 	
 	// Set classname
-	this.className = "UpDriftFromLeft";
+	this.className = "UpDrift";
 }
 
 /**
  * Sets superclass and constructor
  */
-ED.UpDriftFromLeft.prototype = new ED.Doodle;
-ED.UpDriftFromLeft.prototype.constructor = ED.UpDriftFromLeft;
-ED.UpDriftFromLeft.superclass = ED.Doodle.prototype;
+ED.UpDrift.prototype = new ED.Doodle;
+ED.UpDrift.prototype.constructor = ED.UpDrift;
+ED.UpDrift.superclass = ED.Doodle.prototype;
 
 /**
  * Sets handle attributes
  */
-ED.UpDriftFromLeft.prototype.setHandles = function()
+ED.UpDrift.prototype.setHandles = function()
 {
 }
 
 /**
  * Sets default dragging attributes
  */
-ED.UpDriftFromLeft.prototype.setPropertyDefaults = function()
+ED.UpDrift.prototype.setPropertyDefaults = function()
 {
 	this.isSelectable = true;
 	this.isOrientated = false;
@@ -438,14 +443,15 @@ ED.UpDriftFromLeft.prototype.setPropertyDefaults = function()
 	this.isSqueezable = false;
 	this.isMoveable = true;
 	this.isRotatable = false;
+    this.snapToQuadrant = true;
+    this.quadrantPoint = new ED.Point(370, 250);
 }
 
 /**
  * Sets default parameters
  */
-ED.UpDriftFromLeft.prototype.setParameterDefaults = function()
+ED.UpDrift.prototype.setParameterDefaults = function()
 {
-    this.originX = 250;
 }
 
 /**
@@ -453,42 +459,54 @@ ED.UpDriftFromLeft.prototype.setParameterDefaults = function()
  *
  * @param {Point} _point Optional point in canvas plane, passed if performing hit test
  */
-ED.UpDriftFromLeft.prototype.draw = function(_point)
+ED.UpDrift.prototype.draw = function(_point)
 {
+    // Use scale to flip arrow into correct position for quadrant
+    this.scaleX = this.originX/Math.abs(this.originX);
+    this.scaleY = this.originY/Math.abs(this.originY);
+    
 	// Get context
 	var ctx = this.drawing.context;
 	
 	// Call draw method in superclass
-	ED.UpDriftFromLeft.superclass.draw.call(this, _point);
+	ED.UpDrift.superclass.draw.call(this, _point);
     
 	// Boundary path
 	ctx.beginPath();
     
 	// Rectangular area
-    ctx.arc(-98, -100, 200, Math.PI/2, 0.1, true);
+	ctx.rect(-100, -100, 200, 200);
     
 	// Close path
-	//ctx.closePath();
+	ctx.closePath();
 	
 	// Set line attributes
-    ctx.lineWidth = 6;
-    ctx.lineJoin = 'miter';
-    ctx.strokeStyle = "rgba(80, 80, 80, 1)";
+	// Set line attributes
+	ctx.lineWidth = 0;
 	ctx.fillStyle = "rgba(0, 0, 0, 0)";
+	ctx.strokeStyle = ctx.fillStyle;
     
 	// Draw boundary path (also hit testing)
 	this.drawBoundary(_point);
 	
 	// Other stuff here
 	if (this.drawFunctionMode == ED.drawFunctionMode.Draw)
-	{        
+	{
+        // Arrow body
+        ctx.beginPath();
+        ctx.arc(-98, 100, 200, -Math.PI/2, -0.1, false);
+        ctx.lineWidth = 6;
+        ctx.lineJoin = 'miter';
+        ctx.strokeStyle = "rgba(80, 80, 80, 1)";
+        ctx.fillStyle = "rgba(0, 0, 0, 0)";
+        ctx.stroke();
+        
         // Arrow head
         ctx.beginPath();
-        ctx.moveTo(100, -100);
-        ctx.lineTo(80, -70);
-        ctx.lineTo(120, -70);
+        ctx.moveTo(100, 100);
+        ctx.lineTo(80, 70);
+        ctx.lineTo(120, 70);
         ctx.closePath();
-        
         ctx.fillStyle = "rgba(80, 80, 80, 1)";
         ctx.fill();
 	}
@@ -505,9 +523,9 @@ ED.UpDriftFromLeft.prototype.draw = function(_point)
  *
  * @returns {String} Description of doodle
  */
-ED.UpDriftFromLeft.prototype.description = function()
+ED.UpDrift.prototype.description = function()
 {
-    var returnString = "UpDriftFromLeft";
+    var returnString = "UpDrift";
 	
 	return returnString;
 }
@@ -638,7 +656,7 @@ ED.APattern.prototype.draw = function(_point)
  */
 ED.APattern.prototype.description = function()
 {
-    var returnString = "UpShootFromLeft";
+    var returnString = "UpShoot";
 	
 	return returnString;
 }
@@ -769,7 +787,7 @@ ED.VPattern.prototype.draw = function(_point)
  */
 ED.VPattern.prototype.description = function()
 {
-    var returnString = "UpShootFromLeft";
+    var returnString = "UpShoot";
 	
 	return returnString;
 }
