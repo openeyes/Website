@@ -98,14 +98,18 @@
 		function supramid(_checked)
 		{
 			var howFar = document.getElementById('howFar');
-			if (_checked)
+			var mm = document.getElementById('mm');
+			
+			if (!_checked)
 			{
 				howFar.style.display = "inline";
+				mm.style.display = "inline";
 				howFar.focus();
 			}
 			else
 			{
 				howFar.style.display = "none";
+				howFar.style.display = "mm";
 			}
 		}
 	            
@@ -142,7 +146,7 @@
 		</div>
 
 		<!-- Edit mode section -->
-		<div class="section" style="height:485px;" align="left">
+		<div class="section" style="height:525px;" align="left">
 			<h4>Edit mode:</h4>
 			
 			<!-- Drawing -->
@@ -214,6 +218,17 @@
         					 </td>
 						</tr>
 						<tr>
+							<td align="left"><p class="lable" >Per-op drugs:</p></td>
+							<td align="left">
+						        <select>
+						            <option>None</option>
+						            <option>Periorbital</option>
+						            <option>Intravitreal/Cameral</option>
+						            <option>Systemic</option>
+						        </select>
+        					 </td>
+						</tr>
+						<tr>
 							<td align="left"><p class="lable" >Patch:</p></td>
 							<td align="left">
 						        <select>
@@ -229,8 +244,8 @@
 						<tr>
 							<td align="left"><p class="lable" >Supramid:</p></td>
 							<td align="left">
-								<input class="checkbox" type="checkbox" id="chk_sup" onchange="supramid(this.checked)";/>
-								<input type="text" style="display: none;" id="howFar"/>
+								<input class="checkbox" type="checkbox" checked="true" id="chk_sup" onchange="supramid(this.checked)";/>
+								<input type="text" title="if not in the AC, how far from the limbus was it left?"style="display: none;" id="howFar"/><span id="mm" style="display: none;">&nbspmm</span>
 					        </td>
 						</tr>
 						<tr>

@@ -16,10 +16,12 @@
                             
         var drawingRightEdit;
         var drawingLeftEdit;
-                                        
+        var drawingRightDisplay;
+        var drawingLeftDisplay;
+                                                
         function init()
         {
-            // Get reference to the drawingEdit canvas elements
+            // Get reference to the edit canvas elements
             var canvasRightEdit = document.getElementById('canvasRightEdit');
             var canvasLeftEdit = document.getElementById('canvasLeftEdit');
             
@@ -44,26 +46,37 @@
                 drawingLeftEdit.deselectDoodles();
             }
                         
-            // Get reference to the drawingEdit canvas
-            //var canvasDisplay = document.getElementById('canvasDisplay');
+            // Get reference to the display canvas elements
+            var canvasRightDisplay = document.getElementById('canvasRightDisplay');
+            var canvasLeftDisplay = document.getElementById('canvasLeftDisplay');
             
-            // Create a drawing
-            //drawingDisplay = new ED.Drawing(canvasDisplay, ED.eye.Right, 'RPS');
+            // Create drawing objects
+            drawingRightDisplay = new ED.Drawing(canvasRightDisplay, ED.eye.Right, 'RPS');
+            drawingLeftDisplay = new ED.Drawing(canvasLeftDisplay, ED.eye.Left, 'LPS');
             
             // Preload any images
-            //drawingDisplay.preLoadImagesFrom('../../graphics/');
+            drawingRightDisplay.preLoadImagesFrom('../../graphics/');
+            drawingLeftDisplay.preLoadImagesFrom('../../graphics/');
             
-            // Wait for drawing object to be ready before adding objects or drawingEdits
-/*
-            drawingDisplay.onLoaded = function()
+            // Wait for drawingEdit objects to be ready before adding objects or drawingEdits
+            drawingRightDisplay.onLoaded = function()
             {
-                drawingDisplay.addDoodle('Fundus');
-                drawingDisplay.addDoodle('RRD');
-                drawingDisplay.addDoodle('UTear');
-                drawingDisplay.deselectDoodles();          
-                drawingDisplay.drawAllDoodles();
+                drawingRightDisplay.addDoodle('OrthopticEye');
+                var doodle = drawingRightDisplay.addDoodle('UpDrift');
+                doodle.originX = doodle.quadrantPoint.x;
+	            doodle.originY = -doodle.quadrantPoint.y;
+	            drawingRightDisplay.addDoodle('VPattern');
+                drawingRightDisplay.deselectDoodles();
             }
-*/
+            drawingLeftDisplay.onLoaded = function()
+            {
+                drawingLeftDisplay.addDoodle('OrthopticEye');
+                var doodle = drawingLeftDisplay.addDoodle('UpDrift');
+                doodle.originX = -doodle.quadrantPoint.x;
+	            doodle.originY = -doodle.quadrantPoint.y;
+	            drawingLeftDisplay.addDoodle('VPattern');
+                drawingLeftDisplay.deselectDoodles();
+            }
         }
         
         // Add shoots or drifts
@@ -388,9 +401,79 @@
 		</div>					
 
 		<!-- Display mode section -->
-		<div class="section" style="height:270px;" align="left">
+		<div class="section" style="height:320px;" align="left">
 			<h4>Display mode:</h4>
-			<p>Under construction</p>
+
+			<!-- Column 1 -->
+			<div style="float:left; width: 70px; height: 220px;">
+				<p class="coverTestHor">&nbsp</p>
+				<p class="coverTestVer">&nbsp</p>
+				<p class="coverTestHor">20∆ LXT</p>
+				<p class="coverTestVer">10∆ LHT</p>
+				<p class="coverTestHor">&nbsp</p>
+				<p class="coverTestVer">&nbsp</p>
+			</div>
+			
+			<!-- Column 2 -->
+			<div style="float:left; width: 60px; height: 220px;">
+				<p class="occMovRightTop">-3</p>
+				<p class="occMovRight">0</p>
+				<p class="occMovRight">+2</p>
+			</div>				   				
+
+			<!-- Column 3 -->
+			<div style="float:left; width: 220px; height: 220px;">
+				<canvas id="canvasRightDisplay" width="200" height="200"></canvas>					
+			</div>
+			
+			<!-- Column 4 -->
+			<div style="float:left; width: 60px; height: 220px;">
+				<p class="occMovLeftTop">+3</p>
+				<p class="occMovLeft">0</p>
+				<p class="occMovLeft">-2</p>
+			</div>	
+
+			<!-- Column 5 -->
+			<div style="float:left; width: 70px; height: 220px;">
+				<p class="coverTestHor">50∆ AXT</p>
+				<p class="coverTestVer">&nbsp</p>
+				<p class="coverTestHor">30∆ AX(T)</p>
+				<p class="coverTestVer">&nbsp</p>
+				<p class="coverTestHor">15∆ X</p>
+				<p class="coverTestVer">&nbsp</p>
+				<p class="nearTitle">Near:</p>
+				<p class="coverTestHor">10∆ X</p>
+			</div>
+
+			<!-- Column 6 -->
+			<div style="float:left; width: 60px; height: 220px;">
+				<p class="occMovRightTop">+3</p>
+				<p class="occMovRight">0</p>
+				<p class="occMovRight">-2</p>		
+			</div>				   				
+
+			<!-- Column 7 -->
+			<div style="float:left; width: 220px; height: 220px;">
+				<canvas id="canvasLeftDisplay" width="200" height="200"></canvas>							
+			</div>
+			
+			<!-- Column 8 -->
+			<div style="float:left; width: 60px; height: 220px;">
+				<p class="occMovLeftTop">-3</p>
+				<p class="occMovLeft">0</p>
+				<p class="occMovLeft">+2</p>
+			</div>	
+
+			<!-- Column 9 -->
+			<div style="float:left; width: 70px; height: 220px;">
+				<p class="coverTestHor">&nbsp</p>
+				<p class="coverTestVer">&nbsp</p>
+				<p class="coverTestHor">20∆ RXT</p>
+				<p class="coverTestVer">10∆ RHT</p>
+				<p class="coverTestHor">&nbsp</p>
+				<p class="coverTestVer">&nbsp</p>
+			</div>
+
 			
 
 		<!-- End of Display mode section -->
