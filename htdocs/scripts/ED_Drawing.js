@@ -1060,18 +1060,17 @@ ED.Drawing.prototype.addDoodle = function(_className)
         }
         
         // Add to array
+        this.doodleArray[this.doodleArray.length] = newDoodle;
+        
         if (newDoodle.addAtBack)
         {
-            this.doodleArray.unshift(newDoodle);
+            this.moveToBack();
         }
         else
         {
-            this.doodleArray[this.doodleArray.length] = newDoodle;
+            this.repaint();
         }
-        
-        // Refresh canvas
-        this.repaint();
-        
+
         // Return doodle
         return newDoodle;
     }
@@ -2211,6 +2210,35 @@ ED.Doodle.prototype.clockHour = function()
     clockHour = clockHour.toFixed(0);
     if (clockHour == 0) clockHour = 12;        
     return clockHour
+}
+
+/**
+ * Returns the extent converted to clock hours
+ *
+ * @returns {Int} Clock hour from 1 to 12
+ */
+ED.Doodle.prototype.clockHourExtent = function()
+{
+    var clockHourStart;
+    var clockHourEnd;
+    
+    if (this.isRotatable && !this.isMoveable)
+    {
+        clockHourStart = (((this.rotation - this.arc/2) * 6/Math.PI) + 12) % 12;
+        clockHourEnd = (((this.rotation + this.arc/2) * 6/Math.PI) + 12) % 12;
+    }
+    else
+    {
+//        var twelvePoint = new ED.Point(0,-100);
+//        var thisPoint = new ED.Point(this.originX, this.originY);
+//        var clockHour = ((twelvePoint.clockwiseAngleTo(thisPoint) * 6/Math.PI) + 12) % 12;
+    }
+    
+    clockHourStart = clockHourStart.toFixed(0);
+    if (clockHourStart == 0) clockHourStart = 12;
+    clockHourEnd = clockHourEnd.toFixed(0);
+    if (clockHourEnd == 0) clockHourEnd = 12;  
+    return "from " + clockHourStart + " to " + clockHourEnd;
 }
 
 /**

@@ -20,7 +20,6 @@ function updateSelect(_selectId, _subsection)
 			switch (_subsection)
 			{
 				case "Adjunctive":
-					sel.options[sel.options.length] = new Option("Fascia lata harvest", "FL harvest");
 					sel.options[sel.options.length] = new Option("Allogenic implant", "Al implnt");
 					sel.options[sel.options.length] = new Option("Dermis fat graft", "DFG");
 					sel.options[sel.options.length] = new Option("Ear cartilage graft", "Aur cart");
@@ -39,37 +38,17 @@ function updateSelect(_selectId, _subsection)
 					sel.options[sel.options.length] = new Option("Dacryocystorhinostomy (complex)", "DCR complex");
 					sel.options[sel.options.length] = new Option("Examination under anaesthetic", "EUA");
 					sel.options[sel.options.length] = new Option("Lester Jones tube", "LJ tube");
-					sel.options[sel.options.length] = new Option("Sizler trephine and tube and endoscopy", "Sizler");
-					sel.options[sel.options.length] = new Option("Syringe and probe nasolacrimal duct", "S&P");
-					sel.options[sel.options.length] = new Option("DCG  S & P", "DCG  S & P");
-					sel.options[sel.options.length] = new Option("DCR (complex)", "DCR (complex)");
-					sel.options[sel.options.length] = new Option("DCR (routine)", "DCR (routine)");
-					sel.options[sel.options.length] = new Option("EUA ? Proceed to lacrimal surgery", "EUA ? Proceed to lacrimal surgery");
-					sel.options[sel.options.length] = new Option("Lester Jones tube", "Lester Jones tube");
-					sel.options[sel.options.length] = new Option("Sizler trephine and tube / endoscopy", "Sizler trephine and tube / endoscopy");
-					sel.options[sel.options.length] = new Option("Syringe and probe NLD", "Syringe and probe NLD");
-					sel.options[sel.options.length] = new Option("Lacrimal other - simple", "Lacrimal other - simple");
 					sel.options[sel.options.length] = new Option("Lacrimal other - complex", "Lacrimal other - complex");
-					sel.options[sel.options.length] = new Option("Dacryocystorhinostomy", "DCR");
-					sel.options[sel.options.length] = new Option("DCR & retrotubes", "CanaliculoDCR");
-					sel.options[sel.options.length] = new Option("DCR & insertion of tube (complex)", "");
-					sel.options[sel.options.length] = new Option("DCR & insertion of tube (routine)", "DCR+tube");
 					sel.options[sel.options.length] = new Option("Lacrimal gland - biopsy", "Lacrimal gland - biopsy");
 					sel.options[sel.options.length] = new Option("Lacrimal gland - other", "Lacrimal gland - other");
-					sel.options[sel.options.length] = new Option("Lacrimal sac - biopsy", "RevAnasLacGlNos");
+					sel.options[sel.options.length] = new Option("Lacrimal sac - biopsy", "Lacrimal sac - biopsy");
 					sel.options[sel.options.length] = new Option("Lacrimal sac - excision", "Lacrimal sac - excision");
-					sel.options[sel.options.length] = new Option("Lester Jones tube - closed", "Close JonesTube");
-					sel.options[sel.options.length] = new Option("Lester Jones tube - open", "Lester Jones tube - open");
 					sel.options[sel.options.length] = new Option("Punctal occlusion", "OcclLacrPunctm");
 					sel.options[sel.options.length] = new Option("Punctoplasty", "DilatnLacPunctm");
 					sel.options[sel.options.length] = new Option("Removal tube from nasolac duct", "RemovTubeFrNLC");
 					sel.options[sel.options.length] = new Option("Repair of lacrimal canaliculus", "RepairLacCanali");
 					sel.options[sel.options.length] = new Option("Sizzler trephine and tube", "Sizzler trephine and tube");
-					sel.options[sel.options.length] = new Option("Syringe and probe NLD & DCG", "Syringe and probe NLD & DCG");
 					sel.options[sel.options.length] = new Option("Syringe and probe NLD", "Syringe");
-					sel.options[sel.options.length] = new Option("Trauma - repair", "Trauma - repair");
-					sel.options[sel.options.length] = new Option("EUA ? Proceed to lacrimal surgery", "Lacrimal Gl Opn");
-					sel.options[sel.options.length] = new Option("OTHER lacrimal surgery", "ExcLacrimalSac");
 					break;
 				
 				case "Lid":
@@ -82,7 +61,7 @@ function updateSelect(_selectId, _subsection)
 					sel.options[sel.options.length] = new Option("Brow suspension - synthetic", "Brow susp synth");
 					sel.options[sel.options.length] = new Option("Cryotherapy with Collin cryoprobe", "Cryo Collin");
 					sel.options[sel.options.length] = new Option("Cryotherapy with liquid nitrogen", "Cryo Nitro");
-					sel.options[sel.options.length] = new Option("Entropion correcton", "Ent");
+					sel.options[sel.options.length] = new Option("Entropion correction", "Ent");
 					sel.options[sel.options.length] = new Option("Ectropion correction", "Ectr");
 					sel.options[sel.options.length] = new Option("Ptosis correction", "Ptosis");
 					sel.options[sel.options.length] = new Option("Tarsorrhaphy", "Tarsorrhaphy");
@@ -100,25 +79,12 @@ function updateSelect(_selectId, _subsection)
 					sel.options[sel.options.length] = new Option("Lower lid elevation - specify material", "LL elvtn");
 					sel.options[sel.options.length] = new Option("Correction of telecanthus with wire", "Telecnth wire");
 					sel.options[sel.options.length] = new Option("Conjunctival lesion - biopsy / excision", "Conjunctival lesion - biopsy / excision");
-					sel.options[sel.options.length] = new Option("Cryotherapy", "Cryotherapy");
 					sel.options[sel.options.length] = new Option("Electrolysis", "Electrolysis");
-					sel.options[sel.options.length] = new Option("Excision biopsy lesion lid or conj", "Excision biopsy lesion lid or conj");
 					sel.options[sel.options.length] = new Option("I & C cyst", "I & C cyst");
-					sel.options[sel.options.length] = new Option("Malposition correction (en,ectropion, ptosis, lowering, tarsorrhaphy)", "Malposition correction");
-					sel.options[sel.options.length] = new Option("OTHER minor operation - long", "OTHER minor operation - long");
-					sel.options[sel.options.length] = new Option("OTHER minor operation - short", "OTHER minor operation - short");
 					sel.options[sel.options.length] = new Option("Punctoplasty", "Punctoplasty");
-					sel.options[sel.options.length] = new Option("Biopsy - excision", "Biopsy - excision");
-					sel.options[sel.options.length] = new Option("Biopsy - incisional / shave", "BiopsyLidLesion");
-					sel.options[sel.options.length] = new Option("Blepharoplasty: lower eyelid", "Blepharo Lowlid");
-					sel.options[sel.options.length] = new Option("Blepharoplasty: upper & lower lids", "Blepharoplasty: upper & lower lids");
-					sel.options[sel.options.length] = new Option("Blepharoplasty: upper lid", "Blepharoplasty: upper lid");
 					sel.options[sel.options.length] = new Option("Blepharospasm - avulsion of nerve of eyelid", "LidNvAvulsion");
 					sel.options[sel.options.length] = new Option("Blepharospasm - botulinum injection", "InjBotulinumMus");
 					sel.options[sel.options.length] = new Option("Blepharospasm - orbicularis muscle stripping", "OrbicularisMsSt");
-					sel.options[sel.options.length] = new Option("Brow suspension - autogenous fascia lata (fresh)", "Entropion upLid");
-					sel.options[sel.options.length] = new Option("Brow suspension - exogenous material / suture", "CorrecEctropion");
-					sel.options[sel.options.length] = new Option("Brow suspension - STORED autogenous fascia lata", "Entropio lowLid");
 					sel.options[sel.options.length] = new Option("Canthoplasty lateral", "Canthoplasty lateral");
 					sel.options[sel.options.length] = new Option("Canthoplasty medial", "Canthoplasty medial");
 					sel.options[sel.options.length] = new Option("Caruncle - biopsy / excision", "ExcLesionCanthu");
@@ -168,7 +134,6 @@ function updateSelect(_selectId, _subsection)
 					break;
 		
 				case "Orbit":
-					sel.options[sel.options.length] = new Option("Decompression of orbit - bilateral", "Decompression of orbit - bilateral");
 					sel.options[sel.options.length] = new Option("Decompression of orbit - unilateral", "Decompression of orbit - unilateral");
 					sel.options[sel.options.length] = new Option("Fracture repair", "Fracture repair");
 					sel.options[sel.options.length] = new Option("Orbitotomy - anterior - complex", "Orbitotomy - anterior - complex");
@@ -319,7 +284,7 @@ function updateSelect(_selectId, _subsection)
 			sel.options[sel.options.length] = new Option("Cyclodialysis cleft repair", "CyclodiaClftRep");
 			sel.options[sel.options.length] = new Option("Examination under anaesthetic", "EUA");
 			sel.options[sel.options.length] = new Option("Goniotomy", "Goniotomy");
-			sel.options[sel.options.length] = new Option("Graft to sclera", "DonorSclera");
+			sel.options[sel.options.length] = new Option("Gr	aft to sclera", "DonorSclera");
 			sel.options[sel.options.length] = new Option("Insertion of aqueous shunt", "InsAqueousShunt");
 			sel.options[sel.options.length] = new Option("Insertion of IOL", "IOL");
 			sel.options[sel.options.length] = new Option("Iridoplasty", "Iridoplasty");
@@ -354,9 +319,6 @@ function updateSelect(_selectId, _subsection)
 			break;
 			
 		case "Strabismus":
-			sel.options[sel.options.length] = new Option("Insertion of Intacs", "Intacs ");
-			sel.options[sel.options.length] = new Option("Laser assisted in situ keratomileusis", "LASIK");
-			sel.options[sel.options.length] = new Option("Removal of Intacs", "Removal of Intacs");
 			sel.options[sel.options.length] = new Option("Adjustable suture", "Adjustable");
 			sel.options[sel.options.length] = new Option("Botulinum injection eye muscle", "BTXA-muscle");
 			sel.options[sel.options.length] = new Option("Faden", "Faden");
