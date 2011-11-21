@@ -1,4 +1,14 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<?php
+	// Include database class
+	require_once ('../classes/OEDBConnectionClass.inc.php');
+	
+	// Connect to database
+	$dbc = new OEDBConnection(OEDatabase::main);
+	
+	// Arrays
+	$specialties = array();
+?>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -12,7 +22,7 @@
 	<script language="JavaScript" src="../../scripts/elements.js" type="text/javascript"></script>
 	<script language="JavaScript" src="../../scripts/common.js" type="text/javascript"></script>	
 	<script language="JavaScript" src="../../scripts/incrementalSearch.js" type="text/javascript"></script>
-	<script language="JavaScript" src="procedure.js" type="text/javascript"></script>
+	<script language="JavaScript" src="procedures.js" type="text/javascript"></script>
 	    
     <!--   This script handles the drawings for the page   -->
     <script type="text/javascript">
@@ -20,13 +30,184 @@
         // Runs on page load
         function init()
         {
-        	// Populate select
+         	// Set select to Adnexal to start with
+        	document.getElementById('specialty').selectedIndex = 1;
+        	
+       		// Populate select
         	updateSelect("common","Adjunctive");
         }
-	            
-    </script>
 
+<?php
+	// Output list of specialties as select options
+	if ($dbc->isConnected())
+	{				
+
+		$q = "SELECT id, name FROM specialty ORDER BY name ASC";
+		$success = $dbc->execute($q);
+		
+		if ($success)
+		{
+			$count = $dbc->recordCount();
+			if ($count > 0)
+			{
+				$specialties = $dbc->resultArray();
+			}
+		}
+	}
+?>
+
+		// Called when specialty changes;
+		function specChanged(_id)
+		{
+			switch (_id)
+			{		            
+<?php
+	foreach ($specialties as $specialty)
+	{
+
+		// Is there a subsection?
+		$q = "SELECT * FROM specialty_subsection WHERE specialty_id = $specialty->id ORDER BY name ASC";
+		$success = $dbc->execute($q);
+		
+		if ($success)
+		{
+			$count = $dbc->recordCount();
+			if ($count > 0)
+			{
+				$subsections = $dbc->resultArray();
+				echo '
+				case "'.$specialty->id.'":
+					document.getElementById("subsection").style.display = \'inline\';
+					document.getElementById("subsection").selectedIndex = 0;			
+					updateSelect("common","'.$subsections[0]->name.'");
+					break;';
+			}
+		}					
+	}
+?>
+
+				default:
+					document.getElementById("subsection").style.display = 'none';
+					updateSelect("common","All");	
+					break;	
+			}
+		}
+		
+		// Change the options in the _select according to subsection
+		function updateSelect(_selectId, _subsection)
+		{
+			// Get reference to the select
+			var sel = document.getElementById(_selectId);
+			
+			var specialty_id = document.getElementById("specialty").value;
+			
+			// Remove all options
+			sel.options.length = 0;
+		
+			// First title
+			sel.options[sel.options.length] = new Option("Common procedures","");
+						
+			// Repopulate with correct format
+			switch (specialty_id)
+			{
+			
+<?php
+	foreach ($specialties as $specialty)
+	{
+		echo '
+				case"'.$specialty->id.'":';
+
+		// Is there a subsection?
+		$q = "SELECT * FROM specialty_subsection WHERE specialty_id = $specialty->id ORDER BY name ASC";
+		$success = $dbc->execute($q);
+		
+		if ($success)
+		{
+			$count = $dbc->recordCount();
+			
+			// There is a subsection
+			if ($count > 0)
+			{
+				$subsections = $dbc->resultArray();
+				echo '
+					switch (_subsection)
+					{';
+							
+				foreach ($subsections as $subsection)
+				{
+					echo '
+						case "'.$subsection->name.'":';
+						
+						
+					$q = "SELECT term, short_format FROM proc, proc_specialty_subsection_assignment WHERE proc.id = proc_specialty_subsection_assignment.proc_id AND proc_specialty_subsection_assignment.specialty_subsection_id = $subsection->id ORDER BY term ASC";
+					$success = $dbc->execute($q);
+					if ($success)
+					{
+						$count = $dbc->recordCount();
+						if ($count > 0)
+						{
+							$items = $dbc->resultArray();
+							foreach ($items as $item)
+							{
+								echo '
+							sel.options[sel.options.length] = new Option("'.$item->term.'", "'.$item->short_format.'");';
+							}
+						}
+					}		
+						
+				
+							
+					echo '
+							break;';
+										
+				}
+				
+					echo '
+						default:
+							console.log("default");
+							break;
+					}
+					break;';
+								
+
+			}
+			// NO subsection
+			else
+			{
+				$q = "SELECT term, short_format FROM proc, proc_specialty_assignment WHERE proc.id = proc_specialty_assignment.proc_id AND proc_specialty_assignment.specialty_id = $specialty->id ORDER BY term ASC";
+				$success = $dbc->execute($q);
+				if ($success)
+				{
+					$count = $dbc->recordCount();
+					if ($count > 0)
+					{
+						$items = $dbc->resultArray();
+						foreach ($items as $item)
+						{
+							echo '
+					sel.options[sel.options.length] = new Option("'.$item->term.'", "'.$item->short_format.'");';
+						}
+					}
+				}					
+				
+				echo '
+					break;';
+			}
+		}
+						
+	}
+?>
+
+			}
+			
+			// Set focus to select
+			document.getElementById("common").focus();
+		}
+
+
+   </script>
 </head>
+
 <body onload="init();">
 <div id="screen" align="center">
 	<div id="content">
@@ -59,7 +240,7 @@
 			<p>Possible enhancements would include a full hierarchical procedure browser.</p>
 			<p>Status: <b>Alpha</b></p>
 		</div>
-		
+	
 		<!-- Settings section -->
 		<div class="section" style="height:76px;" align="left">
 			<h4>Settings:</h4>
@@ -69,24 +250,15 @@
 						<td align="left" width="60%"><p class="complable" >Specialty:</p></td>
 						<td align="left" width="40%">
 							<select id="specialty" style="width: auto;" onchange="specChanged(this.value);">
-								<option value="Accident & Emergency">Accident & Emergency</option>
-								<option value="Adnexal" selected="TRUE">Adnexal</option>
-								<option value="Anaesthetics">Anaesthetics</option>
-								<option value="Cataract">Cataract</option>
-								<option value="Cornea">Cornea</option>
-								<option value="External">External</option>
-								<option value="Glaucoma">Glaucoma</option>
-								<option value="Medical Retina">Medical Retina</option>
-								<option value="Neuro-ophthalmology">Neuro-ophthalmology</option>
-								<option value="Oncology">Oncology</option>
-								<option value="Paediatrics">Paediatrics</option>
-								<option value="Primary Care">Primary Care</option>
-								<option value="Refractive">Refractive</option>
-								<option value="Strabismus">Strabismus</option>
-								<option value="Uveitis">Uveitis</option>
-								<option value="Vitreoretinal">Vitreoretinal</option>
+<?php
+	foreach ($specialties as $specialty)
+	{
+		echo '								<option value="'.$specialty->id.'">'.$specialty->name.'</option>'."\n";
+
+	}
+?>
 							</select>
-				        </td>
+						</td>
 					</tr>
 				</tbody>
 			</table>
@@ -105,11 +277,12 @@
 					
 						<!-- Select for category -->
 						<select style="display:inline;" class="sidebar" id="subsection" title="Subsections for your specialty" onchange="updateSelect('common',this.value);" onkeyup="selectKeyUp(event);">
-							<option value="Adjunctive">Adjunctive</option>
-							<option value="Lacrimal">Lacrimal</option>						
+							<option value="Ancillary">Ancillary</option>
+							<option value="Corneoplastic">Corneoplastic</option>						
+							<option value="Lacrimal">Lacrimal</option>
 							<option value="Lid">Lid</option>
 							<option value="Orbit">Orbit</option>
-							<option value="Socket">Socket</option>
+							<option value="Socket & eye removal">Socket & eye removal</option>
 						</select>
 							
 						<!-- Select for common procedures -->
