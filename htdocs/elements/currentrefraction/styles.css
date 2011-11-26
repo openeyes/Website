@@ -167,15 +167,15 @@ span.squiggle {
 .vaSelect {
 	margin-left: 10px;
 	margin-top: 5px;
-	margin-right: 10px;
-	width: 60px;
+/* 	margin-right: 10px */;
+/* 	width: 70px; */
 }
 
 /* VA Lable */
 .vaLable {
 	display: inline-block;
 	font-size: 0.8em;
-	width:70px;
+	width:60px;
 	text-align:left;
 	margin-left: 10px;
 	margin-top: 10px;
