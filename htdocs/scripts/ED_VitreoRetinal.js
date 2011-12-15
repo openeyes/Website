@@ -1739,7 +1739,10 @@ ED.Lattice.prototype.setPropertyDefaults = function()
  */
 ED.Lattice.prototype.setParameterDefaults = function()
 {
-    this.arc = 60 * Math.PI/180;  
+    this.arc = 60 * Math.PI/180;
+    
+    // The radius property is changed by movement in rotatable doodles
+    this.radius = 350;
 }
 
 /**
@@ -1756,8 +1759,8 @@ ED.Lattice.prototype.draw = function(_point)
 	ED.Lattice.superclass.draw.call(this, _point);
     
     // Lattice is at equator
-    var ro = 800/2;
-    var ri = 700/2;
+    var ro = this.radius + 50;
+    var ri = this.radius;
     var r = ri + (ro - ri)/2;
 	
 	// Calculate parameters for arcs
@@ -2099,7 +2102,6 @@ ED.LaserCircle.prototype.draw = function(_point)
             ctx.stroke();
             
         }
-
 	}
 	
 	// Coordinates of handles (in canvas plane)

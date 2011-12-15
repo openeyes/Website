@@ -96,12 +96,11 @@ ED.handleRing =
 	Outer:1
 }
 
-
 /*
  * Chris Raettig's function for getting accurate mouse position in all browsers
  *
  * @param {Object} obj Object to get offset for, usually canvas object
- * @return {Object} x and y values of offset
+ * @returns {Object} x and y values of offset
  */
 ED.findOffset = function(obj)
 {
@@ -112,6 +111,27 @@ ED.findOffset = function(obj)
             curtop += obj.offsetTop;
         } while (obj = obj.offsetParent);
         return { x: curleft, y: curtop };
+    }
+}
+
+/*
+ * Returns true if browser is firefox
+ *
+ * @returns {Bool} True is browser is firefox
+ */
+ED.isFirefox = function()
+{
+    var index = 0;
+    var ua = window.navigator.userAgent;
+    index = ua.indexOf("Firefox");
+    
+    if (index > 0)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
     }
 }
 
@@ -136,7 +156,7 @@ ED.findOffset = function(obj)
  * @property {Int} doubleClickMilliSeconds Duration of double click
  * @property {Bool} newPointOnClick Flag indicating whether a mouse click will create a new PointInLine doodle
  * @property {Bool} completeLine Flag indicating whether to draw an additional line to the first PointInLine doodle
- * @property {Float} scale Scaling of transformation from canvas to doodle planes, preserving aspect ration and maximising doodle plnae
+ * @property {Float} scale Scaling of transformation from canvas to doodle planes, preserving aspect ratio and maximising doodle plnae
  * @property {Float} globalScaleFactor Factor used to scale all added doodles to this drawing, defaults to 1
  * @param {Canvas} _canvas Canvas element 
  * @param {Eye} _eye Right or left eye
@@ -164,7 +184,7 @@ ED.Drawing = function(_canvas, _eye, _IDSuffix)
     this.completeLine = false;
     this.globalScaleFactor = 1;
     
-    // Fit canvas make maximum use of doodle plane
+    // Fit canvas making maximum use of doodle plane
     if (this.canvas.width >= this.canvas.height)
     {
         this.scale = this.canvas.width/1001;
@@ -182,6 +202,8 @@ ED.Drawing = function(_canvas, _eye, _IDSuffix)
     this.imageArray['laserPattern'] = new Image();
     this.imageArray['fuchsPattern'] = new Image();
     this.imageArray['pscPattern'] = new Image();
+    this.imageArray['meshworkPattern'] = new Image();
+    this.imageArray['newVesselPattern'] = new Image();
     
 	// Set transform to map from doodle to canvas plane
 	this.transform.translate(this.canvas.width/2, this.canvas.height/2);
@@ -204,7 +226,7 @@ ED.Drawing = function(_canvas, _eye, _IDSuffix)
     this.fillRadio = document.getElementById('fillRadio' + this.IDSuffix);
     this.thickness = document.getElementById('thicknessSelect' + this.IDSuffix);
     
-    // Add event listeners (NB within the event listener 'this' refers to the canvas, NOT the drawing)
+    // Add event listeners (NB within the event listener 'this' refers to the canvas, NOT the drawing instance)
     var drawing = this;
     
     // Mouse listeners
@@ -248,8 +270,6 @@ ED.Drawing = function(_canvas, _eye, _IDSuffix)
                             var point = new ED.Point(e.targetTouches[0].pageX - this.offsetLeft,e.targetTouches[0].pageY - this.offsetTop);
                             drawing.mousemove(point); 
                             }, false);
-    // Focus listeners
-    //this.canvas.addEventListener('blur', function(e) {drawing.deselectDoodles();}, false);
     
     // Keyboard listener
     window.addEventListener('keydown',function(e) {
@@ -257,7 +277,7 @@ ED.Drawing = function(_canvas, _eye, _IDSuffix)
                             }, true);
     
     
-    // Stop browser stealing double click to select text (TODO Test this in browsers other than Safari)
+    // Stop browser stealing double click to select text
     this.canvas.onselectstart = function () { return false; }
 }
 
@@ -284,7 +304,7 @@ ED.Drawing.prototype.preLoadImagesFrom = function(_path)
 }
 
 /**
- * Checks all images are downloaded then calls onLoaded function to proceed with other processing
+ * Checks all images are loaded then calls onLoaded function to proceed with other processing
  */
 ED.Drawing.prototype.checkAllLoaded = function()
 {
@@ -1081,9 +1101,10 @@ ED.Drawing.prototype.addDoodle = function(_className)
 }
 
 /**
- * Test if doodle of class exists in drawing
+ * Test if doodle of a class exists in drawing
  *
  * @param {String} _className Classname of doodle
+ * @returns {Bool} True is a doodle of the class exists, otherwise false 
  */
 ED.Drawing.prototype.hasDoodleOfClass = function(_className)
 {
@@ -1218,7 +1239,7 @@ ED.Drawing.prototype.deleteDoodlesOfClass = function(_className)
 
 
 /**
- * Updates a doodle with a vew value of a parameter ***TODO*** move this to the drawing object calling it setParameterForDoodle
+ * Updates a doodle with a vew value of a parameter
  *
  * @param {String} _class Class of the doodle to be updated
  * @param {String} _parameter Name of the parameter
@@ -1241,6 +1262,32 @@ ED.Drawing.prototype.setParameterForDoodle = function(_class, _parameter, _value
     
     // Refresh drawing
     this.repaint();               
+}
+
+/**
+ * Returns the total extent in degrees covered by doodles of the passed class
+ *
+ * @param {String} _class Class of the doodle to be updated
+ * @returns {Int} Total extent in degrees, with maximum of 360
+ */
+ED.Drawing.prototype.totalDegreesExtent = function(_class)
+{
+    var degrees = 0;
+
+    // Calculate total for all doodles of this class
+    for (var i = 0; i < this.doodleArray.length; i++)
+    {
+        // Find doodles of given class name
+        if (this.doodleArray[i].className == _class)
+        {
+            degrees += this.doodleArray[i].degreesExtent();
+        }
+    }
+
+    // Overlapping doodles do not increase total beyond 360 degrees
+    if (degrees > 360) degrees = 360;
+
+    return degrees;
 }
 
 /**
@@ -1269,8 +1316,12 @@ ED.Drawing.prototype.report = function()
             }
             else
             {
-                groupArray[doodle.className] += ", ";
-                groupArray[doodle.className] += doodle.description();
+                // Only add additional detail if supplied by descripton method
+                if (doodle.description().length > 0)
+                {
+                    groupArray[doodle.className] += ", ";
+                    groupArray[doodle.className] += doodle.description();
+                }
             }
         }
         else
@@ -1466,7 +1517,6 @@ ED.Drawing.prototype.innerAngle = function(_pointA, _pointM, _pointB)
 
 /**
  * Toggles drawing state for drawing points in line
- *
  */
 ED.Drawing.prototype.togglePointInLine = function()
 {
@@ -1484,29 +1534,36 @@ ED.Drawing.prototype.togglePointInLine = function()
     }
 }
 
-/**
- * Report class
- *
- * 
- */
+
 
 /**
- * Constructor
- * 
- * @param Drawing _drawing
+ * An object of the Report class is used to extract data for the Royal College of Ophthalmologists retinal detachment dataset.
+ * The object analyses an EyeDraw drawing, and sets the value of HTML elements on the page accordingly.
+ *
+ * @class Report
+ * @property {Canvas} canvas A canvas element used to edit and display the drawing
+ * @property {Int} breaksInAttached The number of retinal breaks in attached retina
+ * @property {Int} breaksInDetached The number of retinal breaks in detached retina
+ * @property {String} largestBreakType The type of the largest retinal break
+ * @property {Int} largestBreakSize The size in clock hours of the largest retinal break
+ * @property {Int} lowestBreakPosition The lowest position of any break in clock hours
+ * @property {String} pvrType The type of PVR
+ * @property {Int} pvrCClockHours The number of clock hours of posterior PVR type C
+ * @property {Int} antPvrClockHours The number of clock hours of anterior PVR
+ * @param Drawing _drawing The drawing object to be analysed
  */
 ED.Report = function(_drawing)
 {
    	// Properties
 	this.drawing = _drawing;
-    this.pvrType = 'None';
-    this.pvrCClockHours = 0;
-    this.antPvrClockHours = 0;
     this.breaksInAttached = 0;
     this.breaksInDetached = 0;
     this.largestBreakType = 'Not found';
     this.largestBreakSize = 0;
     this.lowestBreakPosition = 12;
+    this.pvrType = 'None';
+    this.pvrCClockHours = 0;
+    this.antPvrClockHours = 0;
     
     // Variables
     var pvrCDegrees = 0;
@@ -1620,7 +1677,12 @@ ED.Report = function(_drawing)
     this.largestBreakSize = Math.floor((size - remainder) / 30);
 }
 
-// Accepts a bearing in degrees (0 is at 12 o'clock) and returns true if it is in an area of detachment
+/**
+ * Accepts a bearing in degrees (0 is at 12 o'clock) and returns true if it is in an area of detachment
+ *
+ * @param {Float} _angle Bearing in degrees
+ * @returns {Bool} True is the bearing intersects with an area of retinal deatchment
+ */
 ED.Report.prototype.inDetachment = function(_angle)
 {
     var returnValue = false;
@@ -1646,6 +1708,10 @@ ED.Report.prototype.inDetachment = function(_angle)
                 returnValue = true;
             }
         }
+        else if (max == min) // Case if detachment is total
+        {
+            return true;
+        }
         else
         {
             if (min <= _angle && _angle <= max)
@@ -1658,7 +1724,11 @@ ED.Report.prototype.inDetachment = function(_angle)
     return returnValue;
 }
 
-// Extent of RRD in clock hours
+/**
+ * Extent of RRD in clock hours
+ *
+ * @returns {Array} An array of extents (1 to 3 clock hours) for each quadrant
+ */
 ED.Report.prototype.extent = function()
 {
     // Array of extents by quadrant
@@ -1695,7 +1765,11 @@ ED.Report.prototype.extent = function()
     return extentArray;
 }
 
-// Returns true if macula is off
+/**
+ * Returns true if the macular is off
+ *
+ * @returns {Bool} True if the macula is off
+ */
 ED.Report.prototype.isMacOff = function()
 {
     var result = false;
@@ -2089,7 +2163,7 @@ ED.Doodle.prototype.drawBoundary = function(_point)
 	if (this.drawFunctionMode == ED.drawFunctionMode.HitTest)
 	{
 		// Workaround for Mozilla bug 405300 https://bugzilla.mozilla.org/show_bug.cgi?id=405300
-		if (isFirefox())
+		if (ED.isFirefox())
 		{
 			ctx.save();
 			ctx.setTransform( 1, 0, 0, 1, 0, 0 );
@@ -2164,7 +2238,7 @@ ED.Doodle.prototype.groupDescription = function()
  */
 ED.Doodle.prototype.description = function()
 {
-	return "Description of " + this.className;
+	return "";
 }
 
 /**
@@ -2229,9 +2303,9 @@ ED.Doodle.prototype.clockHourExtent = function()
     }
     else
     {
-//        var twelvePoint = new ED.Point(0,-100);
-//        var thisPoint = new ED.Point(this.originX, this.originY);
-//        var clockHour = ((twelvePoint.clockwiseAngleTo(thisPoint) * 6/Math.PI) + 12) % 12;
+        var twelvePoint = new ED.Point(0,-100);
+        var thisPoint = new ED.Point(this.originX, this.originY);
+        var clockHour = ((twelvePoint.clockwiseAngleTo(thisPoint) * 6/Math.PI) + 12) % 12;
     }
     
     clockHourStart = clockHourStart.toFixed(0);
@@ -2239,6 +2313,18 @@ ED.Doodle.prototype.clockHourExtent = function()
     clockHourEnd = clockHourEnd.toFixed(0);
     if (clockHourEnd == 0) clockHourEnd = 12;  
     return "from " + clockHourStart + " to " + clockHourEnd;
+}
+
+/**
+ * Returns the extent converted to degrees
+ *
+ * @returns {Int} Extent 0 to 360 degrees
+ */
+ED.Doodle.prototype.degreesExtent = function()
+{
+    var degrees = this.arc * 180/Math.PI;
+    var intDegrees = Math.round(degrees);
+    return intDegrees;
 }
 
 /**
@@ -2425,7 +2511,7 @@ ED.Range.prototype.isBelow = function(_num)
  * Returns true if the parameter is more than the maximum of the range
  *
  * @param {Float} _num
- * @return {Bool} True if the parameter is more than the maximum
+ * @returns {Bool} True if the parameter is more than the maximum
  */
 ED.Range.prototype.isAbove = function(_num)
 {
