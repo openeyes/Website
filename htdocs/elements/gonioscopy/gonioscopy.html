@@ -141,13 +141,14 @@
    				
 				<!-- Controls -->
 				<div style='float: right; width: 220px; height: 320px;'>
-
-					<table cellspacing="0" width="120" >
+				
+					<p class="lable" >Angle (Schaffer):</p>
+					<table cellspacing="0" style='background-image:url("../../graphics/cross.gif"); width:150px; height:150px;'>
 					<tbody>
 						<tr>
-							<td align="left" width="40%"><p class="lable" >Angle (Schaffer):</p></td>
-							<td align="left" width="60%">
-								<select name="shaffer" id="shaffer" >
+							<td align="left" width="33%" style='height:50px;'></td>
+							<td align="left" width="33%" style='height:50px;'>
+								<select style='margin: 0px; width: 50px;'>
 						            <option value="0">NR</option>
 						            <option value="0">0</option>
 						            <option value="I">I</option>
@@ -156,9 +157,54 @@
 						            <option value="IV">IV</option>
 						        </select>
 					        </td>
-						</tr>	
+					        <td align="left" width="33%" style='height:50px;'></td>
+						</tr>
 						<tr>
-							<td align="left" width="40%"><p class="lable" >Van Herrick:</p></td>
+							<td align="left" width="33%" style='height:50px;'>
+								<select style='margin: 0px; width: 50px;'>
+						            <option value="0">NR</option>
+						            <option value="0">0</option>
+						            <option value="I">I</option>
+						            <option value="II">II</option>
+						            <option value="III">III</option>
+						            <option value="IV">IV</option>
+						        </select>
+					        </td>
+							<td align="left" width="33%" style='height:50px;'></td>
+							<td align="left" width="33%" style='height:50px;'>
+								<select style='margin: 0px; width: 50px;'>
+						            <option value="0">NR</option>
+						            <option value="0">0</option>
+						            <option value="I">I</option>
+						            <option value="II">II</option>
+						            <option value="III">III</option>
+						            <option value="IV">IV</option>
+						        </select>
+					        </td>
+						</tr>
+						<tr>
+							<td align="left" width="33%" style='height:50px;'></td>
+							<td align="left" width="33%" style='height:50px;'>
+								<select style='margin: 0px; width: 50px;'>
+						            <option value="0">NR</option>
+						            <option value="0">0</option>
+						            <option value="I">I</option>
+						            <option value="II">II</option>
+						            <option value="III">III</option>
+						            <option value="IV">IV</option>
+						        </select>
+					        </td>
+					        <td align="left" width="33%" style='height:50px;'></td>
+						</tr>
+					</tbody
+					</table>	
+
+					<table cellspacing="0" width="120" >
+					<tbody>
+						<tr>
+							<td align="left" width="40%">
+								<p class="lable" title="Br J Ophthalmol 2000;84:186–192">Van Herrick:</p>
+							</td>
 							<td align="left" width="60%">
 								<select name="vanherrick" id="vanherrick" >
 						            <option value="0">NR</option>
@@ -174,9 +220,10 @@
 						<tr>
 							<td align="left" width="40%"><p class="lable" > </p></td>
 							<td align="left" width="60%">
-								<span style="position:relative; width:auto; background:#edf;">
-									<span id='vanHerrickPNG' class="popup">
-										<img usemap="#pickmap" width=225 src="../../graphics/gonioscopy.png" onMouseout="hidePop('vanHerrickPNG');"/>
+								<a href="javascript:void(0);" title="Br J Ophthalmol 2000;84:186–192" onClick="showPop('vanHerrickPNG');">Foster images</a>
+								<span style="position:relative;">
+									<span id='vanHerrickPNG' class="popup" title="Click an area of image to select result">
+										<img usemap="#pickmap" width=225 src="../../graphics/gonioscopy.png">
 										<map name="pickmap">
 					                        <area style="cursor:pointer" shape="rect" coords="0,0,112,112" onclick="popupSelect(5);" />
 					                        <area style="cursor:pointer" shape="rect" coords="0,112,112,224" onclick="popupSelect(15);" />
@@ -185,8 +232,7 @@
 					                        <area style="cursor:pointer" shape="rect" coords="112,112,225,224" onclick="popupSelect(75);" />
 					                        <area style="cursor:pointer" shape="rect" coords="112,224,225,336" onclick="popupSelect(100);" />						                    	</map>
 									</span>
-									<a href="javascript:void(0);" onMouseover="showPop('vanHerrickPNG');">Visual</a>
-								</span>
+								</span>								
 					        </td>
 						</tr>
 
@@ -199,7 +245,7 @@
 					</tbody>	
 					</table>
 					
-					<textarea name="gonio" id="gonio"></textarea>
+					<textarea style="height:37px;" name="gonio" id="gonio"></textarea>
 														
 				</div>   				
    			
