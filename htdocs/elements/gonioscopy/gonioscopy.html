@@ -18,7 +18,13 @@
         // Variables assigned to each drawing on this page
         var drawingEdit;
         var drawingDisplay;
-                                    
+        
+        // Variables for angleGrade doodles of each quadrant
+        var doodleAngleGradeSup;
+		var doodleAngleGradeNas;
+		var doodleAngleGradeInf;
+		var doodleAngleGradeTem;
+		                                    
         // Runs on page load
         function init()
         {
@@ -38,17 +44,85 @@
             drawingEdit.onLoaded = function()
             {
                 drawingEdit.addDoodle('Gonioscopy');
+                
+                // AngleGrade doodles
+                doodleAngleGradeSup = drawingEdit.addDoodle('AngleGrade');
+                doodleAngleGradeNas = drawingEdit.addDoodle('AngleGrade');
+                doodleAngleGradeNas.rotation = 90 * Math.PI/180;
+                doodleAngleGradeInf = drawingEdit.addDoodle('AngleGrade');
+                doodleAngleGradeInf.rotation = 180 * Math.PI/180;
+                doodleAngleGradeTem = drawingEdit.addDoodle('AngleGrade');
+                doodleAngleGradeTem.rotation = 270 * Math.PI/180;
+                
                 drawingEdit.deselectDoodles();
 	            drawingEdit.drawAllDoodles();
             }
-
+            
+            // Function to detect changes in parameters (eg from mouse dragging)
+            drawingEdit.parameterListener = function()
+            {
+                if (drawingEdit.selectedDoodle != null && drawingEdit.selectedDoodle.className == 'AngleGrade')
+                {
+                    if (typeof(doodleAngleGradeSup) != 'undefined' && doodleAngleGradeSup.isSelected)
+                    {
+                        var angleGradeSup = document.getElementById('angleGradeSup');
+                        var grade = doodleAngleGradeSup.getParameter('grade');
+                        angleGradeSup.value = grade;
+                    }
+                    if (typeof(doodleAngleGradeNas) != 'undefined' && doodleAngleGradeNas.isSelected)
+                    {
+                        var angleGradeNas = document.getElementById('angleGradeNas');
+                        var grade = doodleAngleGradeNas.getParameter('grade');
+                        angleGradeNas.value = grade;
+                    }
+                    if (typeof(doodleAngleGradeInf) != 'undefined' && doodleAngleGradeInf.isSelected)
+                    {
+                        var angleGradeInf = document.getElementById('angleGradeInf');
+                        var grade = doodleAngleGradeInf.getParameter('grade');
+                        angleGradeInf.value = grade;
+                    }
+                    if (typeof(doodleAngleGradeTem) != 'undefined' && doodleAngleGradeTem.isSelected)
+                    {
+                        var angleGradeTem = document.getElementById('angleGradeTem');
+                        var grade = doodleAngleGradeTem.getParameter('grade');
+                        angleGradeTem.value = grade;
+                    }
+                }
+            }
         }
         
+        function setGrade(_doodleVarName, _value)
+        {
+            var doodle;
+            
+            switch (_doodleVarName)
+            {
+                case "doodleAngleGradeSup":
+                    doodle = doodleAngleGradeSup;
+                    break;
+                case "doodleAngleGradeNas":
+                    doodle = doodleAngleGradeNas;
+                    break;
+                case "doodleAngleGradeInf":
+                    doodle = doodleAngleGradeInf;
+                    break;
+                case "doodleAngleGradeTem":
+                    doodle = doodleAngleGradeTem;
+                    break;
+                default:
+                    doodle = null;
+                    break;
+            }
+            
+            // Set new value for doodle
+            drawingEdit.setParameterForDoodle(doodle, 'grade', _value); 
+        }
+               
         function popupSelect(_value)
         {
-        	var select = document.getElementById('vanherrick');
+        	var select = document.getElementById('vanherick');
         	select.value = _value;
-        	hidePop('vanHerrickPNG');
+        	hidePop('vanHerickPNG');
         }
         
         function showPop(id)
@@ -105,7 +179,7 @@
 		<div class="section">
 			<h4>Description:</h4>
 			<p>This element allows drawing and recording of gonioscopy findings. The angular extent of features such as angle recession, anterior synechiae, and angle new vessels is shown graphically, and extracted into text using the report button.</p>
-			<p>The Van Herrick grade can be selected from the menu, or from the visual selector which uses diagrams from Paul Foster's paper as a guide.</p>
+			<p>The Van Herick grade can be selected from the menu, or from the visual selector which uses diagrams from Paul Foster's paper as a guide.</p>
 			<p>Status: <b>Alpha</b></p>
 		</div>
 
@@ -142,57 +216,53 @@
 				<!-- Controls -->
 				<div style='float: right; width: 220px; height: 320px;'>
 				
-					<p class="lable" >Angle (Schaffer):</p>
+					<p class="lable" >Angle (Scheie):</p>
 					<table cellspacing="0" style='background-image:url("../../graphics/cross.gif"); width:150px; height:150px;'>
 					<tbody>
 						<tr>
 							<td align="left" width="33%" style='height:50px;'></td>
 							<td align="left" width="33%" style='height:50px;'>
-								<select style='margin: 0px; width: 50px;'>
-						            <option value="0">NR</option>
-						            <option value="0">0</option>
-						            <option value="I">I</option>
-						            <option value="II">II</option>
-						            <option value="III">III</option>
-						            <option value="IV">IV</option>
-						        </select>
+	                            <select id="angleGradeSup" onclick="setGrade('doodleAngleGradeSup', this.value);" style='margin: 0px; width: 50px;'>
+	                                <option value="O">O</option>
+	                                <option value="I">I</option>
+	                                <option value="II">II</option>
+	                                <option value="III">III</option>
+	                                <option value="IV">IV</option>
+	                            </select>
 					        </td>
 					        <td align="left" width="33%" style='height:50px;'></td>
 						</tr>
 						<tr>
 							<td align="left" width="33%" style='height:50px;'>
-								<select style='margin: 0px; width: 50px;'>
-						            <option value="0">NR</option>
-						            <option value="0">0</option>
-						            <option value="I">I</option>
-						            <option value="II">II</option>
-						            <option value="III">III</option>
-						            <option value="IV">IV</option>
-						        </select>
+	                            <select id="angleGradeTem" onclick="setGrade('doodleAngleGradeTem', this.value);" style='margin: 0px; width: 50px;'>
+	                                <option value="O">O</option>
+	                                <option value="I">I</option>
+	                                <option value="II">II</option>
+	                                <option value="III">III</option>
+	                                <option value="IV">IV</option>
+	                            </select>
 					        </td>
 							<td align="left" width="33%" style='height:50px;'></td>
 							<td align="left" width="33%" style='height:50px;'>
-								<select style='margin: 0px; width: 50px;'>
-						            <option value="0">NR</option>
-						            <option value="0">0</option>
-						            <option value="I">I</option>
-						            <option value="II">II</option>
-						            <option value="III">III</option>
-						            <option value="IV">IV</option>
-						        </select>
+	                            <select id="angleGradeNas" onclick="setGrade('doodleAngleGradeNas', this.value);" style='margin: 0px; width: 50px;'>
+	                                <option value="O">O</option>
+	                                <option value="I">I</option>
+	                                <option value="II">II</option>
+	                                <option value="III">III</option>
+	                                <option value="IV">IV</option>
+	                            </select>
 					        </td>
 						</tr>
 						<tr>
 							<td align="left" width="33%" style='height:50px;'></td>
 							<td align="left" width="33%" style='height:50px;'>
-								<select style='margin: 0px; width: 50px;'>
-						            <option value="0">NR</option>
-						            <option value="0">0</option>
-						            <option value="I">I</option>
-						            <option value="II">II</option>
-						            <option value="III">III</option>
-						            <option value="IV">IV</option>
-						        </select>
+	                            <select id="angleGradeInf" onclick="setGrade('doodleAngleGradeInf', this.value);" style='margin: 0px; width: 50px;'>
+	                                <option value="O">O</option>
+	                                <option value="I">I</option>
+	                                <option value="II">II</option>
+	                                <option value="III">III</option>
+	                                <option value="IV">IV</option>
+	                            </select>
 					        </td>
 					        <td align="left" width="33%" style='height:50px;'></td>
 						</tr>
@@ -203,10 +273,10 @@
 					<tbody>
 						<tr>
 							<td align="left" width="40%">
-								<p class="lable" title="Br J Ophthalmol 2000;84:186–192">Van Herrick:</p>
+								<p class="lable" title="Br J Ophthalmol 2000;84:186–192">Van Herick:</p>
 							</td>
 							<td align="left" width="60%">
-								<select name="vanherrick" id="vanherrick" >
+								<select name="vanherick" id="vanherick" >
 						            <option value="0">NR</option>
 						            <option value="5">5%</option>
 						            <option value="15">15%</option>
@@ -220,17 +290,17 @@
 						<tr>
 							<td align="left" width="40%"><p class="lable" > </p></td>
 							<td align="left" width="60%">
-								<a href="javascript:void(0);" title="Br J Ophthalmol 2000;84:186–192" onClick="showPop('vanHerrickPNG');">Foster images</a>
+								<a href="javascript:void(0);" title="Br J Ophthalmol 2000;84:186–192" onClick="showPop('vanHerickPNG');">Foster images</a>
 								<span style="position:relative;">
-									<span id='vanHerrickPNG' class="popup" title="Click an area of image to select result">
-										<img usemap="#pickmap" width=225 src="../../graphics/gonioscopy.png">
+									<span id='vanHerickPNG' class="popup" title="Click an area of image to select result">
+										<img usemap="#pickmap" width=450 src="../../graphics/gonioscopy.png">
 										<map name="pickmap">
-					                        <area style="cursor:pointer" shape="rect" coords="0,0,112,112" onclick="popupSelect(5);" />
-					                        <area style="cursor:pointer" shape="rect" coords="0,112,112,224" onclick="popupSelect(15);" />
-					                        <area style="cursor:pointer" shape="rect" coords="0,224,112,336" onclick="popupSelect(25);" />
-					                        <area style="cursor:pointer" shape="rect" coords="112,0,225,112" onclick="popupSelect(30);" />
-					                        <area style="cursor:pointer" shape="rect" coords="112,112,225,224" onclick="popupSelect(75);" />
-					                        <area style="cursor:pointer" shape="rect" coords="112,224,225,336" onclick="popupSelect(100);" />						                    	</map>
+					                        <area style="cursor:pointer" shape="rect" coords="0,0,225,225" onclick="popupSelect(5);" />
+					                        <area style="cursor:pointer" shape="rect" coords="0,225,225,450" onclick="popupSelect(15);" />
+					                        <area style="cursor:pointer" shape="rect" coords="0,450,225,675" onclick="popupSelect(25);" />
+					                        <area style="cursor:pointer" shape="rect" coords="225,0,450,225" onclick="popupSelect(30);" />
+					                        <area style="cursor:pointer" shape="rect" coords="225,225,450,450" onclick="popupSelect(75);" />
+					                        <area style="cursor:pointer" shape="rect" coords="225,450,450,675" onclick="popupSelect(100);" />						                    	</map>
 									</span>
 								</span>								
 					        </td>

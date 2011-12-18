@@ -166,7 +166,7 @@
 						<tr>
 							<td align="left" width="20%"><p class="lable" >Incision site:</p></td>
 							<td align="left" width="60%">
-						        <select name="incision" id="incisionSite" onclick="drawingEdit.setParameterForDoodle('PhakoIncision', 'incisionSite', this.value);" >
+						        <select name="incision" id="incisionSite" onclick="drawingEdit.setParameterForDoodleOfClass('PhakoIncision', 'incisionSite', this.value);" >
 						            <option value="Corneal">Corneal</option>
 						            <option value="Limbal">Limbal</option>
 						            <option value="Scleral">Scleral</option>
@@ -176,19 +176,19 @@
 						<tr>
 							<td align="left"><p class="lable" >Length</p></td>
 							<td align="left">
- 								<input type="text" id="incisionLength" onchange="drawingEdit.setParameterForDoodle('PhakoIncision', 'incisionLength', this.value);"/>
+ 								<input type="text" id="incisionLength" onchange="drawingEdit.setParameterForDoodleOfClass('PhakoIncision', 'incisionLength', this.value);"/>
 					        </td>
 						</tr>			
 						<tr>
 							<td align="left"><p class="lable" >Meridian:</p></td>
 							<td align="left">
-								<input type="text" id="incisionMeridian" onchange="drawingEdit.setParameterForDoodle('PhakoIncision', 'incisionMeridian', this.value);"/>
+								<input type="text" id="incisionMeridian" onchange="drawingEdit.setParameterForDoodleOfClass('PhakoIncision', 'incisionMeridian', this.value);"/>
 					        </td>
 						</tr>
 						<tr>
 							<td align="left"><p class="lable" >Type:</p></td>
 							<td align="left">
-						        <select name="incisionType" id="incisionType" onclick="drawingEdit.setParameterForDoodle('PhakoIncision', 'incisionType', this.value);" >
+						        <select name="incisionType" id="incisionType" onclick="drawingEdit.setParameterForDoodleOfClass('PhakoIncision', 'incisionType', this.value);" >
 						            <option value="Pocket">Pocket</option>
 						            <option value="Section">Section</option>
 						        </select>
