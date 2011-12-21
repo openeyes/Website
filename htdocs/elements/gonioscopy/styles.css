@@ -15,6 +15,11 @@
 	text-align: right;
 }
 
+.complable {
+	margin-right: 4px;
+	text-align: right;
+}
+
 p#RSS {
 	font-weight: bold;
 }

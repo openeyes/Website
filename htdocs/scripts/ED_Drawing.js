@@ -202,7 +202,9 @@ ED.Drawing = function(_canvas, _eye, _IDSuffix)
     this.imageArray['laserPattern'] = new Image();
     this.imageArray['fuchsPattern'] = new Image();
     this.imageArray['pscPattern'] = new Image();
-    this.imageArray['meshworkPattern'] = new Image();
+    this.imageArray['meshworkPatternLight'] = new Image();
+    this.imageArray['meshworkPatternMedium'] = new Image();
+    this.imageArray['meshworkPatternHeavy'] = new Image();
     this.imageArray['newVesselPattern'] = new Image();
     
 	// Set transform to map from doodle to canvas plane
@@ -2245,6 +2247,9 @@ ED.Doodle.prototype.drawBoundary = function(_point)
 			ctx.fill();
 		}
 		ctx.stroke();
+        
+        // Reset so shadow only on boundary
+        ctx.shadowBlur = 0;
 	}
 }
 

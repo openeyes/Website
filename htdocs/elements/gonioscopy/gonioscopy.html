@@ -15,6 +15,9 @@
 	
     <script type="text/javascript">
     
+    	// Level
+    	var isBasic = true;
+    
         // Variables assigned to each drawing on this page
         var drawingEdit;
         var drawingDisplay;
@@ -28,17 +31,23 @@
         // Runs on page load
         function init()
         {
+        	// Initial level setting
+        	changeLevel('Basic');
+        }
+        
+        function canvasInit(_canvas)
+        {
             // Get reference to the drawingEdit canvas
-            var canvasEdit = document.getElementById('canvasEdit');
+            //var canvasEdit = document.getElementById("canvasEdit")
             
             // Create a drawing
-            drawingEdit = new ED.Drawing(canvasEdit, ED.eye.Right, 'RPS');
+            drawingEdit = new ED.Drawing(_canvas, ED.eye.Right, 'RPS');
             
             // Preload images
             drawingEdit.preLoadImagesFrom('../../graphics/');
             
             // Set focus to canvasEdit element
-            canvasEdit.focus();
+            _canvas.focus();
             
             // Wait for drawingEdit object to be ready before adding objects or drawingEdits
             drawingEdit.onLoaded = function()
@@ -66,26 +75,38 @@
                     if (typeof(doodleAngleGradeSup) != 'undefined' && doodleAngleGradeSup.isSelected)
                     {
                         var angleGradeSup = document.getElementById('angleGradeSup');
+                        var angleVisSup = document.getElementById('angleVisSup');
                         var grade = doodleAngleGradeSup.getParameter('grade');
                         angleGradeSup.value = grade;
+                        if (grade == 'III' || grade == 'IV') angleVisSup.value = "No";
+                        else angleVisSup.value = "Yes";
                     }
                     if (typeof(doodleAngleGradeNas) != 'undefined' && doodleAngleGradeNas.isSelected)
                     {
                         var angleGradeNas = document.getElementById('angleGradeNas');
+                        var angleVisNas = document.getElementById('angleVisNas');
                         var grade = doodleAngleGradeNas.getParameter('grade');
                         angleGradeNas.value = grade;
+                        if (grade == 'III' || grade == 'IV') angleVisNas.value = "No";
+                        else angleVisNas.value = "Yes";
                     }
                     if (typeof(doodleAngleGradeInf) != 'undefined' && doodleAngleGradeInf.isSelected)
                     {
                         var angleGradeInf = document.getElementById('angleGradeInf');
+                        var angleVisInf = document.getElementById('angleVisInf');
                         var grade = doodleAngleGradeInf.getParameter('grade');
                         angleGradeInf.value = grade;
+                        if (grade == 'III' || grade == 'IV') angleVisInf.value = "No";
+                        else angleVisInf.value = "Yes";
                     }
                     if (typeof(doodleAngleGradeTem) != 'undefined' && doodleAngleGradeTem.isSelected)
                     {
                         var angleGradeTem = document.getElementById('angleGradeTem');
+                        var angleVisTem = document.getElementById('angleVisTem');
                         var grade = doodleAngleGradeTem.getParameter('grade');
                         angleGradeTem.value = grade;
+                        if (grade == 'III' || grade == 'IV') angleVisTem.value = "No";
+                        else angleVisTem.value = "Yes";
                     }
                 }
             }
@@ -115,7 +136,9 @@
             }
             
             // Set new value for doodle
-            drawingEdit.setParameterForDoodle(doodle, 'grade', _value); 
+            if (_value == "Yes") drawingEdit.setParameterForDoodle(doodle, 'grade', "O");
+            else if (_value == "No") drawingEdit.setParameterForDoodle(doodle, 'grade', "III");
+            else drawingEdit.setParameterForDoodle(doodle, 'grade', _value); 
         }
                
         function popupSelect(_value)
@@ -148,8 +171,69 @@
 			
 			repText.value = text;
 		}
-
-	            
+		
+		function changeLevel(_value)
+		{
+			// Set flag indicating level
+			if (_value == 'Basic') isBasic = true;
+			else isBasic = false;
+			
+			// Basic level
+			if (isBasic)
+			{
+				// Quadrant controls
+				document.getElementById("quadrantLable").innerHTML = "Pigmented meshwork seen:";
+				document.getElementById("angleGradeSup").style.display = "none";
+				document.getElementById("angleVisSup").style.display = "inline";
+				document.getElementById("angleGradeNas").style.display = "none";
+				document.getElementById("angleVisNas").style.display = "inline";
+				document.getElementById("angleGradeInf").style.display = "none";
+				document.getElementById("angleVisInf").style.display = "inline";
+				document.getElementById("angleGradeTem").style.display = "none";
+				document.getElementById("angleVisTem").style.display = "inline";
+				
+				// Other controls
+				document.getElementById("expertControls").style.display = "none";
+				
+				// Doodle buttons
+				document.getElementById("asButton").style.display = "none";
+				document.getElementById("arButton").style.display = "none";
+				
+				// Select canvas size (NB chaining canvas size seems to mess up pointInPath method?)
+				document.getElementById("canvasBasicDiv").style.display = "inline";
+				document.getElementById("canvasExpertDiv").style.display = "none";
+				document.getElementById("controlsDiv").style.width = "280px";					
+				canvasInit(document.getElementById("canvasBasic"));	
+			}
+			// Expert level
+			else
+			{
+				// Quadrant controls
+				document.getElementById("quadrantLable").innerHTML = "Scheie grade:";
+				document.getElementById("angleGradeSup").style.display = "inline";
+				document.getElementById("angleVisSup").style.display = "none";
+				document.getElementById("angleGradeNas").style.display = "inline";
+				document.getElementById("angleVisNas").style.display = "none";
+				document.getElementById("angleGradeInf").style.display = "inline";
+				document.getElementById("angleVisInf").style.display = "none";
+				document.getElementById("angleGradeTem").style.display = "inline";
+				document.getElementById("angleVisTem").style.display = "none";
+				
+				// Other controls
+				document.getElementById("expertControls").style.display = "inline";
+				
+				// Doodle buttons
+				document.getElementById("asButton").style.display = "inline";
+				document.getElementById("arButton").style.display = "inline";
+								
+				// Canvas size	
+				document.getElementById("canvasBasicDiv").style.display = "none";
+				document.getElementById("canvasExpertDiv").style.display = "inline";
+				document.getElementById("controlsDiv").style.width = "220px";					
+				canvasInit(document.getElementById("canvasExpert"));				
+			}
+		}
+    
     </script>
 
 </head>
@@ -183,6 +267,24 @@
 			<p>Status: <b>Alpha</b></p>
 		</div>
 
+		<!-- Settings section -->
+		<div class="section" style="height:70px;" align="left">
+			<h4>Settings:</h4>
+			<table cellspacing="0" width="620" >
+				<tbody>				
+					<tr>
+						<td align="left" width="60%"><p class="complable" >Level:</p></td>
+						<td align="left" width="40%">
+							<select style="width: auto; margin-top:5px;" onchange="changeLevel(this.value);">
+								<option>Basic</option>
+								<option>Expert</option>
+							</select>
+				        </td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
 		<!-- Edit mode section -->
 		<div class="section" style="height:480px;" align="left">
 			<h4>Edit mode:</h4>
@@ -202,21 +304,23 @@
 	                <br />
 
                     <button class="imgbutton" title="Angle new vessels" onclick="drawingEdit.addDoodle('AngleNV'); return false;" ><img src="../../graphics/angleNV.gif" /></button>
-                    <button class="imgbutton" title="Anterior synechiae" onclick="drawingEdit.addDoodle('AntSynech'); return false;" ><img src="../../graphics/antSynech.gif" /></button>
-                    <button class="imgbutton" title="Angle recession" onclick="drawingEdit.addDoodle('AngleRecession'); return false;" ><img src="../../graphics/angleRecession.gif" /></button>
-                    <button class="imgbutton" title="Pigmented meshwork" onclick="drawingEdit.addDoodle('PigmentedMesh'); return false;" ><img src="../../graphics/pigmentedMesh.gif" /></button>
+                    <button class="imgbutton" id="asButton" title="Anterior synechiae" onclick="drawingEdit.addDoodle('AntSynech'); return false;" ><img src="../../graphics/antSynech.gif" /></button>
+                    <button class="imgbutton" id="arButton" title="Angle recession" onclick="drawingEdit.addDoodle('AngleRecession'); return false;" ><img src="../../graphics/angleRecession.gif" /></button>
                      <br />
    				</div>
    				
 				<!-- Canvas -->
-				<div style='float: left; width: 320px; height: 320px;'>
-	                <canvas id="canvasEdit" width="300" height="300" tabindex="1"></canvas>
+				<div id="canvasBasicDiv" style='float: left; width: 260px; height: 320px;'>
+	                <canvas id="canvasBasic" width="239" height="239" tabindex="1"></canvas>
+				</div>
+				<div id="canvasExpertDiv" style='float: left; width: 320px; height: 320px;'>
+	                <canvas id="canvasExpert" width="300" height="300" tabindex="1"></canvas>
 				</div>
    				
 				<!-- Controls -->
-				<div style='float: right; width: 220px; height: 320px;'>
+				<div id="controlsDiv" style='float: right; width: 220px; height: 320px;'>
 				
-					<p class="lable" >Angle (Scheie):</p>
+					<p id="quadrantLable" class="lable" style="width:220px;text-align:left;"></p>
 					<table cellspacing="0" style='background-image:url("../../graphics/cross.gif"); width:150px; height:150px;'>
 					<tbody>
 						<tr>
@@ -228,6 +332,10 @@
 	                                <option value="II">II</option>
 	                                <option value="III">III</option>
 	                                <option value="IV">IV</option>
+	                            </select>
+	                            <select id="angleVisSup" onclick="setGrade('doodleAngleGradeSup', this.value);" style='margin: 0px; width: 50px;'>
+	                                <option value="Yes">Yes</option>
+	                                <option value="No">No</option>
 	                            </select>
 					        </td>
 					        <td align="left" width="33%" style='height:50px;'></td>
@@ -241,6 +349,10 @@
 	                                <option value="III">III</option>
 	                                <option value="IV">IV</option>
 	                            </select>
+	                            <select id="angleVisTem" onclick="setGrade('doodleAngleGradeTem', this.value);" style='margin: 0px; width: 50px;'>
+	                                <option value="Yes">Yes</option>
+	                                <option value="No">No</option>
+	                            </select>
 					        </td>
 							<td align="left" width="33%" style='height:50px;'></td>
 							<td align="left" width="33%" style='height:50px;'>
@@ -250,6 +362,10 @@
 	                                <option value="II">II</option>
 	                                <option value="III">III</option>
 	                                <option value="IV">IV</option>
+	                            </select>
+	                            <select id="angleVisNas" onclick="setGrade('doodleAngleGradeNas', this.value);" style='margin: 0px; width: 50px;'>
+	                                <option value="Yes">Yes</option>
+	                                <option value="No">No</option>
 	                            </select>
 					        </td>
 						</tr>
@@ -263,13 +379,18 @@
 	                                <option value="III">III</option>
 	                                <option value="IV">IV</option>
 	                            </select>
+	                            <select id="angleVisInf" onclick="setGrade('doodleAngleGradeInf', this.value);" style='margin: 0px; width: 50px;'>
+	                                <option value="Yes">Yes</option>
+	                                <option value="No">No</option>
+	                            </select>
 					        </td>
 					        <td align="left" width="33%" style='height:50px;'></td>
 						</tr>
 					</tbody
 					</table>	
 
-					<table cellspacing="0" width="120" >
+					
+					<table cellspacing="0" width="120" id="expertControls">
 					<tbody>
 						<tr>
 							<td align="left" width="40%">
@@ -305,7 +426,12 @@
 								</span>								
 					        </td>
 						</tr>
+					</tbody>	
+					</table>
 
+					<!-- Report button and Free text area -->					
+					<table cellspacing="0" width="120">
+					<tbody>
 						<tr>
 							<td align="left"><p class="lable" >Text description:</p></td>
 							<td align="left">
@@ -314,7 +440,6 @@
 						</tr>
 					</tbody>	
 					</table>
-					
 					<textarea style="height:37px;" name="gonio" id="gonio"></textarea>
 														
 				</div>   				

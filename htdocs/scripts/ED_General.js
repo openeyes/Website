@@ -543,7 +543,6 @@ ED.Slider.prototype.draw = function(_point)
 	// Other stuff here
 	if (this.drawFunctionMode == ED.drawFunctionMode.Draw)
 	{
-        console.log(this.apexX + " " + this.rangeOfApexX.max);
 	}
 	
     // Coordinates of handles (in canvas plane)
