@@ -41,7 +41,7 @@
             //var canvasEdit = document.getElementById("canvasEdit")
             
             // Create a drawing
-            drawingEdit = new ED.Drawing(_canvas, ED.eye.Right, 'RPS');
+            drawingEdit = new ED.Drawing(_canvas, ED.eye.Right, 'RPS', true);
             
             // Preload images
             drawingEdit.preLoadImagesFrom('../../graphics/');
@@ -259,7 +259,7 @@
 		</div>
 		
 		<!-- Element Title and Description -->
-		<h2>Element title</h2>
+		<h2>Gonioscopy</h2>
 		<div class="section">
 			<h4>Description:</h4>
 			<p>This element allows drawing and recording of gonioscopy findings. The angular extent of features such as angle recession, anterior synechiae, and angle new vessels is shown graphically, and extracted into text using the report button.</p>

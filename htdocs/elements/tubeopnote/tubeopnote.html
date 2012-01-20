@@ -26,7 +26,7 @@
             var canvas = document.getElementById('canvas');
             
             // Create blank drawing
-            drawingEdit = new ED.Drawing(canvas, ED.eye.Right, 'RPS');
+            drawingEdit = new ED.Drawing(canvas, ED.eye.Right, 'RPS', true);
             
             // Make doodles smaller to give more space for Baerveld tube
             drawingEdit.globalScaleFactor = 0.8;
@@ -36,7 +36,7 @@
             
             // Display canvas
             var canvasDisplay = document.getElementById('canvasDisplay');
-            drawingDisplay = new ED.Drawing(canvasDisplay, ED.eye.Right, 'RPS');
+            drawingDisplay = new ED.Drawing(canvasDisplay, ED.eye.Right, 'RPS', false);
             drawingDisplay.addDoodle('AntSeg');
             var bv = drawingDisplay.addDoodle('Baerveldt');
             bv.originX = -300;
