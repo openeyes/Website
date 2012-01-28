@@ -92,6 +92,7 @@ ED.Iris.prototype.setPropertyDefaults = function()
     this.isMoveable = false;
     this.isRotatable = false;
     this.isUnique = true;
+    this.rangeOfApexX = new ED.Range(-0, +0);
     this.rangeOfApexY = new ED.Range(-280, -240);
 }
 
@@ -2389,8 +2390,7 @@ ED.Supramid.prototype.getParameter = function(_parameter)
  */
 ED.Supramid.prototype.description = function()
 {
-    var returnString = "Supramid tube at ";
-    
+    var returnString = "Supramid tube";
     
 	return returnString;
 }
@@ -2530,8 +2530,7 @@ ED.Vicryl.prototype.draw = function(_point)
  */
 ED.Vicryl.prototype.description = function()
 {
-    var returnString = "Vicryl suture at ";
-    
+    var returnString = "Vicryl suture";
     
 	return returnString;
 }
@@ -2835,9 +2834,7 @@ ED.Baerveldt.prototype.setParameter = function(_parameter, _value)
  */
 ED.Baerveldt.prototype.description = function()
 {
-    var returnString = "Baerveldt tube at ";
-    
-    returnString += this.clockHour() + " o'clock";
+    var returnString = "Baerveldt tube";
     
 	return returnString;
 }
