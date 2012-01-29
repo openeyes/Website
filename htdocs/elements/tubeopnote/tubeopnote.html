@@ -30,9 +30,6 @@
             // Create blank drawing
             drawingEdit = new ED.Drawing(canvas, ED.eye.Right, 'RPS', true);
             
-            // Make doodles smaller to give more space for Baerveld tube
-            //drawingEdit.globalScaleFactor = 0.8;
-
 			// Set focus to canvas
             canvas.focus();
             
@@ -41,9 +38,9 @@
             drawingDisplay = new ED.Drawing(canvasDisplay, ED.eye.Right, 'RPS', false);
             drawingDisplay.addDoodle('Iris');
             drawingDisplay.addDoodle('Pupil');
-            var bv = drawingDisplay.addDoodle('Baerveldt');
-            //bv.originX = -300;
-            //bv.originY = -300;
+            drawingDisplay.addDoodle('Baerveldt');
+            drawingDisplay.addDoodle('Supramid');
+            drawingDisplay.addDoodle('Vicryl');
             drawingDisplay.addDoodle('Patch');
             var dood = drawingDisplay.addDoodle('PI');
             dood.outerRadius = 260;
@@ -55,13 +52,45 @@
 	        {
                 // Get reference to form inputs
                 var platePosition = document.getElementById('platePosition');
-                var plateLimbusDistance = document.getElementById('plateLimbusDistance');
+                var patchType = document.getElementById('patchType');
+                var ligated = document.getElementById('ligated');
                 
-                // Check doodle of appropriate classname is selected
-                if (drawingEdit.selectedDoodle != null && drawingEdit.selectedDoodle.className == 'Baerveldt')
+                // Check doodle of a plate classname is selected
+                var dood = drawingEdit.selectedDoodle;
+                if (dood != null)
                 {
-                    platePosition.value = drawingEdit.selectedDoodle.getParameter('platePosition');
-                    plateLimbusDistance.value = drawingEdit.selectedDoodle.getParameter('plateLimbusDistance');
+                	if (dood.className == 'Molteno' || dood.className == 'Baerveldt' || dood.className == 'Ahmed')
+                	{
+                		platePosition.value = dood.getParameter('platePosition');
+                	}
+                }
+                
+                // Alter setting of patch drop down appropriately
+                if (drawingEdit.hasDoodleOfClass('Patch'))
+                {
+                	// May have been set to another material other than sclera
+                	if (patchType.value == 'None')
+                	{
+                		patchType.value = 'Sclera';
+                	}
+                }
+                else
+                {
+                	patchType.value = 'None'
+                }
+                
+                // Alter setting of ligature drop down appropriately
+                if (drawingEdit.hasDoodleOfClass('Vicryl'))
+                {
+                	// May have been set to another material other than vicryl
+                	if (ligated.value == 'None')
+                	{
+                		ligated.value = 'Vicryl';
+                	}
+                }
+                else
+                {
+                	ligated.value = 'None'
                 }
 	        }
                    
@@ -121,10 +150,46 @@
 		
 		function setPlateQuadrant(_value)
 		{
-			//var plateDoodle = drawingEdit.firstDoodleOfClass('Baerveldt');
-			drawingEdit.setParameterForDoodleOfClass('Baerveldt', 'platePosition', _value);
+			var plateDoodle = drawingEdit.firstDoodleOfClass('Molteno');
+			if (plateDoodle) drawingEdit.setParameterForDoodleOfClass('Molteno', 'platePosition', _value);
+			plateDoodle = drawingEdit.firstDoodleOfClass('Baerveldt');
+			if (plateDoodle) drawingEdit.setParameterForDoodleOfClass('Baerveldt', 'platePosition', _value);
+			plateDoodle = drawingEdit.firstDoodleOfClass('Ahmed');
+			if (plateDoodle) drawingEdit.setParameterForDoodleOfClass('Ahmed', 'platePosition', _value);
 		}
-	            
+		
+		// Called by select element to add or delete patch doodle
+		function togglePatch(_value)
+		{
+			if (_value != 'None')
+			{
+				if (!drawingEdit.hasDoodleOfClass('Patch'))
+				{
+					drawingEdit.addDoodle('Patch');
+				}
+			}
+			else
+			{
+				drawingEdit.deleteDoodlesOfClass('Patch');
+			}
+		}
+
+		// Called by select element to add or delete patch doodle
+		function toggleVicryl(_value)
+		{
+			if (_value != 'None')
+			{
+				if (!drawingEdit.hasDoodleOfClass('Vicryl'))
+				{
+					drawingEdit.addDoodle('Vicryl');
+				}
+			}
+			else
+			{
+				drawingEdit.deleteDoodlesOfClass('Vicryl');
+			}
+		}
+			            
     </script>
 
 </head>
@@ -168,10 +233,13 @@
 				<div class="toolbar">
 					<button class="imgbutton" class="imgbutton" disabled="true" id="moveToFrontRPS" title="Move to front" onclick="drawingEdit.moveToFront(); return false;" ><img src="../../graphics//moveToFront.gif"/></button>
 	                <button class="imgbutton" disabled="true" id="moveToBackRPS" title="Move to back" onclick="drawingEdit.moveToBack(); return false;" ><img src="../../graphics//moveToBack.gif" /></button>
-	                <button class="imgbutton" disabled="true" id="deleteRPS" title="Delete" onclick="drawingEdit.deleteDoodle(); return false;" ><img src="../../graphics//delete.gif" /></button>
+	                <button class="imgbutton" disabled="true" id="deleteRPS" title="Delete" onclick="drawingEdit.deleteDoodle(); return false;" ><img src="../../graphics/delete.gif" /></button>
+                    <button class="imgbutton" disabled="true" id="flipVerRPS" title="Flip around vertical axis" onclick="drawingEdit.flipVer(); return false;" ><img src="../../graphics/flipVer.gif" /></button>
+                    <button class="imgbutton" disabled="true" id="flipHorRPS" title="Flip around horizontal axis" onclick="drawingEdit.flipHor(); return false;" ><img src="../../graphics/flipHor.gif" /></button>
 	                <button class="imgbutton" disabled="true" id="lockRPS" title="Lock" onclick="drawingEdit.lock(); return false;" ><img src="../../graphics//lock.gif" /></button>
 	                <button class="imgbutton" disabled="true" id="unlockRPS" title="Unlock" onclick="drawingEdit.unlock(); return false;" ><img src="../../graphics//unlock.gif" /></button>
 	                <br />
+                    <button class="imgbutton" id="molteno" title="Molteno tube" onclick="drawingEdit.addDoodle('Molteno'); return false;" ><img src="../../graphics/molteno.gif" /></button> 
                     <button class="imgbutton" id="baerveldt" title="Baerveldt tube" onclick="drawingEdit.addDoodle('Baerveldt'); return false;" ><img src="../../graphics/baerveldt.gif" /></button> 
                     <button class="imgbutton" id="ahmed" title="Ahmed tube" onclick="drawingEdit.addDoodle('Ahmed'); return false;" ><img src="../../graphics/ahmed.gif" /></button>                          
                     <button class="imgbutton" id="patch" title="Patch" onclick="drawingEdit.addDoodle('Patch'); return false;" ><img src="../../graphics/patch.gif" /></button>
@@ -198,9 +266,9 @@
 							<td align="left" width="60%">
 						        <select name="incision" id="platePosition" onclick="setPlateQuadrant(this.value);">
 						            <option value="STQ">STQ</option>
-						            <option value="ITQ">ITQ</option>
 						            <option value="SNQ">SNQ</option>
 						            <option value="INQ">INQ</option>
+						            <option value="ITQ">ITQ</option>
 						        </select>
 					        </td>
 						</tr>
@@ -244,7 +312,7 @@
 						<tr>
 							<td align="left"><p class="lable" >Patch:</p></td>
 							<td align="left">
-						        <select>
+						        <select id="patchType" onclick="togglePatch(this.value);" >
 						            <option>None</option>
 						            <option>Sclera</option>
 						            <option>Cornea</option>
@@ -276,7 +344,7 @@
 						<tr>
 							<td align="left"><p class="lable" >Ligated:</p></td>
 							<td align="left">
-						        <select>
+						        <select id="ligated" onclick="toggleVicryl(this.value);" >
 						            <option>None</option>
 						            <option>10/0 Nylon</option>
 						            <option>Vicryl</option>
@@ -329,7 +397,7 @@
 					<canvas class="display" id="canvasDisplay" width="200" height="200" tabindex="1"></canvas>
 				</div>
 				<div style="float:right; width: 320px; height: 220px;">
-					<p>Baerveld tube in superotemporal quadrant, with scleral patch</p>
+					<p>Baerveld tube in superotemporal quadrant, with supramid 7mm from limbus, and vicryl ligature, covered with scleral patch</p>
 				</div>
 			</div>
 	
