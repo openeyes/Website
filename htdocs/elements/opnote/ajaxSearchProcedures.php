@@ -64,7 +64,7 @@ if (strlen($searchText) > $minimumStringLength)
 	{					
 		// Search for matching procedures
 		$q = "
-		SELECT p.short_format, p.term FROM openeyesweb.procedure AS p 
+		SELECT p.short_format, p.term FROM openeyes_website.procedure AS p 
 		WHERE p.term LIKE '%".$searchText."%'
 		ORDER BY term ASC
 		";
