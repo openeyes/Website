@@ -60,7 +60,9 @@
                 opticCup.setHandleProperties();
                 opticCup.squiggleArray[0].pointsArray[0].x = -160;
                 opticCup.squiggleArray[0].pointsArray[0].y = -160;
-                                
+                opticCup.squiggleArray[0].pointsArray[7].x = -180;
+                opticCup.squiggleArray[0].pointsArray[7].y = -140;
+                                                
                 //opticCup.rotation = Math.PI/6;
                 var defect = drawingDisplay.addDoodle('NerveFibreDefect');
                 defect.rotation = -Math.PI/3;
@@ -146,7 +148,9 @@
 		<h2>Optic disk</h2>
 		<div class="section">
 			<h4>Description:</h4>
-			<p>This element allows drawing and recording of optic disk findings. The optic cup can be stretched with any of its four handles (which appear when it is selected), and also rotated, so that a notch can easily be depicted. Selecting the disk margin displays handles which can be dragged to depict peri-papillary atrophy.</p>
+			<p>This element allows drawing and recording of optic disk findings. The disk can be selected by clicking on the margin, and then rotated to indicate disk tilt. Dragging one of the handles will show peri-papillary atrophy.</p>
+			
+			<p>The optic cup can be sized by selecting it and dragging the top handle to set the approximate size. Clicking the 'Toggle mode' button will then show additional handles which can be moved to indicate fine detail in the cup, for example localised notches.</p>
 			<p>Status: <b>Alpha</b></p>
 		</div>
 
