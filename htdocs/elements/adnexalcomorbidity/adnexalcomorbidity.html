@@ -39,7 +39,7 @@
 			textArea.value = textArea.value + text;
 			
 			// Adjust height of target textarea
-			adjustHeight(textareaId, 20);
+			//adjustHeight(textareaId, 20);
 			
 			// Reset select
 			select.selectedIndex = 0;
@@ -105,14 +105,15 @@
 		</div>
 
 		<!-- Edit mode section -->
-		<div class="section" style="height:100px;" align="left">
+		<div class="section" style="height:320px;" align="left">
 					
 			<!-- Use exactly half the maximum event width -->
 			<div style ="width:540; float:left;">
 				<h4>Edit mode:</h4>
 				
+				<h4>Option 1:</h4>
 				<!-- drop down -->
-				<div style='float:left; width: 160px; height: 60px;'>
+				<div style='float:left; width: 160px; height: 120px;'>
 					<select id="HPCSelect" style="width:150px;" onchange="addToTextarea('HPCSelect', 'HPCTextarea')">
 						<option>Adnexal comorbidity:</option>
 						<option value="Blepharitis">Blepharitis</option>
@@ -124,10 +125,29 @@
 						<option value="Squint">Squint</option>
 					</select>
 				</div>
+		
 			
 				<!-- Textarea -->
-				<div style='float:right; width: 240px;height: 60px;'>
-					<textarea name="history" id="HPCTextarea" style="height:20px;width:220px;" onkeydown="adjustHeight('HPCTextarea', 20);"></textarea>
+				<div style='float:right; width: 240px;height: 120px;'>
+					<textarea name="history" id="HPCTextarea" style="height:60px;width:220px;" onkeydown="adjustHeight('HPCTextarea', 20);"></textarea>
+				</div>
+				
+				<h4>Option 2:</h4>
+				<!-- drop down -->
+				<div style='float:left; width: 160px; height: 60px;'>
+					<input class="checkbox" type="checkbox" />Blepharitis</br>
+					<input class="checkbox" type="checkbox" />Blepharospasm</br>
+					<input class="checkbox" type="checkbox" />Conjunctivitis</br>
+					<input class="checkbox" type="checkbox" />Difficult access</br>
+					<input class="checkbox" type="checkbox" />Ectropion</br>
+					<input class="checkbox" type="checkbox" />Entropion</br>
+					<input class="checkbox" type="checkbox" />Squint</br>
+				</div>
+			
+				<!-- Textarea -->
+				<div style='float:right; width: 240px;height: 120px;'>
+					<p>Comments:</p>
+					<textarea name="history" id="HPCTextarea" style="height:60px;width:220px;"></textarea>
 				</div>
 			</div>
 
