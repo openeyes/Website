@@ -1,5 +1,5 @@
 /**
- * @fileOverview Contains doodle Subclasses for the adnexal drawing
+ * @fileOverview Contains doodle subclasses for glaucoma
  * @author <a href="mailto:bill.aylward@mac.com">Bill Aylward</a>
  * @version 0.8
  *
@@ -30,9 +30,10 @@ if (ED == null || typeof(ED) != "object") { var ED = new Object();}
 
 /**
  * Radii from out to in (mainly for gonioscopy)
+ * @ignore
  */
 var rsl = 480;
-var rsli = 470
+var rsli = 470;
 var rtmo = 404;
 var rtmi = 304;
 var rcbo = 270;
@@ -462,9 +463,9 @@ ED.Gonioscopy.prototype.draw = function(_point)
         // Pattern
         if (this.apexX < -440)
         {
-            if (this.apexY < -440) ptrn = ctx.createPattern(this.drawing.imageArray['meshworkPatternLight'],'repeat');
-            else if (this.apexY < -420) ptrn = ctx.createPattern(this.drawing.imageArray['meshworkPatternMedium'],'repeat');
-            else ptrn = ctx.createPattern(this.drawing.imageArray['meshworkPatternHeavy'],'repeat');
+            if (this.apexY < -440) ptrn = ctx.createPattern(this.drawing.imageArray['MeshworkPatternLight'],'repeat');
+            else if (this.apexY < -420) ptrn = ctx.createPattern(this.drawing.imageArray['MeshworkPatternMedium'],'repeat');
+            else ptrn = ctx.createPattern(this.drawing.imageArray['MeshworkPatternHeavy'],'repeat');
             ctx.fillStyle = ptrn;
         }
         // Uniform
@@ -838,7 +839,7 @@ ED.AngleNV.prototype.draw = function(_point)
 	ctx.closePath();
     
     // create pattern
-    var ptrn = ctx.createPattern(this.drawing.imageArray['newVesselPattern'],'repeat');
+    var ptrn = ctx.createPattern(this.drawing.imageArray['NewVesselPattern'],'repeat');
     ctx.fillStyle = ptrn;
 	ctx.strokeStyle = "rgba(255, 255, 255, 0)";
 	
@@ -1686,7 +1687,7 @@ ED.OpticCup.prototype.draw = function(_point)
     
 	// Set line attributes
 	ctx.lineWidth = 2;
-    var ptrn = ctx.createPattern(this.drawing.imageArray['cribriformPattern'],'repeat');
+    var ptrn = ctx.createPattern(this.drawing.imageArray['CribriformPattern'],'repeat');
     ctx.fillStyle = ptrn;
 	ctx.strokeStyle = "gray";
 	
@@ -1864,6 +1865,7 @@ ED.NerveFibreDefect.prototype.setParameterDefaults = function()
     this.arc = 20 * Math.PI/180;
     this.apexY = -460;
     //this.rotation = (this.drawing.eye == ED.eye.Right)?-Math.PI/4:Math.PI/4;
+    this.rotation = Math.PI/4;
 }
 
 /**
