@@ -67,6 +67,10 @@ EG.isFirefox = function()
     }
 }
 
+EG.Config = {
+    hasShadow: true       
+}
+
 /**
  * A Graph consists of a canvas element displaying one or more series;
  *
@@ -131,7 +135,7 @@ EG.Graph = function(_canvas)
     this.tickMarkLength = 8;
     
     // Decoration
-    this.hasShadow = false;
+    this.hasShadow = EG.Config.hasShadow;
     
     // Behaviour (true when positive hit test with a point)
     this.showMessage = false;
@@ -201,7 +205,7 @@ EG.Graph.prototype.mousedown = function(_x, _y)
             var y = this.scaleY * series.pointsArray[j][1];
             
             // Check to see if mouse is in path
-            if (series.addPathForPoint(x, y, _x, _y)) alert("This would navigate to the event containing the data");
+            if (series.addPathForPoint(x, y, _x, _y)) console.log("Mousedown for point " + j + " in series " + i);
         }
     }
 }
@@ -961,7 +965,137 @@ EG.TimePoints.prototype.addPathForPoint = function(_x, _y, _mx, _my)
     return returnValue;
 }
 
+/**
+ * Time Points indicated by arrow
+ *
+ * @class Series
+ * @property {Graph} graph Reference to the enclosing Graph object
+ * @property {Array} pointsArray Array of points
+ * @param {Graph} _graph
+ * @param {Array} _array
+ * @param {Array} _params Associative array of optional parameters for subclass
+ */ 
+EG.TimeBlocks = function(_graph, _array, _params)
+{
+	// Call superclass constructor
+	EG.Series.call(this, _graph, _array);
+}
 
+/**
+ * Sets superclass and constructor
+ */
+EG.TimeBlocks.prototype = new EG.Series;
+EG.TimeBlocks.prototype.constructor = EG.TimeBlocks;
+EG.TimeBlocks.superclass = EG.Series.prototype;
+
+/**
+ * Draws the series
+ */
+EG.TimeBlocks.prototype.draw = function()
+{
+    // Vertical offset
+    var offsetY = -12;
+    var labelIsVertical = true;
+    
+    // Shortcut to context    
+    var ctx = this.graph.context;
+    
+    // Scale shortcuts
+    var sx = this.graph.scaleX;
+    var sy = this.graph.scaleY;
+    
+    // Start a new graphics path
+    ctx.beginPath(); 
+    
+    // Iterate through array drawing rectangles
+    for (var i = 0; i < this.pointsArray.length; i++)
+    {
+        // Draw point
+        var x = sx * this.pointsArray[i][0];
+        var y = sy * this.pointsArray[i][1];
+        var d = sy * this.pointsArray[i][2];
+        
+        // Draw point
+        this.addPathForPoint(x, y);
+        
+        if (i == 0)
+        {
+            ctx.strokeStyle = "blue";
+            ctx.fillStyle = "lightblue";
+        }
+        else
+        {
+            ctx.strokeStyle = "gray";
+            ctx.fillStyle = "lightgray";            
+        }
+    }
+    
+    // Set line attributes
+	ctx.lineWidth = 1;
+	ctx.strokeStyle = "blue";
+    ctx.fillStyle = "lightblue";
+    
+    // Draw line and fill arrow
+    ctx.fill();
+    ctx.stroke();
+    
+    // Write arrow labels
+    for (var i = 0; i < this.pointsArray.length; i++)
+    {
+        // Check for existence of optional label and write it
+        if (typeof(this.pointsArray[i][3]) != 'undefined')
+        {
+            this.graph.placeText(this.pointsArray[i][0] + 30, this.pointsArray[i][1] + offsetY, this.pointsArray[i][3], {orientation:'horizontal', alignment:'center', colour:'blue'});
+        }
+    }
+}
+
+/**
+ * Adds a shape for the passed point for this series type (eg circle, bar, pie etc)
+ * Also carries out hit test for mouse detection
+ *
+ * @param {Float} _x X coordinate in canvas plane
+ * @param {Float} _y Y coordinate in canvas plane
+ * @param {Float} _d Y coordinate in canvas plane
+ * @returns {Bool} True if mouse position within path 
+ */
+EG.TimeBlocks.prototype.addPathForPoint = function(_x, _y, _mx, _my)
+{
+    var returnValue = false;
+    
+    // Shortcut to context
+    var ctx = this.graph.context;
+    
+    // Arrow dimensions
+    var h = 20;
+    var d = 400;
+    
+    // Check for passed mouse position arguments
+    if(_mx)
+    {
+        // Create path and check for mouse hit
+        ctx.beginPath();
+    }
+    
+    // Add arrow path for point
+    ctx.moveTo(_x, _y);
+    ctx.rect(_x, _y, d, h);
+    
+    // Check if mouse position is within path
+    if(_mx)
+    {
+        // Ensure path is closed
+        ctx.closePath();
+        
+        // Perfrom hit test
+        if (ctx.isPointInPath(_mx, _my))
+        {
+            returnValue = true;           
+        }
+    }
+    
+    return returnValue;
+}
 
 
 
