@@ -161,3 +161,11 @@ span.squiggle {
 /*       display: list-item; */
 }
 
+/* History text area */
+textarea {
+	margin-top: 10px;
+	margin-bottom: 0px;
+	height: 40px;
+	width: 300px;
+	overflow: hidden;
+}
