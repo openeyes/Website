@@ -820,7 +820,7 @@ ED.Surgeon.prototype.setHandles = function()
 ED.Surgeon.prototype.setPropertyDefaults = function()
 {
 	this.isSelectable = true;
-    this.isShowHighlight = false;
+    this.isShowHighlight = true;
 	this.isOrientated = true;
 	this.isScaleable = false;
 	this.isSqueezable = false;
@@ -856,6 +856,19 @@ ED.Surgeon.prototype.setPropertyDefaults = function()
 ED.Surgeon.prototype.setParameterDefaults = function()
 {
     this.originY = -300;
+
+		if (this.drawing.eye == ED.eye.Left)
+		{
+				this.originX = 300;
+				this.originY = 0;
+				this.rotation = 2 * Math.PI/4;
+		}
+		else
+		{
+				this.originX = -300;
+				this.originY = 0;
+				this.rotation = 6 * Math.PI/4;
+		}
 }
 
 /**
@@ -1182,7 +1195,7 @@ ED. OperatingTable = function(_drawing, _originX, _originY, _radius, _apexX, _ap
 	ED.Doodle.call(this, _drawing, _originX, _originY, _radius, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order);
 	
 	// Set classname
-	this.className = " OperatingTable";
+	this.className = "OperatingTable";
 }
 
 /**

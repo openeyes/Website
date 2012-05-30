@@ -231,10 +231,10 @@ ED.AntSeg.prototype.setPXE = function(_value)
 }
 
 /**
-* Returns a string containing a text description of the doodle
-*
-* @returns {String} Description of doodle
-*/
+ * Returns a string containing a text description of the doodle
+ *
+ * @returns {String} Description of doodle
+ */
 ED.AntSeg.prototype.description = function()
 {
     var returnString = this.getGrade() + " pupil";
@@ -336,7 +336,7 @@ ED.NuclearCataract.prototype.draw = function(_point)
 	
 	// Set line attributes
 	ctx.lineWidth = 0;
-
+    
     // Colors for gradient
     yellowColour = "rgba(255, 255, 0, 0.75)";
     var brownColour = "rgba(" + Math.round(120 - this.apexY/2) + ", " + Math.round(60 - this.apexY/2) + ", 0, 0.75)";
@@ -345,7 +345,7 @@ ED.NuclearCataract.prototype.draw = function(_point)
     var gradient = ctx.createRadialGradient(0, 0, 210, 0, 0, 50);
     gradient.addColorStop(0, yellowColour);
     gradient.addColorStop(1, brownColour);
-
+    
 	ctx.fillStyle = gradient;
 	ctx.strokeStyle = "rgba(0,0,0,0)";
 	
@@ -518,7 +518,7 @@ ED.CorticalCataract.prototype.draw = function(_point)
 	
 	// Boundary path
 	ctx.beginPath();
-
+    
 	// CorticalCataract
     ctx.arc(0, 0, 240, 0, Math.PI * 2, true);
 	
@@ -538,11 +538,11 @@ ED.CorticalCataract.prototype.draw = function(_point)
 	if (this.drawFunctionMode == ED.drawFunctionMode.Draw)
 	{
         // Parameters
-        var n = 16;                 // Number of cortical spokes
-        var ro = 240;               // Outer radius of cataract
+        var n = 16;									// Number of cortical spokes
+        var ro = 240;								// Outer radius of cataract
         var theta = 2 * Math.PI/n;	// Angle of outer arc of cortical shard
-        var phi = theta/2;          // Half theta
-        var ri = -this.apexY;       // Radius of inner clear area
+        var phi = theta/2;					// Half theta
+        var ri = -this.apexY;				// Radius of inner clear area
         ctx.fillStyle = "rgba(200,200,200,0.75)";
         
         // Draw cortical spokes
@@ -1394,7 +1394,7 @@ ED.PI.prototype.draw = function(_point)
 	if (this.drawFunctionMode == ED.drawFunctionMode.Draw)
 	{
 	}
-
+    
 	// Draw handles if selected
 	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
 	
@@ -1515,7 +1515,7 @@ ED.RK.prototype.draw = function(_point)
     
 	// Arc back the other way
 	ctx.arc(0, 0, ri, arcEnd, arcStart, false);
-
+    
 	// Close path
 	ctx.closePath();
     
@@ -1544,7 +1544,7 @@ ED.RK.prototype.draw = function(_point)
             var pi = new ED.Point(0, 0);
             pi.setWithPolars(ri, angle); 
             var po = new ED.Point(0, 0);
-            po.setWithPolars(ro, angle);            
+            po.setWithPolars(ro, angle);						
             ctx.moveTo(pi.x, pi.y);
             ctx.lineTo(po.x, po.y);
             ctx.closePath();
@@ -1659,7 +1659,7 @@ ED.LasikFlap.prototype.draw = function(_point)
     var r = 320;
 	
 	// Calculate parameters for arc
-    var angle = Math.PI/6;          // Angle of arc of flap hingle
+    var angle = Math.PI/6;					// Angle of arc of flap hingle
 	var arcStart = -Math.PI/2 - angle;
 	var arcEnd = -Math.PI/2 + angle;
     
@@ -1686,7 +1686,7 @@ ED.LasikFlap.prototype.draw = function(_point)
 	if (this.drawFunctionMode == ED.drawFunctionMode.Draw)
 	{
 	}
-
+    
 	// Coordinates of handles (in canvas plane)
     var point = new ED.Point(0, 0)
     point.setWithPolars(r, angle);
@@ -1707,7 +1707,7 @@ ED.LasikFlap.prototype.draw = function(_point)
 ED.LasikFlap.prototype.description = function()
 {
     var returnString = "";
-
+    
     // Get side
     if(this.drawing.eye == ED.eye.Right)
 	{
@@ -2085,7 +2085,7 @@ ED.PhakoIncision = function(_drawing, _originX, _originY, _radius, _apexX, _apex
     
     // Set initial value of length according to loaded arc value
     this.length = this.arc * (6 * this.radius)/this.defaultRadius;
-
+    
     // Set initial value of apexYDelta according to loaded apexY amd radius value
     this.apexYDelta = - this.apexY - this.radius;
 }
@@ -2131,7 +2131,7 @@ ED.PhakoIncision.prototype.setParameterDefaults = function()
 {
     // The radius property is changed by movement in rotatable doodles
     this.radius = this.defaultRadius;
-
+    
     // Default is standard corneal phako wound
     this.arc = 33 * Math.PI/180;
     
@@ -2143,6 +2143,16 @@ ED.PhakoIncision.prototype.setParameterDefaults = function()
     
     // Set initial value of apexYDelta to zero (ie default incision is a pocket)
     this.apexYDelta = 0;
+    
+    // Sideports are usually temporal
+    if(this.drawing.eye == ED.eye.Right)
+    {
+        this.rotation = -Math.PI/2;
+    }
+    else
+    {
+        this.rotation = Math.PI/2;
+    }
 }
 
 /**
@@ -2184,14 +2194,14 @@ ED.PhakoIncision.prototype.draw = function(_point)
     else if (this.drawing.mode == ED.Mode.Apex)
     {
         this.apexYDelta = - this.apexY - this.radius; 
-    }    
-
+    }		 
+    
     // Boundary path
 	ctx.beginPath();
     
     // Half angle of arc
     var theta = this.arc/2;
-
+    
     // Arc across
     ctx.arc(0, 0, ro, - Math.PI/2 + theta, - Math.PI/2 - theta, true);
     
@@ -2225,7 +2235,7 @@ ED.PhakoIncision.prototype.draw = function(_point)
         // Colour of outer line is dark gray
         ctx.strokeStyle = "rgba(120,120,120,0)";
     }
-
+    
 	// Draw boundary path (also hit testing)
 	this.drawBoundary(_point);
 	
@@ -2266,13 +2276,13 @@ ED.PhakoIncision.prototype.draw = function(_point)
             ctx.stroke();
         }
 	}
-
+    
     // Coordinates of handles (in canvas plane)
     var point = new ED.Point(0, 0);
     point.setWithPolars(r, theta);
 	this.handleArray[3].location = this.transform.transformPoint(point);
 	this.handleArray[4].location = this.transform.transformPoint(new ED.Point(this.apexX, this.apexY));
-
+    
 	// Draw handles if selected
 	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
 	
@@ -2313,13 +2323,13 @@ ED.PhakoIncision.prototype.getParameter = function(_parameter)
     
     switch (_parameter)
     {
-        // Incision site (CND 5.13)
+            // Incision site (CND 5.13)
         case 'incisionSite':
             if (this.radius > 428) returnValue = 'Scleral';
             else if (this.radius > 344) returnValue = 'Limbal';
             else returnValue = 'Corneal';
             break;
-        // Incision length (CND 5.14)
+            // Incision length (CND 5.14)
         case 'incisionLength':
             // Calculate length of arc in mm
             var length = this.radius * this.arc * 6/this.defaultRadius;
@@ -2341,7 +2351,7 @@ ED.PhakoIncision.prototype.getParameter = function(_parameter)
         default:
             returnValue = "";
             break;
-
+            
     }
     
     return returnValue;
@@ -2357,41 +2367,41 @@ ED.PhakoIncision.prototype.setParameter = function(_parameter, _value)
 {
     switch (_parameter)
     {
-        // Incision site (CND 5.13)
+            // Incision site (CND 5.13)
         case 'incisionSite':
             switch (_value)
-            {
-                case 'Scleral':
-                    this.radius = 428;
-                    break;
-                case 'Limbal':
-                    this.radius = 376;
-                    break;
-                case 'Corneal':
-                    this.radius = 330;
-                    break;
-                default:
-                    break;
-            }
+        {
+            case 'Scleral':
+                this.radius = 428;
+                break;
+            case 'Limbal':
+                this.radius = 376;
+                break;
+            case 'Corneal':
+                this.radius = 330;
+                break;
+            default:
+                break;
+        }
             
             // Correct for change in arc as incision moves
             this.arc = this.length * this.defaultRadius/(6 * this.radius);
             
             break;
-        
-        // Incision length (CND 5.14)
+            
+            // Incision length (CND 5.14)
         case 'incisionLength':
             this.length = _value;
             this.arc = this.length * this.defaultRadius/(6 * this.radius);
             break;
             
-        // Incision Meridian
+            // Incision Meridian
         case 'incisionMeridian':
             var angle = ((90 - _value) + 360) % 360;
             this.rotation = angle * Math.PI/180;
             break;
             
-        // Incision type
+            // Incision type
         case 'incisionType':
             if (_value == "Pocket")
             {
@@ -2403,7 +2413,7 @@ ED.PhakoIncision.prototype.setParameter = function(_parameter, _value)
             }
             this.apexY = -this.radius - this.apexYDelta;
             break;
-
+            
         default:
             break
     }
@@ -2474,7 +2484,7 @@ ED.SidePort.prototype.setParameterDefaults = function()
 {
     // Default is standard corneal phako wound
     this.incisionLength = 1.5;
-        
+    
     // Incision length based on an average corneal radius of 6mm
     this.arc = this.incisionLength/6;
     
@@ -2487,7 +2497,7 @@ ED.SidePort.prototype.setParameterDefaults = function()
     {
         this.rotation = Math.PI/2;
     }
-
+    
 }
 
 /**
@@ -2656,7 +2666,7 @@ ED.IrisHook.prototype.draw = function(_point)
     // If iris there, take account of pupil size
     var doodle = this.drawing.lastDoodleOfClass("AntSeg");
     if (doodle) length = -doodle.apexY; 
-
+    
     ctx.rect(-25, -440, 50, 180 + length);
     
     ctx.closePath();
@@ -2987,7 +2997,7 @@ ED.CornealSuture.prototype.draw = function(_point)
         ctx.lineWidth = 2;
         var colour = "rgba(0,0,120,0.7)"
         ctx.strokeStyle = colour;
-       
+        
         ctx.stroke();
         
         // Knot

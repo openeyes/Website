@@ -41,16 +41,18 @@ function eyeDrawInit(_properties)
 {
     // Get reference to the canvas
     var canvas = document.getElementById(_properties.canvasId);
-    
+
     // Create drawing
-    window[_properties.drawingName] = new ED.Drawing(canvas, _properties.eye, _properties.idSuffix, _properties.isEditable);
+    window[_properties.drawingName] = new ED.Drawing(canvas, _properties.eye, _properties.idSuffix, _properties.isEditable, _properties.offset_x, _properties.offset_y, _properties.to_image);
     
     // Preload any images
     window[_properties.drawingName].preLoadImagesFrom(_properties.graphicsPath);
     
     // Set focus to the canvas element
-    canvas.focus();
-    
+		if (_properties.focus) {
+			canvas.focus();
+		}
+	
     // Wait for the drawing object to be ready before adding objects or other commands
     window[_properties.drawingName].onLoaded = function()
     {
@@ -78,13 +80,14 @@ function eyeDrawInit(_properties)
 	                args += _properties.onLoadedCommandArray[i][1][j] + ","; // ***TODO*** will this work >1 one argument?
 	            }
 	            
-	            // Remove final comma
-	            if (_properties.onLoadedCommandArray[i][1].length > 0) args = args.substring(0, args.length - 1);
-	
-	            // Run function and arguments  ***TODO*** investigate possible bugs from translation of 'this'
-	            window[_properties.drawingName][func](args);
+							args = args.replace(/,$/,'').split(',');
+
+							window[_properties.drawingName][func].apply(window[_properties.drawingName], args);
 	        }
     	}
+			
+			// Mark the drawing unmodified
+			window[_properties.drawingName]["isReady"]();
     }
     
     // Detects changes in doodle parameters (eg from mouse dragging)

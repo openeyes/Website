@@ -28,7 +28,7 @@
             var canvas = document.getElementById('canvas');
             
             // Create blank drawing
-            drawingEdit = new ED.Drawing(canvas, ED.eye.Right, 'RPS', true);
+            drawingEdit = new ED.Drawing(canvas, ED.eye.Right, 'RPS', true, 0, 0);
             
 			// Set focus to canvas
             canvas.focus();
@@ -233,7 +233,7 @@
 				<div class="toolbar">
 					<button class="imgbutton" class="imgbutton" disabled="true" id="moveToFrontRPS" title="Move to front" onclick="drawingEdit.moveToFront(); return false;" ><img src="../../graphics//moveToFront.gif"/></button>
 	                <button class="imgbutton" disabled="true" id="moveToBackRPS" title="Move to back" onclick="drawingEdit.moveToBack(); return false;" ><img src="../../graphics//moveToBack.gif" /></button>
-	                <button class="imgbutton" disabled="true" id="deleteRPS" title="Delete" onclick="drawingEdit.deleteDoodle(); return false;" ><img src="../../graphics/delete.gif" /></button>
+	                <button class="imgbutton" disabled="true" id="deleteDoodleRPS" title="Delete" onclick="drawingEdit.deleteDoodle(); return false;" ><img src="../../graphics/delete.gif" /></button>
                     <button class="imgbutton" disabled="true" id="flipVerRPS" title="Flip around vertical axis" onclick="drawingEdit.flipVer(); return false;" ><img src="../../graphics/flipVer.gif" /></button>
                     <button class="imgbutton" disabled="true" id="flipHorRPS" title="Flip around horizontal axis" onclick="drawingEdit.flipHor(); return false;" ><img src="../../graphics/flipHor.gif" /></button>
 	                <button class="imgbutton" disabled="true" id="lockRPS" title="Lock" onclick="drawingEdit.lock(); return false;" ><img src="../../graphics//lock.gif" /></button>

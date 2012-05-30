@@ -27,7 +27,7 @@
  * @namespace Namespace for all EyeDraw classes
  */
 var ED = new Object();
- 
+
 /**
  * Radius of inner handle displayed with selected doodle
  * @constant
@@ -45,9 +45,9 @@ ED.arrowDelta = 4;
  */
 ED.squiggleWidth = 
 {
-    Thin:4,
-    Medium:12,
-    Thick:20
+Thin:4,
+Medium:12,
+Thick:20
 }
 
 /**
@@ -60,8 +60,8 @@ ED.recentClick = false;
  */
 ED.eye = 
 {
-	Right:0,
-	Left:1
+Right:0,
+Left:1
 }
 
 /**
@@ -69,8 +69,8 @@ ED.eye =
  */
 ED.drawFunctionMode = 
 {
-	Draw:0,
-	HitTest:1
+Draw:0,
+HitTest:1
 }
 
 /**
@@ -78,14 +78,14 @@ ED.drawFunctionMode =
  */
 ED.Mode = 
 {
-	None:0,
-	Move:1,
-	Scale:2,
-	Arc:3,
-	Rotate:4,
-	Apex:5,
-    Handles:6,
-    Draw:7
+None:0,
+Move:1,
+Scale:2,
+Arc:3,
+Rotate:4,
+Apex:5,
+Handles:6,
+Draw:7
 }
 
 /**
@@ -93,9 +93,14 @@ ED.Mode =
  */
 ED.handleRing =
 {
-	Inner:0,
-	Outer:1
+Inner:0,
+Outer:1
 }
+
+/**
+ * Flag to indicate when the drawing has been modified
+ */
+ED.modified = false;
 
 /*
  * Chris Raettig's function for getting accurate mouse position in all browsers
@@ -103,9 +108,8 @@ ED.handleRing =
  * @param {Object} obj Object to get offset for, usually canvas object
  * @returns {Object} x and y values of offset
  */
-ED.findOffset = function(obj)
+ED.findOffset = function(obj, curleft, curtop)
 {
-    var curleft = curtop = 0;
     if (obj.offsetParent) {
         do {
             curleft += obj.offsetLeft;
@@ -165,13 +169,17 @@ ED.isFirefox = function()
  * @param {String} _IDSuffix String suffix to identify HTML elements related to this drawing
  * @param {Bool} _isEditable Flag indicating whether canvas is editable or not
  */
-ED.Drawing = function(_canvas, _eye, _IDSuffix, _isEditable)
+ED.Drawing = function(_canvas, _eye, _IDSuffix, _isEditable, offset_x, offset_y, _to_image)
 {
 	// Properties
 	this.canvas = _canvas;
 	this.eye = _eye;
 	this.IDSuffix = _IDSuffix;
     this.isEditable = _isEditable;
+	
+	this.convertToImage = (_to_image && !this.isEditable) ? true : false;
+	// Grab the canvas parent element
+	this.canvasParent = this.canvas.parentElement;
 	
 	this.context = this.canvas.getContext('2d');
 	this.doodleArray = new Array();
@@ -242,45 +250,45 @@ ED.Drawing = function(_canvas, _eye, _IDSuffix, _isEditable)
         
         // Mouse listeners
         this.canvas.addEventListener('mousedown', function(e) {
-                                var offset = ED.findOffset(this);
-                                var point = new ED.Point(e.pageX-offset.x,e.pageY-offset.y);
-                                drawing.mousedown(point);
-                                 }, false);
+                                     var offset = ED.findOffset(this, offset_x, offset_y);
+                                     var point = new ED.Point(e.pageX-offset.x,e.pageY-offset.y);
+                                     drawing.mousedown(point);
+                                     }, false);
         
         this.canvas.addEventListener('mouseup', function(e) { 
-                                var offset = ED.findOffset(this);
-                                var point = new ED.Point(e.pageX-offset.x,e.pageY-offset.y);
-                                drawing.mouseup(point); 
-                                }, false);
+                                     var offset = ED.findOffset(this, offset_x, offset_y);
+                                     var point = new ED.Point(e.pageX-offset.x,e.pageY-offset.y);
+                                     drawing.mouseup(point); 
+                                     }, false);
         
         this.canvas.addEventListener('mousemove', function(e) { 
-                                var offset = ED.findOffset(this);
-                                var point = new ED.Point(e.pageX-offset.x,e.pageY-offset.y);
-                                drawing.mousemove(point); 
-                                }, false);
+                                     var offset = ED.findOffset(this, offset_x, offset_y);
+                                     var point = new ED.Point(e.pageX-offset.x,e.pageY-offset.y);
+                                     drawing.mousemove(point); 
+                                     }, false);
         
         this.canvas.addEventListener('mouseout', function(e) { 
-                                var offset = ED.findOffset(this);
-                                var point = new ED.Point(e.pageX-offset.x,e.pageY-offset.y);
-                                drawing.mouseout(point); 
-                                }, false);
+                                     var offset = ED.findOffset(this, offset_x, offset_y);
+                                     var point = new ED.Point(e.pageX-offset.x,e.pageY-offset.y);
+                                     drawing.mouseout(point); 
+                                     }, false);
         
         // iOS listeners
         this.canvas.addEventListener('touchstart', function(e) { 
-                                var point = new ED.Point(e.targetTouches[0].pageX - this.offsetLeft,e.targetTouches[0].pageY - this.offsetTop);
-                                e.preventDefault();
-                                drawing.mousedown(point); 
-                                }, false);
+                                     var point = new ED.Point(e.targetTouches[0].pageX - this.offsetLeft,e.targetTouches[0].pageY - this.offsetTop);
+                                     e.preventDefault();
+                                     drawing.mousedown(point); 
+                                     }, false);
         
         this.canvas.addEventListener('touchend', function(e) { 
-                                var point = new ED.Point(e.targetTouches[0].pageX - this.offsetLeft,e.targetTouches[0].pageY - this.offsetTop);
-                                drawing.mouseup(point); 
-                                }, false);
+                                     var point = new ED.Point(e.targetTouches[0].pageX - this.offsetLeft,e.targetTouches[0].pageY - this.offsetTop);
+                                     drawing.mouseup(point); 
+                                     }, false);
         
         this.canvas.addEventListener('touchmove', function(e) { 
-                                var point = new ED.Point(e.targetTouches[0].pageX - this.offsetLeft,e.targetTouches[0].pageY - this.offsetTop);
-                                drawing.mousemove(point); 
-                                }, false);
+                                     var point = new ED.Point(e.targetTouches[0].pageX - this.offsetLeft,e.targetTouches[0].pageY - this.offsetTop);
+                                     drawing.mousemove(point); 
+                                     }, false);
         
         // Keyboard listener
         window.addEventListener('keydown',function(e) {
@@ -293,6 +301,26 @@ ED.Drawing = function(_canvas, _eye, _IDSuffix, _isEditable)
     }
 }
 
+/**
+ * Replaces the canvas element inline with a PNG image, useful for printing
+ */
+ED.Drawing.prototype.replaceWithImage = function()
+{	
+	var img = document.createElement("img");
+	// Base64 encoded PNG version of the canvas element
+	img.setAttribute('src', this.canvas.toDataURL('image/png'));
+	
+	// Removes canvas and hidden input element (+ any other children) as they will be replaced with an image
+	if(this.canvasParent.hasChildNodes())
+	{
+		while(this.canvasParent.childNodes.length >= 1)
+		{
+			this.canvasParent.removeChild(this.canvasParent.firstChild);
+		}
+	}
+	
+	this.canvasParent.appendChild(img);
+}
 
 /**
  * Preloads image files
@@ -359,7 +387,7 @@ ED.Drawing.prototype.loadDoodles = function(_id)
     {
         var doodleSet = window.JSON.parse(sourceElement.value);
         
-        this.load(doodleSet);        
+        this.load(doodleSet);				 
     }
 }
 
@@ -376,18 +404,20 @@ ED.Drawing.prototype.load = function(_doodleSet)
 		// Instantiate a new doodle object with parameters from doodle set
 		this.doodleArray[i] = new ED[_doodleSet[i].subclass]
 		(
-			this,
-			_doodleSet[i].originX,
-			_doodleSet[i].originY,
-			_doodleSet[i].radius,
-			_doodleSet[i].apexX,
-			_doodleSet[i].apexY,
-			_doodleSet[i].scaleX,
-			_doodleSet[i].scaleY,
-			_doodleSet[i].arc,
-			_doodleSet[i].rotation,
-			_doodleSet[i].order
-		);
+         this,
+         _doodleSet[i].originX,
+         _doodleSet[i].originY,
+         _doodleSet[i].radius,
+         _doodleSet[i].apexX,
+         _doodleSet[i].apexY,
+         _doodleSet[i].scaleX,
+         _doodleSet[i].scaleY,
+         _doodleSet[i].arc,
+         _doodleSet[i].rotation,
+         _doodleSet[i].order
+         );
+        
+		this.doodleArray[i].id = i;
         
         // Squiggle array
         if (typeof(_doodleSet[i].squiggleArray) != 'undefined')
@@ -426,7 +456,7 @@ ED.Drawing.prototype.load = function(_doodleSet)
  * @returns {String} Serialized data in JSON format with surrounding square brackets
  */
 ED.Drawing.prototype.save = function()
-{    
+{		 
     // Store current data in textArea
     return '[' + this.json() + ']';
 }
@@ -494,7 +524,7 @@ ED.Drawing.prototype.drawAllDoodles = function()
         ctx.strokeStyle = "rgba(20,20,20,1)";
         ctx.stroke();
     }
-
+    
     
 	// Draw doodles
 	for (var i = 0; i < this.doodleArray.length; i++)
@@ -532,7 +562,7 @@ ED.Drawing.prototype.mousedown = function(_point)
 	// Set flag to indicate success
 	var found = false;
 	this.selectedDoodle = null;
-
+    
 	// Cycle through doodles from front to back doing hit test
 	for (var i = this.doodleArray.length - 1; i > -1; i--)
 	{
@@ -540,7 +570,7 @@ ED.Drawing.prototype.mousedown = function(_point)
 		{
 			// Save context (draw method of each doodle may alter it)
 			this.context.save();
-		
+            
 			// Successful hit test?
 			if (this.doodleArray[i].draw(_point))
 			{
@@ -629,14 +659,14 @@ ED.Drawing.prototype.mousemove = function(_point)
 			// Get mouse positions in canvas plane relative to centre
 			var mousePosRelCanvasCentre = new ED.Point(_point.x - this.canvas.width/2, _point.y - this.canvas.height/2);
 			var lastMousePosRelCanvasCentre = new ED.Point(this.lastMousePosition.x - this.canvas.width/2, this.lastMousePosition.y - this.canvas.height/2);
-				
+            
 			// Get position of centre of display (canvas plane relative to centre) and of an arbitrary point vertically above
 			var canvasCentre = new ED.Point(0, 0);
 			var canvasTop = new ED.Point(0, -100);
 			
 			// Get coordinates of origin of doodle in doodle plane
 			var doodleOrigin = new ED.Point(this.selectedDoodle.originX, this.selectedDoodle.originY);
-
+            
 			// Get position of point vertically above doodle origin in doodle plane
 			var doodleTop = new ED.Point(this.selectedDoodle.originX, this.selectedDoodle.originY - 100);
 			
@@ -703,7 +733,7 @@ ED.Drawing.prototype.mousemove = function(_point)
                             
                             // Keep within bounds
                             this.selectedDoodle.radius = this.selectedDoodle.rangeOfRadius.constrain(this.selectedDoodle.radius);
- 						}
+						}
 					}
 					break;
 				case ED.Mode.Scale:
@@ -712,7 +742,7 @@ ED.Drawing.prototype.mousemove = function(_point)
 						// Get sign of scale (negative scales create horizontal and vertical flips)
 						var signX = this.selectedDoodle.scaleX/Math.abs(this.selectedDoodle.scaleX);
 						var signY = this.selectedDoodle.scaleY/Math.abs(this.selectedDoodle.scaleY);
-
+                        
 						// Calculate change in scale (sign change indicates mouse has moved across central axis)
 						var changeX = mousePosSelectedDoodlePlane.x/lastMousePosSelectedDoodlePlane.x;
 						var changeY = mousePosSelectedDoodlePlane.y/lastMousePosSelectedDoodlePlane.y;
@@ -742,7 +772,7 @@ ED.Drawing.prototype.mousemove = function(_point)
 					}
 					break;
 				case ED.Mode.Arc:
-
+                    
                     // Calculate angles from centre to mouse positions relative to north
                     var newAngle = this.innerAngle(doodleTop, doodleOrigin, mousePosSelectedDoodlePlane);
                     var oldAngle = this.innerAngle(doodleTop, doodleOrigin, lastMousePosSelectedDoodlePlane);
@@ -751,11 +781,11 @@ ED.Drawing.prototype.mousemove = function(_point)
                     var deltaAngle = newAngle - oldAngle;
                     if (this.selectedDoodle.isArcSymmetrical) deltaAngle = 2 * deltaAngle;
                     rotationCorrection = 1;
-
+                    
                     // Arc left or right depending on which handle is dragging
                     if (this.selectedDoodle.draggingHandleIndex < 2)
                     {
-                        deltaAngle =  -deltaAngle;
+                        deltaAngle =	-deltaAngle;
                         rotationCorrection = -1;
                     }
                     
@@ -783,7 +813,7 @@ ED.Drawing.prototype.mousemove = function(_point)
                         rotationCorrection = rotationCorrection * deltaAngle/2;
                         this.selectedDoodle.rotation += rotationCorrection;
                     }
-
+                    
 					break;
 				case ED.Mode.Rotate:
 					if (this.selectedDoodle.isRotatable)
@@ -831,7 +861,7 @@ ED.Drawing.prototype.mousemove = function(_point)
                             p.y = (ay - 1) * p.y/ay;
                         }
                     }
-
+                    
                     // Enforce bounds
 					this.selectedDoodle.squiggleArray[0].pointsArray[i].x = this.selectedDoodle.rangeOfHandlesXArray[i].constrain(this.selectedDoodle.squiggleArray[0].pointsArray[i].x);
 					this.selectedDoodle.squiggleArray[0].pointsArray[i].y = this.selectedDoodle.rangeOfHandlesYArray[i].constrain(this.selectedDoodle.squiggleArray[0].pointsArray[i].y);
@@ -843,7 +873,7 @@ ED.Drawing.prototype.mousemove = function(_point)
 				default:
 					break;		
 			}
-			            
+            
 			// Refresh drawing
 			this.repaint();				
 		}
@@ -871,12 +901,21 @@ ED.Drawing.prototype.mouseup = function(_point)
 	{
 		this.selectedDoodle.isBeingDragged = false;
         
-        // Optionally complete squiggle
-        if (this.selectedDoodle.isDrawable)
-        {
+		// Optionally complete squiggle
+		if (this.selectedDoodle.isDrawable)
+		{
             this.selectedDoodle.completeSquiggle();
             this.drawAllDoodles();
-        }
+		}
+	}
+    
+	// Cycle through doodles from front to back doing hit test
+	for (var i = this.doodleArray.length - 1; i > -1; i--)
+	{
+		if (this.doodleArray[i].className == 'Surgeon') {
+			this.doodleArray[i].isSelected = false;
+			this.doodleArray[i].drawing.repaint();
+		}
 	}
 }
 
@@ -919,19 +958,19 @@ ED.Drawing.prototype.keydown = function(e)
 	{
         // Delete or move doodle
         switch (e.keyCode) {
-            case 8:     // Backspace
+            case 8:			// Backspace
                 this.deleteDoodle();
                 break;
-            case 37:    // Left arrow
+            case 37:		// Left arrow
                 this.selectedDoodle.move(-ED.arrowDelta,0);
                 break;
-            case 38:    // Up arrow
+            case 38:		// Up arrow
                 this.selectedDoodle.move(0,-ED.arrowDelta);
                 break;
-            case 39:    // Right arrow
+            case 39:		// Right arrow
                 this.selectedDoodle.move(ED.arrowDelta,0);
                 break;
-            case 40:    // Down arrow
+            case 40:		// Down arrow
                 this.selectedDoodle.move(0,ED.arrowDelta);
                 break;
             default:
@@ -962,7 +1001,7 @@ ED.Drawing.prototype.keydown = function(e)
                 code = e.keyCode;
             }
         }
-
+        
         // Currently only doodles of Lable class accept alphanumeric input
         if (code > 0 && this.selectedDoodle.className == "Lable")
         {
@@ -1038,7 +1077,7 @@ ED.Drawing.prototype.flipVer = function()
 	{
         // Vertical axis involved altering sign of scale y
         this.selectedDoodle.scaleY = this.selectedDoodle.scaleY * -1;
-
+        
 		// Refresh canvas
 		this.repaint();
 	}
@@ -1149,7 +1188,7 @@ ED.Drawing.prototype.setParameterValueForClass= function(_parameter, _value, _cl
             var doodle = this.doodleArray[i];
             
             // Objects are also associative arrays!
-            doodle[_parameter] =  _value;
+            doodle[_parameter] =	_value;
         }
 	}
     
@@ -1176,12 +1215,24 @@ ED.Drawing.prototype.deselectDoodles = function()
 }
 
 /**
+ * Marks the doodle as 'unmodified' so we can catch an event when it gets modified by the user
+ */
+
+ED.Drawing.prototype.isReady = function() {
+	this.modified = false;
+	if(this.convertToImage)
+	{
+		this.replaceWithImage();
+	}
+}
+
+/**
  * Adds a doodle to the drawing
  *
  * @param {String} _className Classname of doodle
  * @returns {Doodle} The newly added doodle
  */
-ED.Drawing.prototype.addDoodle = function(_className)
+ED.Drawing.prototype.addDoodle = function(_className, rotation)
 {
     // Check that class exists
     if (ED.hasOwnProperty(_className))
@@ -1193,7 +1244,7 @@ ED.Drawing.prototype.addDoodle = function(_className)
     {
         return null;
     }
-
+    
     // Check if one is already there if unique)
     if (!(newDoodle.isUnique && this.hasDoodleOfClass(_className)))
     {
@@ -1202,9 +1253,13 @@ ED.Drawing.prototype.addDoodle = function(_className)
         {
             this.doodleArray[i].isSelected = false;
         }
-
+        
         // Set default parameters
         newDoodle.setParameterDefaults();
+        
+        if (typeof rotation != 'undefined') {
+            newDoodle.rotation = rotation;
+        }
         
         // New doodles are selected by default
         this.selectedDoodle = newDoodle;
@@ -1219,6 +1274,8 @@ ED.Drawing.prototype.addDoodle = function(_className)
             newDoodle.isForDrawing = true;
         }
         
+        newDoodle.id = this.doodleArray.length;
+        
         // Add to array
         this.doodleArray[this.doodleArray.length] = newDoodle;
         
@@ -1230,7 +1287,7 @@ ED.Drawing.prototype.addDoodle = function(_className)
         {
             this.repaint();
         }
-
+        
         // Return doodle
         return newDoodle;
     }
@@ -1258,7 +1315,7 @@ ED.Drawing.prototype.hasDoodleOfClass = function(_className)
             returnValue = true;
         }
 	}
-
+    
     return returnValue;
 }
 
@@ -1308,6 +1365,29 @@ ED.Drawing.prototype.lastDoodleOfClass = function(_className)
     
     return returnValue;
 }
+
+/**
+ * Returns all doodles of the passed className
+ *
+ * @param {String} _className Classname of doodle
+ * @returns {Doodle} The last doodle of the passed className
+ */
+ED.Drawing.prototype.allDoodlesOfClass = function(_className)
+{
+    var returnValue = [];
+    
+	// Go through doodle array backwards looking for doodles of passed className
+	for (var i = this.doodleArray.length - 1; i >= 0; i--)
+	{
+        if (this.doodleArray[i].className == _className)
+        {
+            returnValue.push(this.doodleArray[i]);
+        }
+	}
+    
+	return returnValue;
+}
+
 
 /**
  * Deletes all doodles that are deletable
@@ -1398,7 +1478,7 @@ ED.Drawing.prototype.setParameterForDoodle = function(_doodle, _parameter, _valu
     }
     
     // Refresh drawing
-    this.repaint();               
+    this.repaint();								
 }
 
 /**
@@ -1424,7 +1504,7 @@ ED.Drawing.prototype.setParameterForDoodleOfClass = function(_className, _parame
     }
     
     // Refresh drawing
-    this.repaint();               
+    this.repaint();								
 }
 
 /**
@@ -1436,7 +1516,7 @@ ED.Drawing.prototype.setParameterForDoodleOfClass = function(_className, _parame
 ED.Drawing.prototype.totalDegreesExtent = function(_class)
 {
     var degrees = 0;
-
+    
     // Calculate total for all doodles of this class
     for (var i = 0; i < this.doodleArray.length; i++)
     {
@@ -1446,10 +1526,10 @@ ED.Drawing.prototype.totalDegreesExtent = function(_class)
             degrees += this.doodleArray[i].degreesExtent();
         }
     }
-
+    
     // Overlapping doodles do not increase total beyond 360 degrees
     if (degrees > 360) degrees = 360;
-
+    
     return degrees;
 }
 
@@ -1532,7 +1612,7 @@ ED.Drawing.prototype.report = function()
             {
                 returnString = returnString + ", " + description.firstLetterToLowerCase();
             }
-        }        
+        }				 
     }
 	
     // Return result
@@ -1632,7 +1712,7 @@ ED.Drawing.prototype.repaint = function()
 		if (this.moveToFrontButton !== null) this.moveToFrontButton.disabled = false;
 		if (this.moveToBackButton !== null) this.moveToBackButton.disabled = false;
 		if (this.flipVerButton !== null) this.flipVerButton.disabled = false;
-		if (this.flipHorButton !== null) this.flipHorButton.disabled = false;        
+		if (this.flipHorButton !== null) this.flipHorButton.disabled = false;				 
 		if (this.deleteDoodleButton !== null) this.deleteDoodleButton.disabled = false;
 		if (this.lockButton !== null) this.lockButton.disabled = false;
         if (this.squiggleSpan !== null && this.selectedDoodle.isDrawable) this.squiggleSpan.style.display = "inline-block";
@@ -1642,7 +1722,7 @@ ED.Drawing.prototype.repaint = function()
 		if (this.moveToFrontButton !== null) this.moveToFrontButton.disabled = true;
 		if (this.moveToBackButton !== null) this.moveToBackButton.disabled = true;
 		if (this.flipVerButton !== null) this.flipVerButton.disabled = true;
-		if (this.flipHorButton !== null) this.flipHorButton.disabled = true;   
+		if (this.flipHorButton !== null) this.flipHorButton.disabled = true;	 
 		if (this.deleteDoodleButton !== null) this.deleteDoodleButton.disabled = true;
 		if (this.lockButton !== null) this.lockButton.disabled = true;
         if (this.squiggleSpan !== null) this.squiggleSpan.style.display = "none";
@@ -1659,6 +1739,10 @@ ED.Drawing.prototype.repaint = function()
                 this.unlockButton.disabled = false;
             }
         }
+    }
+    
+    if (!this.modified) {
+        this.modified = true;
     }
     
     // Call to optional method to notify changes in doodle parametes
@@ -1721,7 +1805,7 @@ ED.Drawing.prototype.togglePointInLine = function()
  */
 ED.Report = function(_drawing)
 {
-   	// Properties
+    // Properties
 	this.drawing = _drawing;
     this.breaksInAttached = 0;
     this.breaksInDetached = 0;
@@ -1761,7 +1845,7 @@ ED.Report = function(_drawing)
             this.rrdArray.push(doodle);
         }
     }
-
+    
     // Second iteration for other doodles
 	for (i = 0; i < this.drawing.doodleArray.length; i++)
 	{
@@ -1951,7 +2035,7 @@ ED.Report.prototype.isMacOff = function()
     
     return result;
 }
-    
+
 /**
  * Doodles are components of drawings which have built in knowledge of what they represent, and how to behave when manipulated;
  * Doodles are drawn in the 'doodle plane' consisting of 1001 pixel square grid with central origin (ie -500 to 500) and
@@ -2065,7 +2149,7 @@ ED.Doodle = function(_drawing, _originX, _originY, _radius, _apexX, _apexY, _sca
 			this.arc = _arc * Math.PI/180;
 			this.rotation = _rotation * Math.PI/180;
 			this.order = +_order;
-
+            
 			// Not selected
 			this.isSelected = false;
             this.isForDrawing = false;
@@ -2127,7 +2211,7 @@ ED.Doodle = function(_drawing, _originX, _originY, _radius, _apexX, _apexY, _sca
         
         // Array of points to snap to
         this.pointsArray = new Array();
-
+        
 		// Array of 5 handles
 		this.handleArray = new Array();
 		this.handleArray[0] = new ED.Handle(new ED.Point(-50, 50), false, ED.Mode.Scale, false);
@@ -2173,18 +2257,18 @@ ED.Doodle.prototype.setParameterDefaults = function()
  * @param {Float} _x Distance to move along x axis in doodle plane
  * @param {Float} _y Distance to move along y axis in doodle plane
  */
- ED.Doodle.prototype.move = function(_x, _y)
+ED.Doodle.prototype.move = function(_x, _y)
 {
     // Get position of centre of display (canvas plane relative to centre) and of an arbitrary point vertically above
     var canvasCentre = new ED.Point(0, 0);
     var canvasTop = new ED.Point(0, -100);
-        
+    
     if (this.isMoveable)
-    {        
+    {				 
         // Move doodle to new position
         this.originX += _x;
         this.originY += _y;
-
+        
         // If doodle isOriented is true, rotate doodle around centre of canvas (eg makes 'U' tears point to centre)
         if (this.isOrientated)
         {
@@ -2213,12 +2297,12 @@ ED.Doodle.prototype.setParameterDefaults = function()
                         break;
                     case 1:
                         this.rotation = Math.PI/4;
-                        break;                    
+                        break;										
                     case 3:
                         this.rotation = 3 * Math.PI/4;
                         break;
                     case -1:
-                        this.rotation = -3 *  Math.PI/4;
+                        this.rotation = -3 *	Math.PI/4;
                         break;
                 }
             }
@@ -2242,7 +2326,7 @@ ED.Doodle.prototype.draw = function(_point)
 	{
 		this.drawFunctionMode = ED.drawFunctionMode.Draw;
 	}
-
+    
 	// Get context
 	var ctx = this.drawing.context;
 	
@@ -2320,7 +2404,7 @@ ED.Doodle.prototype.drawHandles = function(_point)
 			// Path for inner ring
 			ctx.beginPath();
 			ctx.arc(handle.location.x, handle.location.y, ED.handleRadius/2, 0, arc, true);
-
+            
 			// Hit testing for inner ring
 			if (this.drawFunctionMode == ED.drawFunctionMode.HitTest)
 			{
@@ -2355,7 +2439,7 @@ ED.Doodle.prototype.drawHandles = function(_point)
 				}
 			}
 			
-
+            
 			// Draw handles
 			if (this.drawFunctionMode == ED.drawFunctionMode.Draw)
 			{
@@ -2422,7 +2506,7 @@ ED.Doodle.prototype.drawBoundary = function(_point)
 			ctx.shadowOffsetY = 0;
 			ctx.shadowBlur = 20;
 		}
-
+        
         // Specify highlight attributes
 		if (this.isForDrawing)
 		{
@@ -2505,7 +2589,7 @@ ED.Doodle.prototype.clockHour = function()
     }
     
     clockHour = clockHour.toFixed(0);
-    if (clockHour == 0) clockHour = 12;        
+    if (clockHour == 0) clockHour = 12;				 
     return clockHour
 }
 
@@ -2580,9 +2664,9 @@ ED.Doodle.prototype.addSquiggle = function()
             break;
         default:
             lineThickness = ED.squiggleWidth.Thin;
-            break;            
+            break;						
     }
-
+    
     // Create new squiggle of selected colour
     var colour = new ED.Colour(colourArray[0], colourArray[1], colourArray[2], 1);
     var squiggle = new ED.Squiggle(this, colour, lineThickness, filled);
@@ -2681,7 +2765,7 @@ ED.Doodle.prototype.drawSpot = function(_ctx, _x, _y, _r, _colour)
     _ctx.beginPath();
     _ctx.arc(_x, _y, _r, 0, Math.PI * 2, true);
     _ctx.fillStyle = _colour;
-    _ctx.fill();    
+    _ctx.fill();		
 }
 
 /**
@@ -2702,7 +2786,7 @@ ED.Doodle.prototype.drawLine = function(_ctx, _x1, _y1, _x2, _y2, _w, _colour)
     _ctx.lineTo(_x2, _y2);
     _ctx.lineWidth = _w;
     _ctx.strokeStyle = _colour;
-    _ctx.stroke();    
+    _ctx.stroke();		
 }
 
 /**
@@ -2744,7 +2828,7 @@ ED.Handle = function(_location, _isVisible, _mode, _isRotatable)
 	this.mode = _mode;
 	this.isRotatable = _isRotatable;
 }
-	
+
 
 /**
  * Represents a range of numerical values
@@ -2815,7 +2899,7 @@ ED.Range.prototype.includes = function(_num)
 		return true;
 	}
 }
-	
+
 /**
  * Constrains a value to the limits of the range
  *
@@ -2960,7 +3044,7 @@ ED.Point.prototype.tangentialControlPoint = function(_phi)
     var point = new ED.Point(0, 0);
     point.setWithPolars(h, angle + _phi);
     
-    return point;    
+    return point;		 
 }
 
 /**
@@ -2983,7 +3067,7 @@ ED.Point.prototype.json = function()
 ED.AffineTransform = function()
 {
 	// Properties - array of arrays of column values one for each row
- 	this.components = [[1,0,0],[0,1,0],[0,0,1]];
+	this.components = [[1,0,0],[0,1,0],[0,0,1]];
 }
 
 /**
@@ -2992,14 +3076,14 @@ ED.AffineTransform = function()
 ED.AffineTransform.prototype.setToIdentity = function()
 {
 	this.components[0][0] = 1;
- 	this.components[0][1] = 0;
- 	this.components[0][2] = 0;
- 	this.components[1][0] = 0;
- 	this.components[1][1] = 1;
- 	this.components[1][2] = 0;	
- 	this.components[2][0] = 0;
- 	this.components[2][1] = 0;
- 	this.components[2][2] = 1;
+	this.components[0][1] = 0;
+	this.components[0][2] = 0;
+	this.components[1][0] = 0;
+	this.components[1][1] = 1;
+	this.components[1][2] = 0;	
+	this.components[2][0] = 0;
+	this.components[2][1] = 0;
+	this.components[2][2] = 1;
 }
 
 /**
@@ -3010,14 +3094,14 @@ ED.AffineTransform.prototype.setToIdentity = function()
 ED.AffineTransform.prototype.setToTransform = function(_transform)
 {
 	this.components[0][0] = _transform.components[0][0];
- 	this.components[0][1] = _transform.components[0][1];
- 	this.components[0][2] = _transform.components[0][2];
- 	this.components[1][0] = _transform.components[1][0];
- 	this.components[1][1] = _transform.components[1][1];
- 	this.components[1][2] = _transform.components[1][2];
- 	this.components[2][0] = _transform.components[2][0];
- 	this.components[2][1] = _transform.components[2][1];
- 	this.components[2][2] = _transform.components[2][2];
+	this.components[0][1] = _transform.components[0][1];
+	this.components[0][2] = _transform.components[0][2];
+	this.components[1][0] = _transform.components[1][0];
+	this.components[1][1] = _transform.components[1][1];
+	this.components[1][2] = _transform.components[1][2];
+	this.components[2][0] = _transform.components[2][0];
+	this.components[2][1] = _transform.components[2][1];
+	this.components[2][2] = _transform.components[2][2];
 }
 
 /**
@@ -3090,7 +3174,7 @@ ED.AffineTransform.prototype.transformPoint = function(_point)
 {
 	var newX = _point.x * this.components[0][0] + _point.y * this.components[0][1] + 1 * this.components[0][2];
 	var newY = _point.x * this.components[1][0] + _point.y * this.components[1][1] + 1 * this.components[1][2];
-
+    
 	return new ED.Point(newX, newY);
 }
 
@@ -3101,9 +3185,9 @@ ED.AffineTransform.prototype.transformPoint = function(_point)
  */
 ED.AffineTransform.prototype.determinant = function()
 {
-	return  this.components[0][0] * (this.components[1][1] * this.components[2][2] - this.components[1][2] * this.components[2][1]) - 
-			this.components[0][1] * (this.components[1][0] * this.components[2][2] - this.components[1][2] * this.components[2][0]) +
-			this.components[0][2] * (this.components[1][0] * this.components[2][1] - this.components[1][1] * this.components[2][0]);
+	return	this.components[0][0] * (this.components[1][1] * this.components[2][2] - this.components[1][2] * this.components[2][1]) - 
+    this.components[0][1] * (this.components[1][0] * this.components[2][2] - this.components[1][2] * this.components[2][0]) +
+    this.components[0][2] * (this.components[1][0] * this.components[2][1] - this.components[1][1] * this.components[2][0]);
 }
 
 /**
@@ -3125,7 +3209,7 @@ ED.AffineTransform.prototype.createInverse = function()
 	inv.components[0][0] = invdet * (this.components[1][1] * this.components[2][2] - this.components[1][2] * this.components[2][1]);
 	inv.components[0][1] = invdet * (this.components[0][2] * this.components[2][1] - this.components[0][1] * this.components[2][2]);
 	inv.components[0][2] = invdet * (this.components[0][1] * this.components[1][2] - this.components[0][2] * this.components[1][1]);
-		
+    
 	inv.components[1][0] = invdet * (this.components[1][2] * this.components[2][0] - this.components[1][0] * this.components[2][2]);
 	inv.components[1][1] = invdet * (this.components[0][0] * this.components[2][2] - this.components[0][2] * this.components[2][0]);
 	inv.components[1][2] = invdet * (this.components[0][2] * this.components[1][0] - this.components[0][0] * this.components[1][2]);
@@ -3133,7 +3217,7 @@ ED.AffineTransform.prototype.createInverse = function()
 	inv.components[2][0] = invdet * (this.components[1][0] * this.components[2][1] - this.components[1][1] * this.components[2][0]);
 	inv.components[2][1] = invdet * (this.components[0][1] * this.components[2][0] - this.components[0][0] * this.components[2][1]);
 	inv.components[2][2] = invdet * (this.components[0][0] * this.components[1][1] - this.components[0][1] * this.components[1][0]);
-		
+    
 	return inv;
 }
 
@@ -3287,7 +3371,7 @@ String.prototype.addAndAfterLastComma = function()
             break;
         }
     }
-
+    
     if (found) return this.substring(0, pos) + ", and" + this.substring(pos+1, this.length);
     else return this;
 }
