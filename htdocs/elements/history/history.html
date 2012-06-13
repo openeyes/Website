@@ -15,8 +15,12 @@
         // Runs on page load
         function init()
         {
-        	// Set focus to text area
-        	document.getElementById("HPCTextarea").focus();
+         	// Get reference to text area
+        	var textarea = document.getElementById("HPCTextarea");
+        	
+        	// Set initial height and focus
+        	adjustHeight("HPCTextarea", 40);
+        	textarea.focus();
         }
 	            
     </script>
