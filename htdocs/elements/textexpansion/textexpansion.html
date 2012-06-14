@@ -17,7 +17,7 @@
 		    "vre" : "the Vitreoretinal emergency clinic",
 		    "aeh" : "Aravind Eye Hospital",
 		    "tp"  : "This patient",
-		    "<age>" : "63 years old"
+		    "/age" : "63 years old"
 		}
                             
         // Runs on page load
@@ -175,7 +175,7 @@
 			<p>Text is typed directly into the text box, which expands vertically to accommodate additional lines. If certain letter combinations are entered, they instantly expand. There are currently three types of expansion;</p>
 			<p>1. Abbreviations. A pre-determined set (customisable to the individual user). For example 'aeh', 'meh', 'vre'.</p>
 			<p>2. Periods of time. A number followed by a single letter (d, w, m or y) expands to a duration. For example '2m' becomes 'two months' (Based on a data entry concept from Aravind Eye Hospital).</p>
-			<p>3. Letter phrase codes. These are three letter codes which extract information from the database. For example &#60;age&#62; extracts the age of the patient.</p>
+			<p>3. Letter phrase codes. These are three letter codes preceded by a 'slash' character which extract information from the database. For example /age extracts the age of the patient.</p>
 			<p>Status: <b>Alpha</b></p>
 		</div> 
 
@@ -208,7 +208,7 @@
 		<div class="section" style="height:160px;" align="left">
 			<h4>Edit mode:</h4>
 						
-			<p>Text: (Try typing "tp, &#60;age&#62;, was seen in the vre at aeh 2d ago.")</p>
+			<p>Text: (Try typing "tp, /age, was seen in the vre at aeh 2d ago.")</p>
 			<textarea name="history" id="HPCTextarea" onkeydown="adjustHeight('HPCTextarea', 40);"></textarea>  				
 			
 		<!-- End of Edit mode section -->
