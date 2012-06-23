@@ -164,6 +164,7 @@ ED.isFirefox = function()
  * @property {Bool} completeLine Flag indicating whether to draw an additional line to the first PointInLine doodle
  * @property {Float} scale Scaling of transformation from canvas to doodle planes, preserving aspect ratio and maximising doodle plnae
  * @property {Float} globalScaleFactor Factor used to scale all added doodles to this drawing, defaults to 1
+ * @property {Int} Current value of scrollFactor
  * @param {Canvas} _canvas Canvas element 
  * @param {Eye} _eye Right or left eye
  * @param {String} _IDSuffix String suffix to identify HTML elements related to this drawing
@@ -176,6 +177,7 @@ ED.Drawing = function(_canvas, _eye, _IDSuffix, _isEditable, offset_x, offset_y,
 	this.eye = _eye;
 	this.IDSuffix = _IDSuffix;
     this.isEditable = _isEditable;
+    this.hoverTimer = null;
 	
 	this.convertToImage = (_to_image && !this.isEditable) ? true : false;
 	// Grab the canvas parent element
@@ -195,6 +197,10 @@ ED.Drawing = function(_canvas, _eye, _IDSuffix, _isEditable, offset_x, offset_y,
     this.newPointOnClick = false;
     this.completeLine = false;
     this.globalScaleFactor = 1;
+    this.scrollValue = 0;
+    
+    // Optional tooltip
+    this.canvasTooltip = document.getElementById('canvasTooltip');
     
     // Fit canvas making maximum use of doodle plane
     if (this.canvas.width >= this.canvas.height)
@@ -266,11 +272,22 @@ ED.Drawing = function(_canvas, _eye, _IDSuffix, _isEditable, offset_x, offset_y,
                                      var point = new ED.Point(e.pageX-offset.x,e.pageY-offset.y);
                                      drawing.mousemove(point); 
                                      }, false);
+
+        this.canvas.addEventListener('mouseover', function(e) {
+                                     var offset = ED.findOffset(this, offset_x, offset_y);
+                                     var point = new ED.Point(e.pageX-offset.x,e.pageY-offset.y);
+                                     drawing.mouseover(point);
+                                     }, false);
         
         this.canvas.addEventListener('mouseout', function(e) { 
                                      var offset = ED.findOffset(this, offset_x, offset_y);
                                      var point = new ED.Point(e.pageX-offset.x,e.pageY-offset.y);
                                      drawing.mouseout(point); 
+                                     }, false);
+        
+        this.canvas.addEventListener('mousewheel', function(e) {
+                                     e.preventDefault();
+                                     drawing.selectNextDoodle(e.wheelDelta);
                                      }, false);
         
         // iOS listeners
@@ -636,6 +653,9 @@ ED.Drawing.prototype.mousedown = function(_point)
  */
 ED.Drawing.prototype.mousemove = function(_point)
 {
+    // Start the hover timer (also resets it)
+    this.startHoverTimer(_point);
+    
 	// Only drag if mouse already down and a doodle selected
 	if (this.mouseDown && this.selectedDoodle != null)
 	{
@@ -724,6 +744,8 @@ ED.Drawing.prototype.mousemove = function(_point)
 							
 							// Work out difference, and change doodle's angle of rotation by this amount
 							var deltaAngle = newAngle - oldAngle;
+                            
+                            // Force numeric value of rotation ***TODO*** do this more generically
 							this.selectedDoodle.rotation += deltaAngle;
                             
                             // Adjust radius property
@@ -925,8 +947,22 @@ ED.Drawing.prototype.mouseup = function(_point)
  * @event
  * @param {Point} _point coordinates of mouse in canvas plane
  */  
+ED.Drawing.prototype.mouseover = function(_point)
+{
+    //console.log('mouseover');
+}
+
+/**
+ * Responds to mouse out event in canvas, stopping dragging operation
+ *
+ * @event
+ * @param {Point} _point coordinates of mouse in canvas plane
+ */  
 ED.Drawing.prototype.mouseout = function(_point)
 {
+    // Stop the hover timer
+    this.stopHoverTimer();
+    
 	// Reset flag and mode
 	this.mouseDown = false;
     this.mode = ED.Mode.None;
@@ -1018,6 +1054,144 @@ ED.Drawing.prototype.keydown = function(e)
 }
 
 /**
+ * Starts a timer to display a tooltip simulating hover. Called from the mousemove event
+ *
+ * @event
+ * @param {Point} _point coordinates of mouse in canvas plane
+ */
+ED.Drawing.prototype.startHoverTimer = function(_point)
+{
+    // Only show tooltips for editable drawings with a span element of id 'canvasTooltip'
+    if (this.isEditable && this.canvasTooltip != null)
+    {
+        // Stop any existing timer
+        this.stopHoverTimer();
+        
+        // Restart it 
+        var drawing = this;
+        this.hoverTimer = setTimeout(function() {drawing.hover(_point);}, 1000);
+    }
+}
+
+/**
+ * Stops the timer. Called by the mouseout event, and from the start of the startHoverTimer method
+ *
+ * @event
+ */
+ED.Drawing.prototype.stopHoverTimer = function()
+{
+    if (this.canvasTooltip != null)
+    {
+        // Reset any existing timer
+        clearTimeout(this.hoverTimer);
+        
+        // Clear text
+        this.canvasTooltip.innerHTML = "";
+        
+        // Hide hover
+        this.hideTooltip();
+    }
+}
+
+/**
+ * Triggered by the hover timer
+ *
+ * @event
+ * @param {Point} _point coordinates of mouse in canvas plane
+ */
+ED.Drawing.prototype.hover = function(_point)
+{
+    this.showTooltip(_point);
+}
+
+/**
+ * Shows a tooltip if present
+ *
+ * @event
+ * @param {Point} _point coordinates of mouse in canvas plane
+ */
+ED.Drawing.prototype.showTooltip = function(_point)
+{
+    // Get coordinates of mouse
+    var xAbs = _point.x;
+    var yAbs = _point.y;
+    if (this.canvas.offsetParent)
+    {
+        var obj = this.canvas;
+        var keepGoing;
+        
+        // The tooltip <span> has an absolute position (relative to the 1st parent element that has a position other than static)
+        do
+        {
+            // ***TODO*** is this a reliable way of getting the position attribute?
+        	var position = document.defaultView.getComputedStyle(obj,null).getPropertyValue('position');
+        	
+            // Flag to continue going up the tree
+        	keepGoing = false;
+        	
+            // Assign x and y values
+        	if (position != null) 
+        	{
+        		if (position == 'static')
+        		{
+        			keepGoing = true;
+        			xAbs += obj.offsetLeft;
+            		yAbs += obj.offsetTop;
+        		}
+        	}
+            
+            // Does parent exist, or is origin for absolute positioning
+            var keepGoing = keepGoing && (obj = obj.offsetParent) ;
+            
+        }
+        while (keepGoing);
+    }
+
+    // Adjust coodinates of tooltip
+    this.canvasTooltip.style.left = xAbs + "px";
+    this.canvasTooltip.style.top = (yAbs + 18) + "px";
+    
+    // Set flag to indicate success
+	var found = false;
+    
+    // Cycle through doodles from front to back doing hit test
+	for (var i = this.doodleArray.length - 1; i > -1; i--)
+	{
+        if (!found)
+		{
+            // Save context (draw method of each doodle may alter it)
+            this.context.save();
+            
+            // Successful hit test?
+            if (this.doodleArray[i].draw(_point))
+            {
+                this.canvasTooltip.innerHTML = this.doodleArray[i].tooltip();
+                found = true;
+            }
+            
+            // Restore context
+            this.context.restore();
+        }
+	}
+    
+    // Display tooltip
+    if (this.canvasTooltip.innerHTML.length > 0)
+    {
+        this.canvasTooltip.style.display = 'block';
+    }
+}
+
+/**
+ * Shows a tooltip
+ *
+ * @event
+ */
+ED.Drawing.prototype.hideTooltip = function()
+{
+    this.canvasTooltip.style.display = 'none';
+}
+
+/**
  * Moves selected doodle to front
  */
 ED.Drawing.prototype.moveToFront = function()
@@ -1105,7 +1279,7 @@ ED.Drawing.prototype.flipHor = function()
 ED.Drawing.prototype.deleteDoodle = function()
 {
 	// Should only be called if a doodle is selected, but check anyway
-	if (this.selectedDoodle != null)
+	if (this.selectedDoodle != null && this.selectedDoodle.canDelete)
 	{
 		// Go through doodles removing any that are selected (should be just one)
 		for (var i = 0; i < this.doodleArray.length; i++)
@@ -1198,7 +1372,6 @@ ED.Drawing.prototype.setParameterValueForClass= function(_parameter, _value, _cl
 
 /**
  * Deselect any selected doodles
- *
  */
 ED.Drawing.prototype.deselectDoodles = function()
 {
@@ -1212,6 +1385,71 @@ ED.Drawing.prototype.deselectDoodles = function()
     
     // Refresh drawing
     this.repaint();
+}
+
+/**
+ * Use scroll to select next doodle in array (From an idea of Adrian Duke)
+ */
+ED.Drawing.prototype.selectNextDoodle = function(_value)
+{
+    // Increment current scrollValue
+    this.scrollValue += _value;
+    
+    // Scroll direction
+    var up = _value > 0?true:false;
+    
+    // 'Damp' scroll speed by waiting for larger increments
+    var dampValue = 96;
+    
+    if (this.scrollValue > dampValue || this.scrollValue < -dampValue)
+    {
+        // Reset scrollValue
+        this.scrollValue = 0;
+        
+        // Index of selected doodle
+        var selectedIndex = -1;
+        
+        // Iterate through doodles
+        for (var i = 0; i < this.doodleArray.length; i++)
+        {
+            if (this.doodleArray[i].isSelected)
+            {
+                selectedIndex = i;
+                
+                // Deselected currently selected doodle
+                this.doodleArray[i].isSelected = false;
+            }
+            
+        }
+        
+        // If there is a selection, change it
+        if (selectedIndex >= 0)
+        {
+            // Change index
+            if (up)
+            {
+                selectedIndex++;
+                if (selectedIndex == this.doodleArray.length) selectedIndex = 0;
+            }
+            else
+            {
+                selectedIndex--;
+                if (selectedIndex < 0) selectedIndex = this.doodleArray.length - 1;
+            }
+            
+            // Wrap
+            if (selectedIndex == this.doodleArray.length)
+            {
+                
+            }
+            
+            this.doodleArray[selectedIndex].isSelected = true;
+            this.selectedDoodle = this.doodleArray[selectedIndex];
+        }
+        
+        // Refresh drawing
+        this.repaint();
+    }
 }
 
 /**
@@ -1254,11 +1492,16 @@ ED.Drawing.prototype.addDoodle = function(_className, rotation)
             this.doodleArray[i].isSelected = false;
         }
         
-        // Set default parameters
-        newDoodle.setParameterDefaults();
+        // Set default parameters (Don't need this since this method called in doodle constructor)
+        //newDoodle.setParameterDefaults();
         
-        if (typeof rotation != 'undefined') {
-            newDoodle.rotation = rotation;
+        if (typeof rotation != 'undefined')
+        {
+            if (rotation.match(/\./)) {
+                newDoodle.rotation = parseFloat(rotation);
+            } else {
+                newDoodle.rotation = parseInt(rotation);
+            }
         }
         
         // New doodles are selected by default
@@ -2109,6 +2352,8 @@ ED.Report.prototype.isMacOff = function()
  */
 ED.Doodle = function(_drawing, _originX, _originY, _radius, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order)
 {
+	this.canDelete = true;
+
 	// Function called as part of prototype assignment has no parameters passed
 	if (typeof(_drawing) != 'undefined')
 	{
@@ -2546,6 +2791,24 @@ ED.Doodle.prototype.groupDescription = function()
 ED.Doodle.prototype.description = function()
 {
 	return "";
+}
+
+/**
+ * Returns a string containing a text description of the doodle. String taken from language specific ED_Tooltips.js
+ *
+ * @returns {String} Tool tip text
+ */
+ED.Doodle.prototype.tooltip = function()
+{
+    var tip = ED.trans[this.className];
+    if (typeof(tip) != 'undefined')
+    {
+        return tip;
+    }
+    else
+    {
+        return "";
+    }
 }
 
 /**
