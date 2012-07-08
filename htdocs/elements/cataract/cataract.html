@@ -53,7 +53,7 @@
             {
                 drawingEdit.addDoodle('AntSeg');
                 drawingEdit.deselectDoodles();
-	            drawingEdit.drawAllDoodles();
+	            drawingEdit.repaint();
             }
 
 			// Get reference to the drawingDisplay canvas
@@ -72,7 +72,7 @@
 	            drawingDisplay.addDoodle('Bleb');
 	            drawingDisplay.addDoodle('PI');
 	            drawingDisplay.deselectDoodles();
-	            drawingDisplay.drawAllDoodles();
+	            drawingDisplay.repaint();
             }
                        
             // Function to detect changes in parameters (eg from mouse dragging)
@@ -86,7 +86,8 @@
                 // Check doodle of appropriate classname is selected
                 if (drawingEdit.selectedDoodle != null && drawingEdit.selectedDoodle.className == 'AntSeg')
                 {
-                    input.value = drawingEdit.selectedDoodle.getGrade();
+                    //input.value = drawingEdit.selectedDoodle.getGrade();
+                    input.value = drawingEdit.selectedDoodle.getParameter('grade');
                 }
                                     
                 // Nuclear cataract
@@ -101,7 +102,8 @@
                     // Check doodle of appropriate classname is selected
                     if (drawingEdit.selectedDoodle != null && drawingEdit.selectedDoodle.className == 'NuclearCataract')
                     {
-                        input.value = drawingEdit.selectedDoodle.getGrade();
+                        //input.value = drawingEdit.selectedDoodle.getGrade();
+                        input.value = drawingEdit.selectedDoodle.getParameter('grade');
                     }
                 }
                 
@@ -117,13 +119,15 @@
                     // Check doodle of appropriate classname is selected
                     if (drawingEdit.selectedDoodle != null && drawingEdit.selectedDoodle.className == 'CorticalCataract')
                     {
-                        input.value = drawingEdit.selectedDoodle.getGrade();
+                        //input.value = drawingEdit.selectedDoodle.getGrade();
+                        input.value = drawingEdit.selectedDoodle.getParameter('grade');
                     }
                 }
             }
 
         }
 
+/*
         function updateAntSeg(_value)
         {
             // Get reference to doodle
@@ -134,6 +138,7 @@
             
             drawingEdit.repaint();
         }
+*/
                     
         function updateNuclearCataract(_value)
         {
@@ -147,10 +152,12 @@
                 if (!doodle)
                 {
                     var doodle = drawingEdit.addDoodle('NuclearCataract');
+                    drawingEdit.deselectDoodles();
                 }
                 
                 // Set grade
-                doodle.setGrade(_value);
+                //doodle.setGrade(_value);
+                doodle.setParameterWithAnimation('grade', _value);
             }
             drawingEdit.repaint();
         }
@@ -225,7 +232,7 @@
         function togglePXE(_value)
         {
             var doodle = drawingEdit.firstDoodleOfClass('AntSeg');
-            doodle.setPXE(_value);
+            doodle.setParameter('pxe', _value);
             drawingEdit.repaint();
         }
                     
@@ -241,10 +248,12 @@
                 if (!doodle)
                 {
                     var doodle = drawingEdit.addDoodle('CorticalCataract');
+                    drawingEdit.deselectDoodles();
                 }
                 
                 // Set grade
-                doodle.setGrade(_value);
+                //doodle.setGrade(_value);
+                doodle.setParameterWithAnimation('grade', _value);
             }
             drawingEdit.repaint();
         }
@@ -301,7 +310,7 @@
 	                <button class="imgbutton" disabled="true" id="unlockRPS" title="Unlock" onclick="drawingEdit.unlock(); return false;" ><img src="../../graphics/unlock.gif" /></button>
 	                <br />
 
-	                <button class="imgbutton" id="NuclearCataractRPS" title="Nuclear Cataract" onclick="drawingEdit.addDoodle('NuclearCataract'); return false;" ><img src="../../graphics/NuclearCataract.gif" /></button>
+	                <button class="imgbutton" id="NuclearCataractRPS" title="Nuclear Cataract" onclick="drawingEdit. ('NuclearCataract'); return false;" ><img src="../../graphics/NuclearCataract.gif" /></button>
 	                <button class="imgbutton" id="CorticalCataractRPS" title="Cortical Cataract" onclick="drawingEdit.addDoodle('CorticalCataract'); return false;" ><img src="../../graphics/CorticalCataract.gif" /></button>
 	                <button class="imgbutton" id="PostSubcapCataractRPS" title="Posterior Subcapsular Cataract" onclick="drawingEdit.addDoodle('PostSubcapCataract'); return false;" ><img src="../../graphics/PostSubcapCataract.gif" /></button>
 	                <button class="imgbutton" id="PCIOLRPS" title="Posterior Chamber IOL" onclick="drawingEdit.addDoodle('PCIOL'); return false;" ><img src="../../graphics/PCIOL.gif" /></button>
@@ -309,7 +318,7 @@
 	                <button class="imgbutton" id="BlebRPS" title="Trabeculectomy bleb" onclick="drawingEdit.addDoodle('Bleb'); return false;" ><img src="../../graphics/Bleb.gif" /></button>
 	                <button class="imgbutton" id="PIRPS" title="Peripheral Iridectomy" onclick="drawingEdit.addDoodle('PI'); return false;" ><img src="../../graphics/PI.gif" /></button>
 	                <button class="imgbutton" id="FuchsRPS" title="Fuch's Endothelial Dystrophy" onclick="drawingEdit.addDoodle('Fuchs'); return false;" ><img src="../../graphics/Fuchs.gif" /></button>
-					<button class="imgbutton" id="RKRPS" title="Radial keratotomy" onclick="drawingEdit.addDoodle('RK'); return false;" ><img src="../../graphics/rk.gif" /></button> 
+					<button class="imgbutton" id="RKRPS" title="Radial keratotomy" onclick="drawingEdit.addDoodle('RK'); return false;" ><img src="../../graphics/RK.gif" /></button> 
 					<button class="imgbutton" id="LasikFlapRPS" title="Lasik Flap" onclick="drawingEdit.addDoodle('LasikFlap'); return false;" ><img src="../../graphics/LasikFlap.gif" /></button>                            
 					<button class="imgbutton" id="CornealScarRPS" title="Corneal Scar" onclick="drawingEdit.addDoodle('CornealScar'); return false;" ><img src="../../graphics/CornealScar.gif" /></button>
    				</div>
@@ -327,7 +336,8 @@
 						<tr>
 							<td align="left" width="40%"><p class="lable" >Pupil size:</p></td>
 							<td align="left" width="60%">
-								<select name="pupil" id="pupil" onclick="updateAntSeg(this.value);" >
+								<!-- <select name="pupil" id="pupil" onclick="updateAntSeg(this.value);" > -->
+								<select name="pupil" id="pupil" onchange="drawingEdit.setParameterForDoodleOfClass('AntSeg', 'grade', this.value);">
 						            <option value="Large">Large</option>
 						            <option value="Medium">Medium</option>
 						            <option value="Small">Small</option>
