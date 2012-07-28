@@ -4108,6 +4108,7 @@ ED.TrialLens.prototype.setPropertyDefaults = function()
  */
 ED.TrialLens.prototype.draw = function(_point)
 {
+    console.log(this.rotation);
 	// Get context
 	var ctx = this.drawing.context;
 	

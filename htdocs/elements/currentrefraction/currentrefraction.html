@@ -19,19 +19,28 @@
     	// Global variables
         var drawingRight;
         var drawingLeft;
+        var drawingRight2D;
+        var drawingLeft2D;
         var doodleRight;
         var doodleLeft;
-                                  
+        var doodleRight2D;
+        var doodleLeft2D;
+                                          
         // Runs on page load
         function init()
         {
             // Get reference to canvas elements
             var canvasRight = document.getElementById('canvasRight');
             var canvasLeft = document.getElementById('canvasLeft');
+            var canvasRight2D = document.getElementById('canvasRight2D');
                         
             // Create blank drawings
             drawingRight = new ED.Drawing(canvasRight, ED.eye.Right, 'RPS', true, 0, 0);
             drawingLeft = new ED.Drawing(canvasLeft, ED.eye.Left, 'LPS', true, 0, 0);
+            drawingRight2D = new ED.Drawing(canvasRight2D, ED.eye.Right, 'RPS2', true, 0, 0);
+            
+            // Adjust arrow delta to make arrow keys increment by 0.25D
+            ED.arrowDelta = 5;
             
 	        // Function to detect changes in parameters (eg from mouse dragging)
 	        drawingRight.parameterListener = function()
@@ -51,18 +60,76 @@
                     element.value = doodleLeft.getParameter('axis');
                 }
 	        }
-	                          
+
+	        drawingRight2D.parameterListener = function()
+	        {
+                //var element = document.getElementById('r_sph_int');
+                if (doodleRight2D != null)
+                {
+                	var sign = "-";
+                	if (parseFloat(doodleRight2D.getParameter('sphere')) > 0)
+                	{
+	                	sign = "+";
+                	}
+                	var intv = Math.abs(parseInt(doodleRight2D.getParameter('sphere')));
+                	var decv = (Math.abs(parseFloat(doodleRight2D.getParameter('sphere'))) - intv).toFixed(2).substring(1,4);
+                	
+                	document.getElementById('r_sph_sign').value = sign;
+                	document.getElementById('r_sph_int').value = intv;
+                	document.getElementById('r_sph_dec').value = decv;
+                	
+                	sign = "-";
+                	if (parseFloat(doodleRight2D.getParameter('cylinder')) > 0)
+                	{
+	                	sign = "+";
+                	}
+                	intv = Math.abs(parseInt(doodleRight2D.getParameter('cylinder')));
+                	decv = (Math.abs(parseFloat(doodleRight2D.getParameter('cylinder'))) - intv).toFixed(2).substring(1,4);
+                	
+                	document.getElementById('r_cyl_sign').value = sign;
+                	document.getElementById('r_cyl_int').value = intv;
+                	document.getElementById('r_cyl_dec').value = decv;
+                }
+	        }
+	        	                          
             // Add doodles
             drawingRight.addDoodle('TrialFrame');
             doodleRight = drawingRight.addDoodle('TrialLens');
             drawingLeft.addDoodle('TrialFrame');
             doodleLeft = drawingLeft.addDoodle('TrialLens');
+            drawingRight2D.addDoodle('GraphAxes');
+            doodleRight2D = drawingRight2D.addDoodle('Slider2D');
                         
             // Draw doodles
             drawingRight.deselectDoodles();
             drawingRight.drawAllDoodles();
             drawingLeft.deselectDoodles();
             drawingLeft.drawAllDoodles();
+            drawingRight2D.deselectDoodles();
+            drawingRight2D.drawAllDoodles();
+        }
+        
+        function rightChange()
+        {
+	        var intn = parseInt(document.getElementById('r_sph_int').value);
+	        var decn = parseFloat(document.getElementById('r_sph_dec').value);
+	        var num = intn + decn;
+	        if ((document.getElementById('r_sph_sign').value) == "-")
+	        {
+		        num = num * -1;
+	        }
+	        doodleRight2D.setParameter('sphere', num);
+	        
+	        intn = parseInt(document.getElementById('r_cyl_int').value);
+	        decn = parseFloat(document.getElementById('r_cyl_dec').value);
+	        num = intn + decn;
+	        if ((document.getElementById('r_cyl_sign').value) == "-")
+	        {
+		        num = num * -1;
+	        }
+	        doodleRight2D.setParameter('cylinder', num);
+	        
+	        drawingRight2D.repaint();
         }
 	            
     </script>
@@ -98,7 +165,7 @@
 		</div>
 
 		<!-- Edit mode section -->
-		<div class="section" style="height:290px;" align="left">
+		<div class="section" style="height:490px;" align="left">
 			<h4>Edit mode:</h4>
 						
 			<!-- Right eye -->
@@ -110,72 +177,72 @@
 				<br />
 				
 				<!-- Sphere -->
-				<select id="r_sph_sign" class="vaSelect">
-					<option selected="true">+</option>
-					<option>-</option>
+				<select id="r_sph_sign" class="vaSelect" onchange="rightChange();">
+					<option value="+"selected="true">+</option>
+					<option value="-">-</option>
 				</select>
-				<select id="r_sph_int" class="vaSelect">
-					<option selected="true">0</option>
-					<option>1</option>
-					<option>2</option>
-					<option>3</option>
-					<option>4</option>
-					<option>5</option>
-					<option>6</option>
-					<option>7</option>
-					<option>8</option>
-					<option>9</option>
-					<option>10</option>
-					<option>11</option>
-					<option>12</option>
-					<option>13</option>
-					<option>14</option>
-					<option>15</option>
-					<option>16</option>
-					<option>17</option>
-					<option>18</option>
-					<option>19</option>
-					<option>20</option>
+				<select id="r_sph_int" class="vaSelect" onchange="rightChange();">
+					<option value = 0 selected="true">0</option>
+					<option value = 1>1</option>
+					<option value = 2>2</option>
+					<option value = 3>3</option>
+					<option value = 4>4</option>
+					<option value = 5>5</option>
+					<option value = 6>6</option>
+					<option value = 7>7</option>
+					<option value = 8>8</option>
+					<option value = 9>9</option>
+					<option value = 10>10</option>
+					<option value = 11>11</option>
+					<option value = 12>12</option>
+					<option value = 13>13</option>
+					<option value = 14>14</option>
+					<option value = 15>15</option>
+					<option value = 16>16</option>
+					<option value = 17>17</option>
+					<option value = 18>18</option>
+					<option value = 19>19</option>
+					<option value = 20>20</option>
 				</select>
-				<select id="r_sph_dec" class="vaSelect">
-					<option selected="true">.00</option>
-					<option>.25</option>
-					<option>.50</option>
-					<option>.75</option>
+				<select id="r_sph_dec" class="vaSelect" onchange="rightChange();">
+					<option value = ".00" selected="true">.00</option>
+					<option value = ".25">.25</option>
+					<option value = ".50">.50</option>
+					<option value = ".75">.75</option>
 				</select>
 				<!-- Cylinder -->
-				<select id="r_cyl_sign" class="vaSelect">
-					<option selected="true">+</option>
-					<option>-</option>
+				<select id="r_cyl_sign" class="vaSelect" onchange="rightChange();">
+					<option value="+"selected="true">+</option>
+					<option value="-">-</option>
 				</select>
-				<select id="r_cyl_int" class="vaSelect">
-					<option selected="true">0</option>
-					<option>1</option>
-					<option>2</option>
-					<option>3</option>
-					<option>4</option>
-					<option>5</option>
-					<option>6</option>
-					<option>7</option>
-					<option>8</option>
-					<option>9</option>
-					<option>10</option>
-					<option>11</option>
-					<option>12</option>
-					<option>13</option>
-					<option>14</option>
-					<option>15</option>
-					<option>16</option>
-					<option>17</option>
-					<option>18</option>
-					<option>19</option>
-					<option>20</option>
+				<select id="r_cyl_int" class="vaSelect" onchange="rightChange();">
+					<option value = 0 selected="true">0</option>
+					<option value = 1>1</option>
+					<option value = 2>2</option>
+					<option value = 3>3</option>
+					<option value = 4>4</option>
+					<option value = 5>5</option>
+					<option value = 6>6</option>
+					<option value = 7>7</option>
+					<option value = 8>8</option>
+					<option value = 9>9</option>
+					<option value = 10>10</option>
+					<option value = 11>11</option>
+					<option value = 12>12</option>
+					<option value = 13>13</option>
+					<option value = 14>14</option>
+					<option value = 15>15</option>
+					<option value = 16>16</option>
+					<option value = 17>17</option>
+					<option value = 18>18</option>
+					<option value = 19>19</option>
+					<option value = 20>20</option>
 				</select>
-				<select id="r_cyl_dec" class="vaSelect">
-					<option selected="true">.00</option>
-					<option>.25</option>
-					<option>.50</option>
-					<option>.75</option>
+				<select id="r_cyl_dec" class="vaSelect" onchange="rightChange();">
+					<option value = ".00" selected="true">.00</option>
+					<option value = ".25">.25</option>
+					<option value = ".50">.50</option>
+					<option value = ".75">.75</option>
 				</select>
 				<br />
 
@@ -184,8 +251,8 @@
 				<span class="vaLable" style="width:50px;">Axis:</span>
 				<input type="text" id="axisRight" onchange="drawingRight.setParameterForDoodleOfClass('TrialLens', 'axis', this.value); return false;"/>
 				<br />
- 				<canvas id="canvasRight" class="canvasclass" width="160" height="160" style="margin-left:200px; margin-top:0px;"></canvas>
- 				<br />
+				<canvas id="canvasRight2D" class="canvasclass" width="160" height="160" style="margin-left:0px; margin-top:0px;" tabindex=1></canvas>
+ 				<canvas id="canvasRight" class="canvasclass" width="160" height="160" style="margin-left:50px; margin-top:0px;"></canvas>
 
 			</div>
 
