@@ -1,0 +1,344 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+
+    <!--   Javascript  -->	
+	<script language="JavaScript" src="../../scripts/elements.js" type="text/javascript"></script>
+	
+	<!-- needs EyeDraw 2 -->
+    <script language="JavaScript" src="js/ED_Drawing.js" type="text/javascript"></script>
+    <script language="JavaScript" src="js/ED_MedicalRetina.js" type="text/javascript"></script>
+    <script language="JavaScript" src="js/ED_Tooltips.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript">
+
+	    // Unique variable assigned to the drawing
+	    var drawingEdit;
+	    var drawingDisplay;
+	        
+        // Runs on page load
+        function init()
+        {
+            // Get reference to the drawingEdit canvas
+            var canvasEdit = document.getElementById('canvasEdit');
+            
+            // Create a drawingEdit
+            drawingEdit = new ED.Drawing(canvasEdit, ED.eye.Right, 'RPS', true, 0, 0);
+            
+            // Instantiate a controller object
+            var controller = new eyeDrawController(drawingEdit);
+            
+            // Preload any images
+            drawingEdit.preLoadImagesFrom('../../graphics/');
+            
+            // Set focus to canvasEdit element
+            canvasEdit.focus();
+        }
+        
+            
+        // Controller class
+        function eyeDrawController(_drawing)
+        {
+            // Assign controller properties
+            this.drawing = _drawing;
+            
+            // Specify call back function
+            this.callBack = callBack;
+            
+            // Register for notifications with drawing
+            this.drawing.registerForNotifications(this, 'callBack', []);
+            
+            // Method called for notification
+            function callBack(_messageArray)
+            {
+                //console.log("Notified for event: " + _messageArray['eventName']);
+
+                switch (_messageArray['eventName'])
+                {
+                    // Eye draw image files all loaded
+                    case 'loaded':
+                    	var doodle = this.drawing.addDoodle('PostPole', {cdRatio:'0.5'});                    
+                        this.drawing.deselectDoodles();
+                        break;
+                    case 'doodleAdded':
+                        gradeCalculator();
+                        break;
+                    case 'doodleDeleted':
+                        gradeCalculator();
+                        break;
+                    case 'parameter':
+                        gradeCalculator();
+                        break;
+                    default:
+                    //console.log('Unhandled notification for message: ' + _messageArray['eventName']);
+                        break;
+                }
+            }
+        }
+        
+        function gradeCalculator()
+        {
+            var doodleArray = drawingEdit.doodleArray;
+            
+            // Array to store counts of doodles of relevant classes
+            var countArray = new Array();
+            countArray['Microaneurysm'] = 0;
+            countArray['HardExudate'] = 0;
+            countArray['Circinate'] = 0;
+            countArray['BlotHaemorrhage'] = 0;
+            countArray['PreRetinalHaemorrhage'] = 0;
+            countArray['CottonWoolSpot'] = 0;
+            countArray['DiabeticNV'] = 0;
+            countArray['PRPPostPole'] = 0;
+            
+            var retinopathy = "R0"
+            var maculopathy = "M0";
+            
+            // Get reference to PostPole doodle
+            var postPole = drawingEdit.lastDoodleOfClass('PostPole');
+            
+            if (postPole)
+            {
+                // Iterate through doodles counting, and checking location
+                for (var i = 0; i < doodleArray.length; i++)
+                {
+                    var doodle = doodleArray[i];
+                    countArray[doodle.className]++;
+                    
+                    // Exudates within one disk diameter of fovea
+                    if (doodle.className == 'HardExudate' || doodle.className == 'Circinate')
+                    {
+                        if (postPole.isWithinDiskDiametersOfFovea(doodle, 1)) maculopathy = 'M1';
+                    }
+                }
+                
+                // R1 (Background)
+                if (countArray['Microaneurysm'] > 0 || countArray['BlotHaemorrhage'] > 0 || countArray['HardExudate'] > 0 || countArray['CottonWoolSpot'] > 0)
+                {
+                    retinopathy = "R1";
+                }
+                
+                // R2
+                if (countArray['BlotHaemorrhage'] > 2)
+                {
+                    retinopathy = "R2";                        
+                }
+                
+                // R3
+                if (countArray['PRPPostPole'] > 0)
+                {
+                    retinopathy = "R3S";
+                }
+                if (countArray['DiabeticNV'] > 0 || countArray['PreRetinalHaemorrhage'] > 0 )
+                {
+                    retinopathy = "R3A";
+                }
+                
+                // Report it
+                document.getElementById('retGrade').value = retinopathy;
+                gradeChange(document.getElementById('retGrade'));
+                document.getElementById('macGrade').value = maculopathy;
+                gradeChange(document.getElementById('macGrade'));
+            }
+        }
+
+        
+        function gradeChange(_obj)
+        {
+	        var id = _obj.id;
+	        var value = _obj.value;
+	        
+	        var retDesc = "";
+	        var macDesc = "";
+	        
+	        switch (value)
+	        {
+		        case 'R0':
+		        	retDesc = "No retinopathy";
+		        	document.getElementById('retGradeDesc').innerHTML = retDesc;		        	
+		        	break;
+		        case 'R1':
+		        	retDesc = "Background retinopathy<br/>- Microaneurysms<br/>- Retinal haemorrhages<br/>- Venous loop<br/>- Any exudate in the presence of other non-referable features of DR<br/>- Any number of   cotton wool spots (CWS) in the presence of other non-referable features of DR";
+		        	document.getElementById('retGradeDesc').innerHTML = retDesc;
+		        	break;
+		        case 'R2':
+		        	retDesc = "Pre-proliferative retinopathy<br/>- Venous beading<br/>- Venous reduplication<br/>- Multiple blot haemorrhages<br/>-Intraretinal microvascular abnormality (IRMA)";
+		        	document.getElementById('retGradeDesc').innerHTML = retDesc;
+		        	break;
+		        case 'R3A':
+		        	retDesc = "Active Proliferative Retinopathy<br/>- New vessels on disc (NVD)<br/>- New vessels elsewhere (NVE)<br/>- Pre-retinal or vitreous haemorrhage<br/>- Pre-retinal fibrosis +/- tractional retinal detachment";
+		        	document.getElementById('retGradeDesc').innerHTML = retDesc;
+		        	break
+		        case 'R3S':
+		        	retDesc = "Evidence of Peripheral Retinal Laser Treatment AND<br/>Stable retina from photograph taken at or shortly after discharge from the Hospital Eye service (HES)";
+		        	document.getElementById('retGradeDesc').innerHTML = retDesc;
+		        	break;
+		        case 'U':
+		        	retDesc = "Ungradable";
+		        	document.getElementById('retGradeDesc').innerHTML = retDesc;
+		        	break;
+		        case 'M0':
+		        	macDesc = "No maculopathy";
+		        	document.getElementById('macGradeDesc').innerHTML = macDesc;
+		        	break;
+		        case 'M1':
+		        	macDesc = "Any of the following:<br/>- Exudate within 1 disc diameter (DD) of the centre of the fovea<br/>- Group of exudates within the macula<br/>- Retinal thickening within 1DD of the centre of the fovea (if stereo available)<br/>- Any microaneurysm or haemorrhage within 1DD of the centre of the fovea only if associated with a best VA of <= 6/12 (if no stereo)";
+		        	document.getElementById('macGradeDesc').innerHTML = macDesc;
+		        	break;
+		        default:
+		        	break;
+	        }
+        }
+         
+    </script>
+
+</head>
+
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+
+		<!-- Logo -->
+		<img id="logo" src="../../images/OpenEyes_logo.png" align="left" alt="OpenEyes - an open source electronic patient record" />
+		
+		<!-- Navigation bar -->
+		<div id="main_nav">
+			<ul>
+				<li><a id="home" href="../../index.html">Home</a></li>
+				<li><a id="news" href="../../news.html">News</a></li>
+				<li><a id="screenshots" href="../../screenshots.html">Screenshots</a></li>
+				<li><a id="documentation" href="../../documentation.html">Documentation</a></li>
+				<li><a id="contributors" href="../../contributors.html">Contributors</a></li>
+				<li><a id="development_selected" href="../../development.html">Development</a></li>
+				<li><a id="contact" href="../../contact.html">Contact us</a></li>
+			</ul>
+		</div>
+		
+		<!-- Element Title and Description -->
+		<h2>NSC grade</h2>
+		<div class="section">
+			<h4>Description:</h4>
+			<p>This element records the NSC grade of diabetic retinopathy, displaying a non-editable description to remind users of the details of the classification</p>
+			<p>Status: <b>Alpha</b></p>
+		</div>
+
+		<!-- Edit mode section -->
+		<div class="section" style="height:520px;" align="left">
+			<h4>Edit mode:</h4>
+						
+			<!-- Right eye -->
+			<div style ="width: 540px; height: 160px; float:left;">
+				<p>Drawing:</p>			
+	            	<!-- Doodle toolbar -->
+					<div class="toolbar">
+						<button class="imgbutton" disabled="true" id="moveToFrontRPS" title="Move to front" onclick="drawingEdit.moveToFront(); return false;" ><img src="../../graphics/moveToFront.gif"/></button>
+		                <button class="imgbutton" disabled="true" id="moveToBackRPS" title="Move to back" onclick="drawingEdit.moveToBack(); return false;" ><img src="../../graphics/moveToBack.gif" /></button>
+		                <button class="imgbutton" disabled="true" id="deleteDoodleRPS" title="Delete" onclick="drawingEdit.deleteDoodle(); return false;" ><img src="../../graphics/delete.gif" /></button>
+		                <button class="imgbutton" disabled="true" id="lockRPS" title="Lock" onclick="drawingEdit.lock(); return false;" ><img src="../../graphics/lock.gif" /></button>
+		                <button class="imgbutton" disabled="true" id="unlockRPS" title="Unlock" onclick="drawingEdit.unlock(); return false;" ><img src="../../graphics/unlock.gif" /></button>
+		                <br />
+		                
+                        <button class="imgbutton" title="Microaneurysm" onclick="drawingEdit.addDoodle('Microaneurysm'); return false;" ><img src="../../graphics/Microaneurysm.gif" /></button> 
+                        <button class="imgbutton" title="Hard exudate" onclick="drawingEdit.addDoodle('HardExudate'); return false;" ><img src="../../graphics/HardExudate.gif" /></button>
+                        <button class="imgbutton" title="Circinate" onclick="drawingEdit.addDoodle('Circinate'); return false;" ><img src="../../graphics/Circinate.gif" /></button>
+                        <button class="imgbutton" title="Blot haemorrhage" onclick="drawingEdit.addDoodle('BlotHaemorrhage'); return false;" ><img src="../../graphics/BlotHaemorrhage.gif" /></button>
+                        <button class="imgbutton" title="Pre-retinal haemorrhage" onclick="drawingEdit.addDoodle('PreRetinalHaemorrhage'); return false;" ><img src="../../graphics/PreRetinalHaemorrhage.gif" /></button>
+                        <button class="imgbutton" title="Cotton wool spot" onclick="drawingEdit.addDoodle('CottonWoolSpot'); return false;" ><img src="../../graphics/CottonWoolSpot.gif" /></button>
+                        <!--<button class="imgbutton" title="Cystoid macular oedema" onclick="drawingEdit.addDoodle('CystoidMacularOedema'); return false;" ><img src="../../graphics/CystoidMacularOedema.gif" /></button>-->
+                        <button class="imgbutton" title="Diabetic new vessles" onclick="drawingEdit.addDoodle('DiabeticNV'); return false;" ><img src="../../graphics/DiabeticNV.gif" /></button>
+                        <button class="imgbutton" title="Panretinal photocoagulation" onclick="drawingEdit.addDoodle('PRPPostPole'); return false;" ><img src="../../graphics/PRPPostPole.gif" /></button>
+                        <br />
+	                    
+	   				</div>
+
+					<!-- Canvas -->
+					<div style='float:left; width: 320px; height: 320px;'>
+		                <canvas id="canvasEdit" class="canvasclass" width="300" height="300" tabindex="1"></canvas>
+					</div>
+					
+			</div>
+
+			<!-- Left eye -->
+			<div style ="width: 540px; height: 160px; float:left;">
+			
+				<!-- Grading selects -->
+				<p>Retinopathy:</p>
+		        <select style="width:100px;" id="retGrade" onchange="gradeChange(this);">
+                    <option value="R0">R0</option>
+                    <option value="R1">R1</option>
+                    <option value="R2">R2</option>
+                    <option value="R3S">R3S</option>
+                    <option value="R3A">R3A</option>
+                    <option value="U">U</option>
+                </select>
+                <br />
+                <p style="margin-top:10px; width:400px; height:100px;" id="retGradeDesc">No retinopathy</p>
+                <br />
+
+				<p>Maculopathy:</p>
+                <select style="width:100px;" id="macGrade" onchange="gradeChange(this);">
+                    <option value="M0">M0</option>
+                    <option value="M1">M1</option>
+                </select>
+                <br />
+                <p style="margin-top:10px; width:400px; height:100px;" id="macGradeDesc">No maculopathy</p>
+                <br />           
+					
+			</div>
+			
+		<!-- End of Edit mode section -->
+		</div>					
+
+		<!-- Display mode section -->
+		<div class="section" style="height:110px;" align="left">
+			<h4>Display mode:</h4>
+			
+			<!-- Right eye -->
+			<div style ="width:540px; float:left;">
+				<p>Right eye:</p>
+
+
+			</div>
+			
+			<!-- Left eye -->
+			<div style ="width:540px; float:left;">
+				<p>Left eye:</p>
+				
+			</div>				
+
+		<!-- End of Display mode section -->
+		</div>	
+
+		<!-- Steering Group -->			
+		<div class="section" align="left">
+			<h4>Steering Group:</h4>
+			<p>Cataract</p>
+		</div>
+		
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26543772-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>
