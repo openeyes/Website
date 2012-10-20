@@ -54,8 +54,8 @@
             // Wait for drawingEdit object to be ready before adding objects or drawingEdits
             drawingDisplay.onLoaded = function()
             {
-                opticCup = drawingDisplay.addDoodle('OpticCup');
-                drawingDisplay.addDoodle('OpticDisk');
+                opticCup = drawingDisplay.addDoodle('OpticDisk');
+                //drawingDisplay.addDoodle('PeripapillaryAtrophy');
                 opticCup.toggleMode();
                 opticCup.setHandleProperties();
                 opticCup.squiggleArray[0].pointsArray[0].x = -160;
@@ -73,8 +73,8 @@
     
     	function editCanvasInit()
     	{
-            opticCupEdit = drawingEdit.addDoodle('OpticCup');
-	        drawingEdit.addDoodle('OpticDisk');
+            opticCupEdit = drawingEdit.addDoodle('OpticDisk');
+	        drawingEdit.addDoodle('PeripapillaryAtrophy');
             drawingEdit.deselectDoodles();
     	}
     	
