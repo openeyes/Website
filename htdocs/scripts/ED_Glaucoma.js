@@ -1834,11 +1834,11 @@ ED.OpticDisk.prototype.setHandleProperties = function()
  */
 ED.NerveFibreDefect = function(_drawing, _originX, _originY, _radius, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order)
 {
-	// Call super-class constructor
-	ED.Doodle.call(this, _drawing, _originX, _originY, _radius, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order); 
-	
 	// Set classname
 	this.className = "NerveFibreDefect";
+	
+	// Call super-class constructor
+	ED.Doodle.call(this, _drawing, _originX, _originY, _radius, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order); 
 }
 
 /**
@@ -1882,8 +1882,24 @@ ED.NerveFibreDefect.prototype.setParameterDefaults = function()
 {
     this.arc = 20 * Math.PI/180;
     this.apexY = -460;
-    //this.rotation = (this.drawing.eye == ED.eye.Right)?-Math.PI/4:Math.PI/4;
-    this.rotation = Math.PI/4;
+    
+    var doodle = this.drawing.lastDoodleOfClass(this.className);
+    if (doodle)
+    {
+    	if (this.drawing.eye == ED.eye.Right)
+    	{
+    		this.rotation = doodle.rotation + 2/3 * Math.PI;
+    	}
+    	else
+    	{
+	    	this.rotation = doodle.rotation - 2/3 * Math.PI;
+    	}
+
+    }
+    else
+    {
+    	this.rotation = (this.drawing.eye == ED.eye.Right)?(7 * Math.PI/6):(5 * Math.PI/6);
+    }
 }
 
 /**
@@ -1996,11 +2012,11 @@ ED.NerveFibreDefect.prototype.description = function()
  */
 ED.DiskHaemorrhage = function(_drawing, _originX, _originY, _radius, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order)
 {
-	// Call super-class constructor
-	ED.Doodle.call(this, _drawing, _originX, _originY, _radius, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order); 
-	
 	// Set classname
 	this.className = "DiskHaemorrhage";
+	
+	// Call super-class constructor
+	ED.Doodle.call(this, _drawing, _originX, _originY, _radius, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order); 
 }
 
 /**
@@ -2035,15 +2051,22 @@ ED.DiskHaemorrhage.prototype.setParameterDefaults = function()
     this.arc = 10 * Math.PI/180;
     this.apexY = -350;
     
-    // Make it 30 degress to last one of same class
     var doodle = this.drawing.lastDoodleOfClass(this.className);
     if (doodle)
     {
-        this.rotation = doodle.rotation + Math.PI/6;
+    	if (this.drawing.eye == ED.eye.Right)
+    	{
+    		this.rotation = doodle.rotation + 2/3 * Math.PI;
+    	}
+    	else
+    	{
+	    	this.rotation = doodle.rotation - 2/3 * Math.PI;
+    	}
+
     }
     else
     {
-        this.rotation = (this.drawing.eye == ED.eye.Right)?-Math.PI/4:Math.PI/4;
+    	this.rotation = (this.drawing.eye == ED.eye.Right)?(7 * Math.PI/6):(5 * Math.PI/6);
     }
 }
 
@@ -3732,9 +3755,9 @@ ED.Patch.prototype.description = function()
 }
 
 /**
- * PeripapillaryAtrophyPit Acquired Pit of Optic Nerve (APON)
+ * OpticDiskPit Acquired Pit of Optic Nerve (APON)
  *
- * @class PeripapillaryAtrophyPit
+ * @class OpticDiskPit
  * @property {String} className Name of doodle subclass
  * @param {Drawing} _drawing
  * @param {Int} _originX
@@ -3748,26 +3771,26 @@ ED.Patch.prototype.description = function()
  * @param {Float} _rotation
  * @param {Int} _order
  */
-ED.PeripapillaryAtrophyPit = function(_drawing, _originX, _originY, _radius, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order)
+ED.OpticDiskPit = function(_drawing, _originX, _originY, _radius, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order)
 {
 	// Call superclass constructor
 	ED.Doodle.call(this, _drawing, _originX, _originY, _radius, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order);
 	
 	// Set classname
-	this.className = "PeripapillaryAtrophyPit";
+	this.className = "OpticDiskPit";
 }
 
 /**
  * Sets superclass and constructor
  */
-ED.PeripapillaryAtrophyPit.prototype = new ED.Doodle;
-ED.PeripapillaryAtrophyPit.prototype.constructor = ED.PeripapillaryAtrophyPit;
-ED.PeripapillaryAtrophyPit.superclass = ED.Doodle.prototype;
+ED.OpticDiskPit.prototype = new ED.Doodle;
+ED.OpticDiskPit.prototype.constructor = ED.OpticDiskPit;
+ED.OpticDiskPit.superclass = ED.Doodle.prototype;
 
 /**
  * Sets handle attributes
  */
-ED.PeripapillaryAtrophyPit.prototype.setHandles = function()
+ED.OpticDiskPit.prototype.setHandles = function()
 {
     this.handleArray[2] = new ED.Handle(null, true, ED.Mode.Scale, false);
 }
@@ -3775,7 +3798,7 @@ ED.PeripapillaryAtrophyPit.prototype.setHandles = function()
 /**
  * Sets default dragging attributes
  */
-ED.PeripapillaryAtrophyPit.prototype.setPropertyDefaults = function()
+ED.OpticDiskPit.prototype.setPropertyDefaults = function()
 {
 	this.isSelectable = true;
 	this.isScaleable = true;
@@ -3786,7 +3809,7 @@ ED.PeripapillaryAtrophyPit.prototype.setPropertyDefaults = function()
 /**
  * Sets default parameters
  */
-ED.PeripapillaryAtrophyPit.prototype.setParameterDefaults = function()
+ED.OpticDiskPit.prototype.setParameterDefaults = function()
 {
     this.originY = 130;
     this.apexY = 0;
@@ -3812,13 +3835,13 @@ ED.PeripapillaryAtrophyPit.prototype.setParameterDefaults = function()
  *
  * @param {Point} _point Optional point in canvas plane, passed if performing hit test
  */
-ED.PeripapillaryAtrophyPit.prototype.draw = function(_point)
+ED.OpticDiskPit.prototype.draw = function(_point)
 {
 	// Get context
 	var ctx = this.drawing.context;
     
 	// Call draw method in superclass
-	ED.PeripapillaryAtrophyPit.superclass.draw.call(this, _point);
+	ED.OpticDiskPit.superclass.draw.call(this, _point);
     
 	// Boundary path
 	ctx.beginPath();
@@ -3864,7 +3887,7 @@ ED.PeripapillaryAtrophyPit.prototype.draw = function(_point)
  *
  * @returns {String} Description of doodle
  */
-ED.PeripapillaryAtrophyPit.prototype.description = function()
+ED.OpticDiskPit.prototype.description = function()
 {
     var returnString = "Acquired pit of optic nerve";
     
