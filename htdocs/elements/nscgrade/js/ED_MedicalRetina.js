@@ -2126,4 +2126,359 @@ ED.FocalLaser.prototype.draw = function(_point)
 	return this.isClicked;
 }
 
+/**
+ * IRMA
+ *
+ * @class IRMA
+ * @property {String} className Name of doodle subclass
+ * @param {Drawing} _drawing
+ * @param {Int} _originX
+ * @param {Int} _originY
+ * @param {Float} _radius
+ * @param {Int} _apexX
+ * @param {Int} _apexY
+ * @param {Float} _scaleX
+ * @param {Float} _scaleY
+ * @param {Float} _arc
+ * @param {Float} _rotation
+ * @param {Int} _order
+ */
+ED.IRMA = function(_drawing, _originX, _originY, _radius, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order)
+{
+	// Call superclass constructor
+	ED.Doodle.call(this, _drawing, _originX, _originY, _radius, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order);
+	
+	// Set classname
+	this.className = "IRMA";
+}
 
+/**
+ * Sets superclass and constructor
+ */
+ED.IRMA.prototype = new ED.Doodle;
+ED.IRMA.prototype.constructor = ED.IRMA;
+ED.IRMA.superclass = ED.Doodle.prototype;
+
+/**
+ * Sets handle attributes
+ */
+ED.IRMA.prototype.setHandles = function()
+{
+    this.handleArray[2] = new ED.Handle(null, true, ED.Mode.Scale, true);
+}
+
+/**
+ * Set default properties
+ */
+ED.IRMA.prototype.setPropertyDefaults = function()
+{
+    // Update component of validation array for simple parameters
+    this.parameterValidationArray['scaleX']['range'].setMinAndMax(+1, +1.5);
+    this.parameterValidationArray['scaleY']['range'].setMinAndMax(+1, +1.5);
+}
+
+/**
+ * Sets default parameters
+ */
+ED.IRMA.prototype.setParameterDefaults = function()
+{
+    this.setOriginWithDisplacements(100, 100);
+}
+
+/**
+ * Draws doodle or performs a hit test if a Point parameter is passed
+ *
+ * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+ */
+ED.IRMA.prototype.draw = function(_point)
+{
+	// Get context
+	var ctx = this.drawing.context;
+
+	// Call draw method in superclass
+	ED.IRMA.superclass.draw.call(this, _point);
+    
+	// Boundary path
+	ctx.beginPath();
+    
+    // Move to centre
+    ctx.moveTo(0,0);
+
+    // Create curves for the IRMA
+    ctx.bezierCurveTo(-30, 0, -70, -30, -50, -50);    
+    ctx.bezierCurveTo(-30, -70, -20, -40, 0, -40);
+    ctx.bezierCurveTo(20, -40, 30, -70, 50, -50);
+    ctx.bezierCurveTo(70, -30, 30, 0, 0, 0);
+       
+    //ctx.closePath(); 
+
+    // Transparent fill
+    ctx.fillStyle = "rgba(100, 100, 100, 0)";
+	
+	// Set attributes
+	ctx.lineWidth = 3;
+	ctx.strokeStyle =  "red";
+	
+	// Draw boundary path (also hit testing)
+	this.drawBoundary(_point);
+    
+    // Coordinates of handles (in canvas plane)
+	this.handleArray[2].location = this.transform.transformPoint(new ED.Point(50, -70));
+	
+	// Draw handles if selected
+	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
+    
+	// Return value indicating successful hittest
+	return this.isClicked;
+}
+
+/**
+ * Macular Thickening
+ *
+ * @class MacularThickening
+ * @property {String} className Name of doodle subclass
+ * @param {Drawing} _drawing
+ * @param {Int} _originX
+ * @param {Int} _originY
+ * @param {Float} _radius
+ * @param {Int} _apexX
+ * @param {Int} _apexY
+ * @param {Float} _scaleX
+ * @param {Float} _scaleY
+ * @param {Float} _arc
+ * @param {Float} _rotation
+ * @param {Int} _order
+ */
+ED.MacularThickening = function(_drawing, _originX, _originY, _radius, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order)
+{
+	// Set classname
+	this.className = "MacularThickening";
+    
+	// Call superclass constructor
+	ED.Doodle.call(this, _drawing, _originX, _originY, _radius, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order);
+}
+
+/**
+ * Sets superclass and constructor
+ */
+ED.MacularThickening.prototype = new ED.Doodle;
+ED.MacularThickening.prototype.constructor = ED.MacularThickening;
+ED.MacularThickening.superclass = ED.Doodle.prototype;
+
+/**
+ * Sets handle attributes
+ */
+ED.MacularThickening.prototype.setHandles = function()
+{
+    this.handleArray[4] = new ED.Handle(null, true, ED.Mode.Apex, false);
+}
+
+/**
+ * Set default properties
+ */
+ED.MacularThickening.prototype.setPropertyDefaults = function()
+{
+    // Update component of validation array for simple parameters
+    this.parameterValidationArray['apexX']['range'].setMinAndMax(+100, +400);
+    this.parameterValidationArray['apexY']['range'].setMinAndMax(-0, +0);
+}
+
+/**
+ * Sets default parameters (Only called for new doodles)
+ * Use the setParameter function for derived parameters, as this will also update dependent variables
+ */
+ED.MacularThickening.prototype.setParameterDefaults = function()
+{
+	this.rotation = -Math.PI/4;
+	this.apexX = 100;
+	this.apexY = 0;
+	
+    this.setOriginWithDisplacements(0, 150);
+}
+
+/**
+ * Draws doodle or performs a hit test if a Point parameter is passed
+ *
+ * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+ */
+ED.MacularThickening.prototype.draw = function(_point)
+{
+	// Get context
+	var ctx = this.drawing.context;
+	
+	// Call draw method in superclass
+	ED.MacularThickening.superclass.draw.call(this, _point);
+    
+    // Exudate radius
+    var r = Math.sqrt(this.apexX * this.apexX + this.apexY * this.apexY);
+    
+	// Boundary path
+	ctx.beginPath();
+    
+	// Exudate
+	ctx.arc(0, 0, r, 0, 2 * Math.PI, true);
+    
+	// Set attributes
+	ctx.lineWidth = 3;
+	ctx.strokeStyle = "rgba(255, 255, 255, 0)";
+    ctx.fillStyle = "rgba(255, 255, 255, 0)";
+	
+	// Draw boundary path (also hit testing)
+	this.drawBoundary(_point);
+	
+	// Other paths and drawing here
+	if (this.drawFunctionMode == ED.drawFunctionMode.Draw)
+	{
+		// Start path
+		ctx.beginPath();
+		
+		// Spacing of lines
+		var d = 30;
+		
+		// Draw central line
+		ctx.moveTo(-r, 0);
+		ctx.lineTo(r, 0);
+						
+		// Draw other lines
+		for (var s = -1; s < 2; s += 2)
+		{
+			for (var y = d; y < r; y += d)
+			{
+				var x = this.xForY(r, y);
+				ctx.moveTo(-x, s * y);
+				ctx.lineTo(x, s * y);
+			}
+		}
+		
+		// Set attributes
+		ctx.lineWidth = 15;
+		ctx.lineCap = "round";
+		ctx.strokeStyle = "rgba(200, 200, 200, 0.75)";
+		
+		// Draw lines
+		ctx.stroke();	
+	}
+    
+    // Coordinates of handles (in canvas plane)
+	this.handleArray[4].location = this.transform.transformPoint(new ED.Point(this.apexX, this.apexY));
+	
+	// Draw handles if selected
+	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
+    
+	// Return value indicating successful hittest
+	return this.isClicked;
+}
+
+ED.MacularThickening.prototype.xForY = function(_r, _y)
+{
+	return Math.sqrt(_r * _r - _y * _y);
+}
+
+/**
+ * TractionRetinalDetachment
+ *
+ * @class TractionRetinalDetachment
+ * @property {String} className Name of doodle subclass
+ * @param {Drawing} _drawing
+ * @param {Int} _originX
+ * @param {Int} _originY
+ * @param {Float} _radius
+ * @param {Int} _apexX
+ * @param {Int} _apexY
+ * @param {Float} _scaleX
+ * @param {Float} _scaleY
+ * @param {Float} _arc
+ * @param {Float} _rotation
+ * @param {Int} _order
+ */
+ED.TractionRetinalDetachment = function(_drawing, _originX, _originY, _radius, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order)
+{
+	// Call superclass constructor
+	ED.Doodle.call(this, _drawing, _originX, _originY, _radius, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order);
+	
+	// Set classname
+	this.className = "TractionRetinalDetachment";
+}
+
+/**
+ * Sets superclass and constructor
+ */
+ED.TractionRetinalDetachment.prototype = new ED.Doodle;
+ED.TractionRetinalDetachment.prototype.constructor = ED.TractionRetinalDetachment;
+ED.TractionRetinalDetachment.superclass = ED.Doodle.prototype;
+
+/**
+ * Sets handle attributes
+ */
+ED.TractionRetinalDetachment.prototype.setHandles = function()
+{
+    this.handleArray[2] = new ED.Handle(null, true, ED.Mode.Scale, true);
+}
+
+/**
+ * Set default properties
+ */
+ED.TractionRetinalDetachment.prototype.setPropertyDefaults = function()
+{
+	this.isSqueezable = true;
+	this.addAtBack = true;
+	
+    // Update component of validation array for simple parameters
+    this.parameterValidationArray['scaleX']['range'].setMinAndMax(+0.5, +1.5);
+    this.parameterValidationArray['scaleY']['range'].setMinAndMax(+0.5, +1.5);
+}
+
+/**
+ * Sets default parameters
+ */
+ED.TractionRetinalDetachment.prototype.setParameterDefaults = function()
+{
+    this.setOriginWithDisplacements(200, 100);
+}
+
+/**
+ * Draws doodle or performs a hit test if a Point parameter is passed
+ *
+ * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+ */
+ED.TractionRetinalDetachment.prototype.draw = function(_point)
+{
+	// Get context
+	var ctx = this.drawing.context;
+
+	// Call draw method in superclass
+	ED.TractionRetinalDetachment.superclass.draw.call(this, _point);
+    
+	// Boundary path
+	ctx.beginPath();
+    
+    // Move to centre
+    var r = 60;
+    var s = 150;
+    ctx.moveTo(-s, -s);
+
+    // Create curves for the TractionRetinalDetachment
+    ctx.bezierCurveTo(-r, -r, r, -r, s, -s);    
+    ctx.bezierCurveTo(r, -r, r, r, s, s);
+    ctx.bezierCurveTo(r, r, -r, r, -s, s);
+    ctx.bezierCurveTo(-r, r, -r, -r, -s, -s);
+         
+    ctx.closePath(); 
+	
+	// Set attributes
+	ctx.lineWidth = 1;
+	ctx.strokeStyle =  "blue";
+    ctx.fillStyle = "blue";
+	
+	// Draw boundary path (also hit testing)
+	this.drawBoundary(_point);
+    
+    // Coordinates of handles (in canvas plane)
+	this.handleArray[2].location = this.transform.transformPoint(new ED.Point(s, -s));
+	
+	// Draw handles if selected
+	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
+    
+	// Return value indicating successful hittest
+	return this.isClicked;
+}

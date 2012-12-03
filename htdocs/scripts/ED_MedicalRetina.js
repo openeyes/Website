@@ -1299,4 +1299,3 @@ ED.Circinate.prototype.description = function()
     
     return returnString;
 }
-
