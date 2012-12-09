@@ -31,7 +31,20 @@
 					document.getElementById("isihara").style.display = "none";
 				}
 			}
-		}	            
+		}
+		
+		function showScore(_id, _value)
+		{
+			if (_value=='Isihara plates')
+			{
+				document.getElementById(_id).style.display = 'inline';
+			}
+			else
+			{
+				document.getElementById(_id).style.display = 'none';
+			}
+		}
+		            
     </script>
 
 </head>
@@ -60,7 +73,7 @@
 		<h2>Colour Vision</h2>
 		<div class="section">
 			<h4>Description:</h4>
-			<p>This element handles the collection of colour vision information. Initially only Isihara plates are supported, but Farnsworth-Munsell and other methods of recording colour vision will be added in due course.</p>
+			<p>This element handles the collection of colour vision information. It addresses items 3.15 to 3.16 of the Glaucoma national dataset.</p>
 			<p>Status: <b>Alpha</b></p>
 		</div>
 
@@ -93,13 +106,26 @@
 			<h4>Edit mode:</h4>
 			
 			<div id="isihara">
-				<p>Isihara</p>
 						
 				<!-- Right eye -->
 				<div style ="width: 540px; float:left;">
 					<p>Right eye:</p>
-					<select class="vaSelect" style="width:auto">
-						<option selected="TRUE">Not measured</option>
+					
+					<select class="vaSelect" style="width:auto" onchange="showScore('isR', this.value);">
+						<option>Isihara plates</option>
+						<option>Red desaturation</option>
+						<option>Farnsworth Panel D‐15</option>
+						<option>Farnsworth‐Munsell 100‐hue test</option>
+					</select>
+					
+					<select class="vaSelect" style="width:auto">				
+						<option>Normal</option>
+						<option>Protans</option>
+						<option>Deutans</option>
+						<option>Tritons</option>
+					</select>
+					
+					<select class="vaSelect" id="isR" style="width:auto; display:inline;">
 						<option>15/15</option>
 						<option>14/15</option>
 						<option>13/15</option>
@@ -117,13 +143,28 @@
 						<option>1/15</option>
 						<option>0/15</option>	
 					</select>
+
 				</div>
 	
 				<!-- Left eye -->
 				<div style ="width:540px; float:left;">
 					<p>Left eye:</p>
-					<select class="vaSelect" style="width:auto">
-						<option selected="TRUE">Not measured</option>
+
+					<select class="vaSelect" style="width:auto" onchange="showScore('isL', this.value);">
+						<option>Isihara plates</option>
+						<option>Red desaturation</option>
+						<option>Farnsworth Panel D‐15</option>
+						<option>Farnsworth‐Munsell 100‐hue test</option>
+					</select>
+					
+					<select class="vaSelect" style="width:auto">				
+						<option>Normal</option>
+						<option>Protans</option>
+						<option>Deutans</option>
+						<option>Tritons</option>
+					</select>
+					
+					<select class="vaSelect" id="isL" style="width:auto; display:inline;">
 						<option>15/15</option>
 						<option>14/15</option>
 						<option>13/15</option>
@@ -141,6 +182,7 @@
 						<option>1/15</option>
 						<option>0/15</option>	
 					</select>
+					
 				</div>
 			</div>
 			
@@ -154,18 +196,17 @@
 			<!-- Right eye -->
 			<div style ="width:540px; float:left;">
 				<p>Right eye:</p>
-				<div style="float:left; width: 220px; height: 120px;">
-					<p>15/15 plates</p>
-				</div>
+				
+				<p>Isihara plates 15/15 Normal</p>
 
 			</div>
 			
 			<!-- Left eye -->
 			<div style ="width:540px; float:left;">
 				<p>Left eye:</p>
-				<div style="float:left; width: 220px; height: 120px;">
-					<p>10/15 plates</p>
-				</div>
+
+				<p>Isihara plates 10/15 Protans defect</p>
+
 			</div>				
 
 		<!-- End of Display mode section -->
@@ -174,7 +215,7 @@
 		<!-- Steering Group -->			
 		<div class="section" align="left">
 			<h4>Steering Group:</h4>
-			<p>General</p>
+			<p>Glaucoma</p>
 		</div>
 		
 		<!-- Blank Line -->
