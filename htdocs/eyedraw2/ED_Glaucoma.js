@@ -1630,13 +1630,25 @@ ED.OpticDisc.prototype.dependentParameterValues = function(_parameter, _value)
                 var newValue = parseFloat(_value) * 300;
                 returnArray['apexY'] = -newValue;
                 
-                // Alter position of top and bottom points accordingly
+                // Alter position of top and bottom points accordingly, then average the others
                 if (this.mode == "Expert")
                 {
                     var ti = 0;
                     var bi = this.numberOfHandles/2;
+                    var meanOldValue = (this.squiggleArray[0].pointsArray[ti].length() + this.squiggleArray[0].pointsArray[bi].length())/2;
                     this.squiggleArray[0].pointsArray[ti].setWithPolars(newValue, this.squiggleArray[0].pointsArray[ti].direction());
                     this.squiggleArray[0].pointsArray[bi].setWithPolars(newValue, this.squiggleArray[0].pointsArray[bi].direction());
+                    
+                    // Adjust others proportionately
+                    for (var i = 0; i < this.numberOfHandles; i++)
+                    {
+                        if (i != ti && i != bi)
+                        {
+                            var newLength = this.squiggleArray[0].pointsArray[i].length() * newValue/meanOldValue;
+                            newLength = newLength>300?300:newLength;
+                            this.squiggleArray[0].pointsArray[i].setWithPolars(newLength, this.squiggleArray[0].pointsArray[i].direction());
+                        }
+                    }
                 }
             }
             else
@@ -2915,7 +2927,7 @@ ED.DiscPallor.prototype.groupDescription = function()
     }
     else
     {
-        return  "Disc Pallor at ";
+        return  "Disc pallor at ";
     }
 }
 
