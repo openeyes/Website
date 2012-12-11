@@ -10,8 +10,8 @@
 
     <!--   Javascript  -->	
 	<script language="JavaScript" src="../../scripts/elements.js" type="text/javascript"></script>
-    <script language="JavaScript" src="../../scripts/ED_Drawing.js" type="text/javascript"></script>
-    <script language="JavaScript" src="../../scripts/ED_Glaucoma.js" type="text/javascript"></script>	
+    <script language="JavaScript" src="../../eyedraw2/ED_Drawing.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../eyedraw2/ED_Glaucoma.js" type="text/javascript"></script>	
 	
     <script type="text/javascript">
         
@@ -26,49 +26,52 @@
         {
             // Get reference to the drawingEdit canvas
             var canvasEdit = document.getElementById('canvasEdit');
-
-            // Create a drawing
-            drawingEdit = new ED.Drawing(canvasEdit, ED.eye.Right, 'RPS', true, 0, 0);
+  
+            // Create a drawingEdit
+            drawingEdit = new ED.Drawing(canvasEdit, ED.eye.Right, 'RPS', true, {graphicsPath:'../../graphics/'});
             
-            // Preload any images
-            drawingEdit.preLoadImagesFrom('../../graphics/');
+            // Instantiate a controller object
+            var controller = new eyeDrawController(drawingEdit);
+            
+            // Initialise drawing
+            drawingEdit.init();
             
             // Set focus to canvasEdit element
             canvasEdit.focus();
-            
-            // Wait for drawingEdit object to be ready before adding objects or drawingEdits
-            drawingEdit.onLoaded = function()
-            {
-            	editCanvasInit();
-            }
-            
-            // Display canvas
-            var canvasDisplay = document.getElementById('canvasDisplay');
-            
-            // Create a drawing
-            drawingDisplay = new ED.Drawing(canvasDisplay, ED.eye.Right, 'RPS', false);
 
-            // Preload any images
-            drawingDisplay.preLoadImagesFrom('../../graphics/');
-            
-            // Wait for drawingEdit object to be ready before adding objects or drawingEdits
-            drawingDisplay.onLoaded = function()
+            // Controller class
+            function eyeDrawController(_drawing)
             {
-                opticCup = drawingDisplay.addDoodle('OpticDisk');
-                //drawingDisplay.addDoodle('PeripapillaryAtrophy');
-                opticCup.toggleMode();
-                opticCup.setHandleProperties();
-                opticCup.squiggleArray[0].pointsArray[0].x = -160;
-                opticCup.squiggleArray[0].pointsArray[0].y = -160;
-                opticCup.squiggleArray[0].pointsArray[7].x = -180;
-                opticCup.squiggleArray[0].pointsArray[7].y = -140;
-                                                
-                //opticCup.rotation = Math.PI/6;
-                var defect = drawingDisplay.addDoodle('NerveFibreDefect');
-                defect.rotation = -Math.PI/3;
-                defect.arc = Math.PI/4;
-                drawingDisplay.deselectDoodles();
+                this.drawing = _drawing;
+                
+                // Specify call back function
+                this.callBack = callBack;
+                
+                // Register for notifications with drawing object
+                this.drawing.registerForNotifications(this, 'callBack', []);
+                
+                // Method called for notification
+                function callBack(_messageArray)
+                {
+                    //console.log("Notified for event: " + _messageArray['eventName']);
+ 
+                    switch (_messageArray['eventName'])
+                    {
+                        // Eye draw image files all loaded
+                        case 'ready':
+                            doodle = this.drawing.addDoodle('OpticDisc', {mode:'Basic'});
+                            this.drawing.addBindings({
+                                                     OpticDisc:{cdRatio:{id:'cdRatioInput', attribute:'ed_val'}, mode:{id:'modeInput'}},
+                                                     DiscPallor:{grade:{id:'pallorInput', attribute:'ed_val'}}
+                                                     });
+                            this.drawing.addDeleteValues({pallorInput:'Healthy'});
+                            this.drawing.deselectDoodles();
+                            break;
+                    }
+                }
             }
+            
+
 		}
     
     	function editCanvasInit()
@@ -185,15 +188,17 @@
 				<div class="toolbar">
 					<button class="imgbutton" class="imgbutton" disabled="true" id="moveToFrontRPS" title="Move to front" onclick="drawingEdit.moveToFront(); return false;" ><img src="../../graphics/moveToFront.gif"/></button>
 	                <button class="imgbutton" disabled="true" id="moveToBackRPS" title="Move to back" onclick="drawingEdit.moveToBack(); return false;" ><img src="../../graphics/moveToBack.gif" /></button>
-	                <button class="imgbutton" disabled="true" id="deleteDoodleRPS" title="Delete" onclick="drawingEdit.deleteDoodle(); return false;" ><img src="../../graphics/delete.gif" /></button>
+	                <button class="imgbutton" disabled="true" id="deleteSelectedDoodleRPS" title="Delete" onclick="drawingEdit.deleteSelectedDoodle(); return false;" ><img src="../../graphics/delete.gif" /></button>
 	                <button class="imgbutton" disabled="true" id="lockRPS" title="Lock" onclick="drawingEdit.lock(); return false;" ><img src="../../graphics/lock.gif" /></button>
 	                <button class="imgbutton" disabled="true" id="unlockRPS" title="Unlock" onclick="drawingEdit.unlock(); return false;" ><img src="../../graphics/unlock.gif" /></button>
 	                <br />
 
-                    <button class="imgbutton" title="Disk Haemorrhage" onclick="drawingEdit.addDoodle('DiskHaemorrhage'); return false;" ><img src="../../graphics/DiskHaemorrhage.gif" /></button>
+                    <button class="imgbutton" title="Peripapillary atrophy" onclick="drawingEdit.addDoodle('PeripapillaryAtrophy'); return false;" ><img src="../../graphics/PeripapillaryAtrophy.gif" /></button>
+                    <button class="imgbutton" title="Disk pallor" onclick="drawingEdit.addDoodle('DiscPallor'); return false;" ><img src="../../graphics/DiscPallor.gif" /></button>
+                    <button class="imgbutton" title="Disk haemorrhage" onclick="drawingEdit.addDoodle('DiscHaemorrhage'); return false;" ><img src="../../graphics/DiskHaemorrhage.gif" /></button>
                     <button class="imgbutton" title="Nerve fibre layer defect" onclick="drawingEdit.addDoodle('NerveFibreDefect'); return false;" ><img src="../../graphics/NerveFibreDefect.gif" /></button>
-                    <button class="imgbutton" title="Papilloedema" onclick="drawingEdit.addDoodle('Papilloedema'); drawingEdit.deselectDoodles(); return false;" ><img src="../../graphics/Papilloedema.gif" /></button>
-                    <button class="imgbutton" title="Acquired Pit of Optic Nerve" onclick="drawingEdit.addDoodle('OpticDiskPit'); return false;" ><img src="../../graphics/OpticDiskPit.gif" /></button>
+                    <button class="imgbutton" title="Acquired pit of optic nerve" onclick="drawingEdit.addDoodle('OpticDiscPit'); return false;" ><img src="../../graphics/OpticDiskPit.gif" /></button>
+                    <button class="imgbutton" title="Papilloedema" onclick="drawingEdit.addDoodle('Papilloedema'); return false;" ><img src="../../graphics/Papilloedema.gif" /></button>
                      <br />
    				</div>
    				
@@ -204,13 +209,46 @@
 			
 				<!-- Controls -->
 				<div style='float:right; width: 220px;height: 320px;'>
-					            
-					<button class="actbutton" title="Extracts description and diagnosis from drawingEdit" onclick="addToReport(); return false;" >Report</button>
-<!-- 				<button class="actbutton" title="Clear drawing and start again" onclick="resetEdit(); return false;" >Reset</button> -->
-					<button class="actbutton" title="Toggle mode for optic cup" onclick="changeLevel(true); return false;" >Toggle mode</button>
+					            					
+					<label class="controlLabel">Mode:</label>
+			        <select id="modeInput">
+			            <option value="Basic">Basic</option>
+			            <option value="Expert">Expert</option>
+			        </select>
+			        <br/>
+					
+					<label class="controlLabel">Colour:</label>
+			        <select id="pallorInput">
+			            <option value="0" ed_val="Healthy">Healthy</option>
+			            <option value="1" ed_val="Sectorial">Sectorial</option>
+			            <option value="2" ed_val="Diffuse">Diffuse</option>
+			        </select>
+			        <br/>
+			        
+			        <label class="controlLabel">C/D ratio:</label>
+			        <select id="cdRatioInput">
+			            <option value="1" ed_val="0.1">0.1</option>
+			            <option value="2" ed_val="0.2">0.2</option>
+			            <option value="3" ed_val="0.3">0.3</option>
+			            <option value="4" ed_val="0.4">0.4</option>
+			            <option value="5" ed_val="0.5" selected=true>0.5</option>
+			            <option value="6" ed_val="0.6">0.6</option>
+			            <option value="7" ed_val="0.7">0.7</option>
+			            <option value="8" ed_val="0.8">0.8</option>
+			            <option value="9" ed_val="0.9">0.9</option>
+			            <option value="10" ed_val="1.0">1.0</option>
+			            <option value="11" ed_val="No view">No view</option>
+			        </select>
+			        <br/>
+			        
+			        <label class="controlLabel">Diameter:</label>
+			        <input type="text" style="width:60px;"/>
+			        
+			        <button class="actbutton" title="Extracts description and diagnosis from drawingEdit" onclick="addToReport(); return false;" >Report</button>
 	
 					<p class="lable">Description:</p>
 					<textarea style="width:220px; height: 120px;" id="opticdisk"></textarea>
+
 				</div>
 				   			
 			</div>

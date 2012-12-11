@@ -56,6 +56,12 @@ function eyeDrawInit(_properties)
     // Create a controller object for this drawing
     var controller = new eyeDrawController(window[_properties.drawingName]);
     
+    // Array of additional controllers
+    var listenerList = new Array();
+    for (var i = 0; i < _properties.listenerArray.length; i++) {
+    	listenerList[i] = new _properties.listenerArray[i](window[_properties.drawingName]);
+    }
+    
     // Initialise drawing
     window[_properties.drawingName].init();
     
@@ -66,7 +72,7 @@ function eyeDrawInit(_properties)
         this.drawing = _drawing;
         
         // Register controller for notifications
-        _drawing.registerForNotifications(this, 'notificationHandler', []);
+        this.drawing.registerForNotifications(this, 'notificationHandler', ['ready', 'doodlesLoaded', 'doodleAdded', 'doodleDeleted', 'doodleSelected', 'mousedragged', 'parameterChanged']);
         
         // Method called for notification
         this.notificationHandler = function(_messageArray)
@@ -85,10 +91,10 @@ function eyeDrawInit(_properties)
                         // Load drawing data from input element
                         this.drawing.loadDoodles(_properties.inputId);
                         
-                        // Draw doodles
-                        this.drawing.drawAllDoodles();
+                        // Refresh drawing
+                        this.drawing.repaint();
                     }
-                    // Otherwise run commands in onLoadedCommand array
+                    // Otherwise run commands in onReadyCommand array
                     else
                     {
                         for ( var i = 0; i < _properties.onReadyCommandArray.length; i++)
@@ -98,7 +104,7 @@ function eyeDrawInit(_properties)
                             var argumentArray = _properties.onReadyCommandArray[i][1];
                             
                             // Run method with arguments
-                            var dood = this.drawing[method].apply(this.drawing, argumentArray);
+                            this.drawing[method].apply(this.drawing, argumentArray);
                         }
                     }
                     
@@ -106,14 +112,12 @@ function eyeDrawInit(_properties)
                     //if (_properties.bindingArray.length > 0)
                     if (!ED.objectIsEmpty(_properties.bindingArray))
                     {
-                        console.log('adding bindings');
                         this.drawing.addBindings(_properties.bindingArray);
                     }
 
                     // Apply delete values
                     if (!ED.objectIsEmpty(_properties.deleteValueArray))
                     {
-                        console.log('adding delete values');
                         this.drawing.addDeleteValues(_properties.deleteValueArray);
                     }
                     
@@ -126,10 +130,21 @@ function eyeDrawInit(_properties)
                     // Optionally make canvas element focussed
                     if (_properties.focus)
                     {
-                        console.log('focus');
                         canvas.focus();
                     }
-                    
+                    break;
+
+                case 'doodlesLoaded':
+                    // Run commands after doodles have successfully loaded
+                    for ( var i = 0; i < _properties.onDoodlesLoadedCommandArray.length; i++)
+                    {
+                        // Get method name
+                        var method = _properties.onDoodlesLoadedCommandArray[i][0];
+                        var argumentArray = _properties.onDoodlesLoadedCommandArray[i][1];
+                        
+                        // Run method with arguments
+                        this.drawing[method].apply(this.drawing, argumentArray);
+                    }
                     break;
                     
                 case 'doodleAdded':
@@ -137,6 +152,23 @@ function eyeDrawInit(_properties)
                     if (input != null && input.value.length > 0)
                     {
                         input.value = this.drawing.save();
+                    }
+                    break;
+                    
+                case 'doodleDeleted':
+                    // Save drawing to hidden input
+                    if (input != null && input.value.length > 0)
+                    {
+                        input.value = this.drawing.save();
+                    }
+                    break;
+                    
+                case 'doodleSelected':
+                    // Ensure that selecting a doodle in one drawing de-deselects the others
+                    for (var idSuffix in _properties.syncArray)
+                    {
+                        var drawing = window['ed_drawing_edit_' + idSuffix];
+                        drawing.deselectDoodles();
                     }
                     break;
                     
@@ -148,36 +180,16 @@ function eyeDrawInit(_properties)
                     }
                     break;
                     
-                    
-                case 'doodleSelected':
-                    // Ensure that selecting a doodle in one drawing de-deselects the others
-                    for (var idSuffix in _properties.syncArray)
-                    {
-                        var drawing = window['ed_drawing_edit_' + idSuffix];
-                        drawing.deselectDoodles();
-                    }
-                    break;
-                    
                 case 'parameterChanged':
-                    
                     // Get master doodle
                     var masterDoodle = _messageArray['object'].doodle;
-
-                    // TEMP stop syncing if slave moves phako incision - put somewhere else
-                    //                    if (_messageArray.selectedDoodle != null)
-                    //                    {
-                    //                        if (_messageArray.selectedDoodle.className == 'PhakoIncision')
-                    //                        {
-                    //                            //stopSync(_messageArray.selectedDoodle);
-                    //                        }
-                    //                    }
 
                     // Iterate through sync array
                     for (var idSuffix in _properties.syncArray)
                     {
                         // Get reference to slave drawing
                         var slaveDrawing = window['ed_drawing_edit_' + idSuffix];
-                        
+
                         // Iterate through each specified className
                         for (var className in _properties.syncArray[idSuffix])
                         {
@@ -208,7 +220,6 @@ function eyeDrawInit(_properties)
                                                     var newValue = slaveDoodle[_messageArray.object.parameter] + increment;
                                                     
                                                     // Sync slave parameter to value of master
-                                                    //slaveDoodle.setSimpleParameter(_messageArray.object.parameter, masterDoodle[_messageArray.object.parameter]);
                                                     slaveDoodle.setSimpleParameter(_messageArray.object.parameter, newValue);
                                                     slaveDoodle.updateDependentParameters(_messageArray.object.parameter);
                                                     
@@ -225,24 +236,14 @@ function eyeDrawInit(_properties)
                         // Refresh slave drawing
                         slaveDrawing.repaint();
                     }
-                     break;
-                
-                default:
-                    //console.log(_messageArray['eventName']);
+                    
+                    // Save drawing to hidden input
+                    if (input != null && input.value.length > 0)
+                    {
+                        input.value = this.drawing.save();
+                    }
                     break;
             }
         }
     }
 }
-
-
-/*
- * Stops syncing for passed doodle
- * ***TODO*** Need to take this out of widget and put in app code somewhere
- */
-function stopSync(_doodle)
-{
-    _doodle.willSync = false;
-}
-
-
