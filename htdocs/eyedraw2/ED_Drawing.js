@@ -116,8 +116,17 @@ ED.findOffset = function(obj, curleft, curtop)
             curleft += obj.offsetLeft;
             curtop += obj.offsetTop;
         } while (obj = obj.offsetParent);
-        return { x: curleft, y: curtop };
+        return { left: curleft, top: curtop };
     }
+}
+
+ED.findPosition = function(obj, event) {
+	if(typeof jQuery != 'undefined') {
+		var offset = jQuery(obj).offset();
+	} else {
+		var offset = ED.findOffset(obj, 0, 0);
+	}
+	return { x: event.pageX - offset.left,  y: event.pageY - offset.top };
 }
 
 /*
@@ -337,32 +346,32 @@ ED.Drawing = function(_canvas, _eye, _IDSuffix, _isEditable, _options)
         
         // Mouse listeners
         this.canvas.addEventListener('mousedown', function(e) {
-                                     var offset = ED.findOffset(this, offsetX, offsetY);
-                                     var point = new ED.Point(e.pageX-offset.x,e.pageY-offset.y);
+          var position = ED.findPosition(this, e);
+          var point = new ED.Point(position.x,position.y);
                                      drawing.mousedown(point);
                                      }, false);
         
         this.canvas.addEventListener('mouseup', function(e) { 
-                                     var offset = ED.findOffset(this, offsetX, offsetY);
-                                     var point = new ED.Point(e.pageX-offset.x,e.pageY-offset.y);
+          var position = ED.findPosition(this, e);
+          var point = new ED.Point(position.x,position.y);
                                      drawing.mouseup(point); 
                                      }, false);
         
-        this.canvas.addEventListener('mousemove', function(e) { 
-                                     var offset = ED.findOffset(this, offsetX, offsetY);
-                                     var point = new ED.Point(e.pageX-offset.x,e.pageY-offset.y);
+        this.canvas.addEventListener('mousemove', function(e) {
+          var position = ED.findPosition(this, e);
+          var point = new ED.Point(position.x,position.y);
                                      drawing.mousemove(point); 
                                      }, false);
 
         this.canvas.addEventListener('mouseover', function(e) {
-                                     var offset = ED.findOffset(this, offsetX, offsetY);
-                                     var point = new ED.Point(e.pageX-offset.x,e.pageY-offset.y);
+          var position = ED.findPosition(this, e);
+          var point = new ED.Point(position.x,position.y);
                                      drawing.mouseover(point);
                                      }, false);
         
         this.canvas.addEventListener('mouseout', function(e) { 
-                                     var offset = ED.findOffset(this, offsetX, offsetY);
-                                     var point = new ED.Point(e.pageX-offset.x,e.pageY-offset.y);
+          var position = ED.findPosition(this, e);
+          var point = new ED.Point(position.x,position.y);
                                      drawing.mouseout(point); 
                                      }, false);
         
@@ -1167,7 +1176,7 @@ ED.Drawing.prototype.mousemove = function(_point)
                     newPosition.x = doodle.squiggleArray[0].pointsArray[index].x + (mousePosSelectedDoodlePlane.x - lastMousePosSelectedDoodlePlane.x);
                     newPosition.y = doodle.squiggleArray[0].pointsArray[index].y + (mousePosSelectedDoodlePlane.y - lastMousePosSelectedDoodlePlane.y);
                     
-                    // Constraining coordiantes handle with optional range array (set in a subclass)
+                    // Constraining coordinates handle with optional range array (set in a subclass)
                     if (typeof(doodle.handleCoordinateRangeArray) != 'undefined')
                     {
                         newPosition.x = doodle.handleCoordinateRangeArray[index]['x'].constrain(newPosition.x);
@@ -1337,6 +1346,7 @@ ED.Drawing.prototype.mouseout = function(_point)
  */  
 ED.Drawing.prototype.keydown = function(e)
 {
+    //console.log(e.keyCode);
 	// Keyboard action works on selected doodle
 	if (this.selectedDoodle != null)
 	{
@@ -1383,6 +1393,36 @@ ED.Drawing.prototype.keydown = function(e)
             else if (e.keyCode == 32 || (e.keyCode > 47 && e.keyCode < 58))
             {
                 code = e.keyCode;
+            }
+            // Apostrophes
+            else if (e.keyCode == 222)
+            {
+                if (e.shiftKey)
+                {
+                    code = 34;
+                }
+                else
+                {
+                    code = 39;
+                }
+            }
+            // Colon and semicolon
+            else if (e.keyCode == 186)
+            {
+                if (e.shiftKey)
+                {
+                    code = 58;
+                }
+                else
+                {
+                    code = 59;
+                }
+            }
+            // Other punctuation
+            else if (e.keyCode == 188 || e.keyCode == 190)
+            {
+                if (e.keyCode == 188) code = 44;
+                if (e.keyCode == 190) code = 46;
             }
             // Backspace
             else if (e.keyCode == 8)
@@ -2782,6 +2822,7 @@ ED.Drawing.prototype.report = function()
 {
 	var returnString = "";
     var groupArray = new Array();
+    var groupEndArray = new Array();
 	
 	// Go through every doodle
 	for (var i = 0; i < this.doodleArray.length; i++)
@@ -2799,11 +2840,20 @@ ED.Drawing.prototype.report = function()
             }
             else
             {
-                // Only add additional detail if supplied by descripton method
+                // Only add additional detail if supplied by description method
                 if (doodle.description().length > 0)
                 {
                     groupArray[doodle.className] += ", ";
                     groupArray[doodle.className] += doodle.description();
+                }
+            }
+            
+            // Check if there is a corresponding end description
+            if (doodle.groupDescriptionEnd().length > 0)
+            {
+                if (typeof(groupEndArray[doodle.className]) == 'undefined')
+                {
+                    groupEndArray[doodle.className] = doodle.groupDescriptionEnd();
                 }
             }
         }
@@ -2837,8 +2887,15 @@ ED.Drawing.prototype.report = function()
         // Get description
         var description = groupArray[className];
         
+        // Get end description
+        var endDescription = "";
+        if (typeof(groupEndArray[className]) != 'undefined')
+        {
+            endDescription = groupEndArray[className];
+        }
+        
         // Replace last comma with a comma and 'and'
-        description = description.addAndAfterLastComma();
+        description = description.addAndAfterLastComma() + endDescription;
         
         // If its not an empty string, add to the return
         if (description.length > 0)
@@ -3849,8 +3906,22 @@ ED.Doodle.prototype.drawBoundary = function(_point)
         
         // Reset so shadow only on boundary
         ctx.shadowBlur = 0;
+        
+        // Draw any additional highlight items
+		if (this.isSelected && this.isShowHighlight)
+		{
+            this.drawHighlightExtras();
+        }
 	}
 }
+
+/**
+ * Draws extra items if the doodle is highlighted
+ */
+ED.Doodle.prototype.drawHighlightExtras = function()
+{
+}
+
 
 /**
  * Returns a String which, if not empty, determines the root descriptions of multiple instances of the doodle
@@ -3868,6 +3939,16 @@ ED.Doodle.prototype.groupDescription = function()
  * @returns {String} Description of doodle
  */
 ED.Doodle.prototype.description = function()
+{
+	return "";
+}
+
+/**
+ * Returns a String which, if not empty, determines the suffix following a group description
+ *
+ * @returns {String} Group description end
+ */
+ED.Doodle.prototype.groupDescriptionEnd = function()
 {
 	return "";
 }
@@ -5353,6 +5434,51 @@ ED.Point.prototype.clockwiseAngleTo = function(_point)
 		return angle;
 	}
 }
+
+/**
+ * Creates a new point at an angle
+ *
+ * @param {Float} _r Distance from the origin
+ * @param {Float} _phi Angle form the radius to the control point
+ * @returns {Point} The control point
+ */
+ED.Point.prototype.pointAtRadiusAndClockwiseAngle = function(_r, _phi)
+{
+    // Calculate direction (clockwise from north)
+    var angle = this.direction();
+    
+    // Create point and set length and direction
+    var point = new ED.Point(0, 0);
+    point.setWithPolars(_r, angle + _phi);
+    
+    return point;
+}
+
+/**
+ * Creates a new point at an angle to and half way along a straight line between this point and another
+ *
+ * @param {Float} _phi Angle form the radius to the control point
+ * @param {Float} _point Point at other end of straight line
+ * @returns {Point} A point object
+ */
+ED.Point.prototype.pointAtAngleToLineToPointAtProportion = function(_phi, _point, _prop)
+{
+    // Midpoint in coordinates as if current point is origin
+    var bp = new ED.Point((_point.x - this.x) * _prop, (_point.y - this.y) * _prop);
+    
+    // Calculate radius
+    r = bp.length();
+    
+    // Create new point
+    var point = bp.pointAtRadiusAndClockwiseAngle(r, _phi);
+    
+    // Shift origin back
+    point.x += this.x;
+    point.y += this.y;
+    
+    return point;
+}
+
 
 /**
  * Clock hour of point on clock face centred on origin
