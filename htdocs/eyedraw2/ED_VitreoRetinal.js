@@ -3360,7 +3360,7 @@ ED.Sclerostomy.prototype.dependentParameterValues = function(_parameter, _value)
  * @param {Point} _point Optional point in canvas plane, passed if performing hit test
  */
 ED.Sclerostomy.prototype.draw = function(_point)
-{console.log(this.arc, this.isSutured);
+{
 	// Get context
 	var ctx = this.drawing.context;
 	
@@ -3389,8 +3389,6 @@ ED.Sclerostomy.prototype.draw = function(_point)
         {
             case "20g":
                 ctx.beginPath();
-                // Use arcTo to create an ellipsoid
-
                 ctx.moveTo(-50, this.parsPlana);
                 ctx.bezierCurveTo(-30, this.parsPlana - 30, 30, this.parsPlana - 30, 50, this.parsPlana);
                 ctx.bezierCurveTo(30, this.parsPlana + 30, -30, this.parsPlana + 30, -50, this.parsPlana);

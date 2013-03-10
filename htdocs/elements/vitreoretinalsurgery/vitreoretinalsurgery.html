@@ -14,6 +14,7 @@
 	<!-- needs EyeDraw 2 -->
     <script language="JavaScript" src="../../eyedraw2/ED_Drawing.js" type="text/javascript"></script>
     <script language="JavaScript" src="../../eyedraw2/ED_Categories.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../eyedraw2/ED_General.js" type="text/javascript"></script>
     <script language="JavaScript" src="../../eyedraw2/ED_MedicalRetina.js" type="text/javascript"></script>	
     <script language="JavaScript" src="../../eyedraw2/ED_VitreoRetinal.js" type="text/javascript"></script>
     
@@ -178,6 +179,28 @@
 		                <button class="imgbutton" disabled="true" id="deleteSelectedDoodleRPS" title="Delete" onclick="drawingEdit.deleteSelectedDoodle(); return false;" ><img src="../../graphics/deleteSelectedDoodle.gif" /></button>
 		                <button class="imgbutton" disabled="true" id="lockRPS" title="Lock" onclick="drawingEdit.lock(); return false;" ><img src="../../graphics/lock.gif" /></button>
 		                <button class="imgbutton" disabled="true" id="unlockRPS" title="Unlock" onclick="drawingEdit.unlock(); return false;" ><img src="../../graphics/unlock.gif" /></button>
+		                <button class="ed_img_button" id="FreehandRPS" title="Freehand" onclick="drawingEdit.addDoodle('Freehand'); drawingEdit.canvas.focus(); return false;"><img src="../../graphics/Freehand.gif"></button>
+		                <span class="squiggle" id="squiggleSpanRPS" style="display: none; ">
+			                <img class="colourWell" border="0" src="../../graphics/ColourWell.gif" usemap="#colormapRPS" alt="colormap">
+			                <map id="colormapRPS" name="colormapRPS">
+			                    <area style="cursor:pointer" shape="rect" coords="0,0,16,16" onclick="drawingEdit.setSquiggleColour('000000');">
+			                    <area style="cursor:pointer" shape="rect" coords="16,0,32,16" onclick="drawingEdit.setSquiggleColour('FF0000');">
+			                    <area style="cursor:pointer" shape="rect" coords="32,0,48,16" onclick="drawingEdit.setSquiggleColour('FF7F00');">
+			                    <area style="cursor:pointer" shape="rect" coords="0,16,16,32" onclick="drawingEdit.setSquiggleColour('0000FF');">
+			                    <area style="cursor:pointer" shape="rect" coords="16,16,32,32" onclick="drawingEdit.setSquiggleColour('00FF00');">
+			                    <area style="cursor:pointer" shape="rect" coords="32,16,48,32" onclick="drawingEdit.setSquiggleColour('FFFF00');">
+			                </map>
+			                <img class="drawingControl" border="0" src="../../graphics/DrawingControl.gif" usemap="#drawingControlRPS" alt="drawingcontrol">
+			                <map id="drawingControlRPS" name="drawingControlRPS">
+			                    <area style="cursor:pointer" shape="rect" coords="0,0,16,16" onclick="drawingEdit.setSquiggleWidth(ED.squiggleWidth.Thin);">
+			                    <area style="cursor:pointer" shape="rect" coords="16,0,32,16" onclick="drawingEdit.setSquiggleWidth(ED.squiggleWidth.Medium);">
+			                    <area style="cursor:pointer" shape="rect" coords="32,0,48,16" onclick="drawingEdit.setSquiggleWidth(ED.squiggleWidth.Thick);">
+			                    <area style="cursor:pointer" shape="rect" coords="0,16,24,32" onclick="drawingEdit.setSquiggleStyle(ED.squiggleStyle.Outline);">
+			                    <area style="cursor:pointer" shape="rect" coords="24,16,48,32" onclick="drawingEdit.setSquiggleStyle(ED.squiggleStyle.Solid);">
+			                </map>
+			                <canvas id="squiggleSettingsRPS" width="24" height="32"></canvas>
+			
+			            </span> 
 		                <br />
 
                         <button class="imgbutton" title="ILM peel" onclick="drawingEdit.addDoodle('ILMPeel'); return false;" ><img src="../../graphics/ILMPeel.gif" /></button>
@@ -189,7 +212,7 @@
                         <button class="imgbutton" title="Sector PRP" onclick="drawingEdit.addDoodle('SectorPRP'); return false;" ><img src="../../graphics/SectorPRP.gif" /></button>
                         <button class="imgbutton" title="Peripheral retinectomy" onclick="drawingEdit.addDoodle('PeripheralRetinectomy'); return false;" ><img src="../../graphics/PeripheralRetinectomy.gif" /></button>
                         <button class="imgbutton" title="Posterior retinectomy" onclick="drawingEdit.addDoodle('PosteriorRetinectomy'); return false;" ><img src="../../graphics/PosteriorRetinectomy.gif" /></button>
-                        <button class="imgbutton" title="Biopsy site" onclick="drawingEdit.addDoodle('BiopsySite'); return false;" ><img src="../../graphics/BiopsySite.gif" /></button>  	                       	
+                        <button class="imgbutton" title="Biopsy site" onclick="drawingEdit.addDoodle('BiopsySite'); return false;" ><img src="../../graphics/BiopsySite.gif" /></button> 	                       	
 
 		                <br />                      
                         <button class="imgbutton" title="Entry site break" onclick="drawingEdit.addDoodle('EntrySiteBreak'); return false;" ><img src="../../graphics/EntrySiteBreak.gif" /></button>
