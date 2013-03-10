@@ -118,6 +118,7 @@
 		<div class="section">
 			<h4>Description:</h4>
 			<p>This element allows recording of details of a pars plana vitrectomy. Sclerostomies can be moved, and edited using the handle, which alters gauge. Sclerostomies can be marked as sutured by selecting them, and clicking the suture button.</p>
+			<p>Procedures for which this subelement appears include Fragmatome lensectomy, Removal of gas, Removal of oil, Vitrectomy, and Biopsy of vitreous.</p> 
 			
 			<p>Status: <b>Alpha</b></p>
 		</div>
@@ -158,7 +159,7 @@
 						<button class="imgbutton" id="ChandelierDoubleRPS" title="Chandelier Double" onclick="drawingEdit.addDoodle('ChandelierDouble'); return false;" ><img src="../../graphics/ChandelierDouble.gif" /></button>
 						<button class="imgbutton" id="CornealAbrasionRPS" title="Corneal erosion" onclick="drawingEdit.addDoodle('CornealErosion'); return false;" ><img src="../../graphics/CornealErosion.gif" /></button>   
 		                <br />		
-						<button class="imgbutton" id="SutureRPS" title="Click to toggle suture on selected sclerostomy" onclick="var dood = drawingEdit.selectedDoodle; if (dood) dood.isSutured = dood.isSutured?false:true; drawingEdit.repaint(); return false;" ><img src="../../graphics/MattressSuture.gif" /></button>
+						<button class="imgbutton" id="SutureRPS" title="Click to toggle suture on selected sclerostomy" onclick="var dood = drawingEdit.selectedDoodle; if (dood) dood.setParameterWithAnimation('isSutured', dood.isSutured?false:true); drawingEdit.repaint(); return false;" ><img src="../../graphics/MattressSuture.gif" /></button>
 	  	                    
 	                </div>
                 			

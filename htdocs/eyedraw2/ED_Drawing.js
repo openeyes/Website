@@ -1903,6 +1903,37 @@ ED.Drawing.prototype.deleteSelectedDoodle = function()
 }
 
 /**
+ * Sets a property on currently selected doodle NB currently only supports boolean properties
+ *
+ * @param {Object} _element An HTML element which called this function
+ * @param {String} _property The name of the property to switch
+ */
+ED.Drawing.prototype.setSelectedDoodle = function(_element, _property)
+{
+    // Get value of check box
+    var value = _element.checked?"true":"false";
+    
+    // Should only be called if a doodle is selected, but check anyway
+	if (this.selectedDoodle != null)
+	{
+        this.selectedDoodle.setParameterFromString(_property, value);
+    }
+    else
+    {
+        ED.errorHandler('ED.Drawing', 'setSelectedDoodle', 'Attempt to set a property on the selected doodle, when none selected');
+    }
+    
+//    if (_element.checked)
+//    {
+//        console.log('YES');
+//    }
+//    else
+//    {
+//        console.log('NO');        
+//    }
+}
+
+/**
  * Deletes doodle with selected id
  */
 ED.Drawing.prototype.deleteDoodleOfId = function(_id)
@@ -2814,6 +2845,18 @@ ED.Drawing.prototype.totalDegreesExtent = function(_class)
 }
 
 /**
+ * Suppresses reporting for all doodles currently in drawing.
+ */
+ED.Drawing.prototype.suppressReports = function()
+{
+    // Iterate through all doodles
+    for (var i = 0; i < this.doodleArray.length; i++)
+    {
+        this.doodleArray[i].willReport = false;
+    }
+}
+
+/**
  * Returns a string containing a description of the drawing
  *
  * @returns {String} Description of the drawing
@@ -2829,37 +2872,38 @@ ED.Drawing.prototype.report = function()
 	{
         var doodle = this.doodleArray[i];
         
-        // Check for a group description
-        if (doodle.groupDescription().length > 0)
+        // Reporting can be switched off with willReport flag
+        if (doodle.willReport)
         {
-            // Create an array entry for it or add to existing
-            if (typeof(groupArray[doodle.className]) == 'undefined')
+            // Check for a group description
+            if (doodle.groupDescription().length > 0)
             {
-                groupArray[doodle.className] = doodle.groupDescription();
-                groupArray[doodle.className] += doodle.description();
-            }
-            else
-            {
-                // Only add additional detail if supplied by description method
-                if (doodle.description().length > 0)
+                // Create an array entry for it or add to existing
+                if (typeof(groupArray[doodle.className]) == 'undefined')
                 {
-                    groupArray[doodle.className] += ", ";
+                    groupArray[doodle.className] = doodle.groupDescription();
                     groupArray[doodle.className] += doodle.description();
                 }
-            }
-            
-            // Check if there is a corresponding end description
-            if (doodle.groupDescriptionEnd().length > 0)
-            {
-                if (typeof(groupEndArray[doodle.className]) == 'undefined')
+                else
                 {
-                    groupEndArray[doodle.className] = doodle.groupDescriptionEnd();
+                    // Only add additional detail if supplied by description method
+                    if (doodle.description().length > 0)
+                    {
+                        groupArray[doodle.className] += ", ";
+                        groupArray[doodle.className] += doodle.description();
+                    }
+                }
+                
+                // Check if there is a corresponding end description
+                if (doodle.groupDescriptionEnd().length > 0)
+                {
+                    if (typeof(groupEndArray[doodle.className]) == 'undefined')
+                    {
+                        groupEndArray[doodle.className] = doodle.groupDescriptionEnd();
+                    }
                 }
             }
-        }
-        else
-        {
-        	if (doodle.willReport)
+            else
             {
                 // Get description
                 var description = doodle.description();
@@ -3002,7 +3046,17 @@ ED.Drawing.prototype.repaint = function()
 	
 	// Redraw all doodles
 	this.drawAllDoodles();
-	
+    
+    // Go through doodles unsetting and then setting property display
+    for (var i = 0; i < this.doodleArray.length; i++)
+    {
+        this.doodleArray[i].setDisplayOfParameterControls(false);
+    }
+	if (this.selectedDoodle != null)
+    {
+        this.selectedDoodle.setDisplayOfParameterControls(true);
+    }
+    
 	// Enable or disable buttons which work on selected doodle
 	if (this.selectedDoodle != null)
 	{
@@ -3922,6 +3976,42 @@ ED.Doodle.prototype.drawHighlightExtras = function()
 {
 }
 
+/**
+ * Shows doodle parameter controls. Doodle must set display:true in parameterValidationArray
+ *
+ * @param {Bool} _flag Flag determining whether display is shown or not shown
+ */
+ED.Doodle.prototype.setDisplayOfParameterControls = function(_flag)
+{
+    for (var parameter in this.parameterValidationArray)
+    {
+        var validation = this.parameterValidationArray[parameter];
+        if (validation.display)
+        {
+            // Construct id of element
+            var id = parameter + this.className + this.drawing.IDSuffix;
+            
+            // Look for corresponding element and toggle display
+            var element = document.getElementById(id);
+            if (element)
+            {
+                // Get parent label
+                var label = element.parentNode;
+                if (_flag)
+                {
+                    label.style.display = 'inline';
+                }
+                else
+                {
+                    label.style.display = 'none';
+                }
+                
+                // Ensure value of checkbox matches value of property
+                element.checked = this[parameter];
+            }
+        }
+    }
+}
 
 /**
  * Returns a String which, if not empty, determines the root descriptions of multiple instances of the doodle
@@ -4669,6 +4759,31 @@ ED.Doodle.prototype.clockHour = function()
 }
 
 /**
+ * Returns the quadrant of a doodle based on origin coordinates
+ *
+ * @returns {String} Description of quadrant
+ */
+ED.Doodle.prototype.quadrant = function()
+{
+    var returnString = "";
+    
+    // Use trigonometry on rotation field to determine quadrant
+    returnString += this.originY < 0?"supero":"infero";
+    if (this.drawing.eye == ED.eye.Right)
+    {
+        returnString += this.originX < 0?"temporal":"nasal";        
+    }
+    else
+    {
+        returnString += this.originX < 0?"nasal":"temporal";
+    }
+    
+    returnString += " quadrant";
+
+    return returnString;
+}
+
+/**
  * Returns the rotation converted to degrees
  *
  * @returns {Int} Degrees from 0 to 360
@@ -4982,16 +5097,16 @@ ED.Doodle.prototype.nearestAngleTo = function(_angle)
 ED.Doodle.prototype.json = function()
 {
 	var s = '{';
-    s = s + '"subclass": ' + '"' + this.className + '", '
-    s = s + '"originX": ' + this.originX.toFixed(0) + ', '
-    s = s + '"originY": ' + this.originY.toFixed(0) + ', '
-    s = s + '"radius": ' + this.radius.toFixed(0) + ', '
-    s = s + '"apexX": ' + this.apexX.toFixed(0) + ', '
-    s = s + '"apexY": ' + this.apexY.toFixed(0) + ', '
-    s = s + '"scaleX": ' + this.scaleX.toFixed(2) + ', '
-    s = s + '"scaleY": ' + this.scaleY.toFixed(2) + ', '
-    s = s + '"arc": ' + (this.arc * 180/Math.PI).toFixed(0)  + ', '
-    s = s + '"rotation": ' + (this.rotation * 180/Math.PI).toFixed(0) + ', '
+    s = s + '"subclass": ' + '"' + this.className + '", ';
+    s = s + '"originX": ' + this.originX.toFixed(0) + ', ';
+    s = s + '"originY": ' + this.originY.toFixed(0) + ', ';
+    s = s + '"radius": ' + this.radius.toFixed(0) + ', ';
+    s = s + '"apexX": ' + this.apexX.toFixed(0) + ', ';
+    s = s + '"apexY": ' + this.apexY.toFixed(0) + ', ';
+    s = s + '"scaleX": ' + this.scaleX.toFixed(2) + ', ';
+    s = s + '"scaleY": ' + this.scaleY.toFixed(2) + ', ';
+    s = s + '"arc": ' + (this.arc * 180/Math.PI).toFixed(0)  + ', ';
+    s = s + '"rotation": ' + (this.rotation * 180/Math.PI).toFixed(0) + ', ';
     s = s + '"order": ' + this.order.toFixed(0) + ', '
     
     s = s + '"squiggleArray": ['; 
