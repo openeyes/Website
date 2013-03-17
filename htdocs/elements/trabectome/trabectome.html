@@ -58,6 +58,9 @@
                         	
                         	// Anterior segment
                         	this.drawing.addDoodle('AntSeg');
+                        	
+                        	// Trabectome
+                        	this.drawing.addDoodle('Trabectome');
                         
                             this.drawing.deselectDoodles();
                             break;
@@ -129,7 +132,7 @@
 		</div>
 
 		<!-- Edit mode section -->
-		<div class="section" style="height:360px;" align="left">
+		<div class="section" style="height:380px;" align="left">
 			<h4>Edit mode:</h4>
 						
 			<!-- Right eye -->
@@ -182,40 +185,46 @@
 									<input class="checkbox" type="checkbox" id="chk_phd"/>
 		    					 </td>
 							</tr>
-						<tr>
-							<td align="left"><p class="lable" >Note:</p></td>
-							<td align="left">
-								<button class="actbutton" title="Creates a text report from the drawing" onclick="addToReport(); return false;" >Report</button>
-					        </td>
-						</tr>
-						<tr>
-							<td>
-							</td>
-							<td>
-								<textarea name="antseg" id="antseg" style="height:40px;"></textarea>
-							</td>
-						</tr>
-						<tr>
-							<td>
-							</td>
-							<td>
-								<select style="width:140px;" id="complicationsSelect" onchange="addToTextarea('complicationsSelect', 'complications')">
-									<option>Complications</option>
-									<option>Haemorrhage</option>
-									<option>Endothelial damage</option>
-									<option>Iris damage</option>
-									<option>Lens damage</option>
-									<option>Other</option>
-								</select>	
-							</td>
-						</tr>
-						<tr>
-							<td>
-							</td>
-							<td>
-								<textarea name="history" id="complications" style="height:50px; margin-top:10px;"></textarea>
-							</td>
-						</tr>
+							<tr>
+								<td align="left"><p class="lable" >HPMC:</p></td>
+								<td align="left">
+									<input class="checkbox" type="checkbox" id="chk_phd"/>
+		    					 </td>
+							</tr>
+							<tr>
+								<td align="left"><p class="lable" >Note:</p></td>
+								<td align="left">
+									<button class="actbutton" title="Creates a text report from the drawing" onclick="addToReport(); return false;" >Report</button>
+						        </td>
+							</tr>
+							<tr>
+								<td>
+								</td>
+								<td>
+									<textarea name="antseg" id="antseg" style="height:40px;"></textarea>
+								</td>
+							</tr>
+							<tr>
+								<td>
+								</td>
+								<td>
+									<select style="width:140px;" id="complicationsSelect" onchange="addToTextarea('complicationsSelect', 'complications')">
+										<option>Complications</option>
+										<option>Haemorrhage</option>
+										<option>Endothelial damage</option>
+										<option>Iris damage</option>
+										<option>Lens damage</option>
+										<option>Other</option>
+									</select>	
+								</td>
+							</tr>
+							<tr>
+								<td>
+								</td>
+								<td>
+									<textarea name="history" id="complications" style="height:40px; margin-top:10px;"></textarea>
+								</td>
+							</tr>
 						</tbody>	
 					</table>
 					
