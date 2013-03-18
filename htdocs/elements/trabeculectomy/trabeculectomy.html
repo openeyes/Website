@@ -60,12 +60,13 @@
                         	this.drawing.addDoodle('AntSeg');
                         	
                         	// Trabectome
-                        	this.drawing.addDoodle('Trabectome');
+                        	//this.drawing.addDoodle('Trabectome');
                         
                             this.drawing.deselectDoodles();
                             break;
                             
                         case 'doodleAdded':
+/*
                         	var doodle = _messageArray['object'];
                         	if (doodle.className == "SidePort")
                         	{
@@ -77,17 +78,8 @@
 		                        	this.drawing.repaint();
 	                        	}
                         	}
-                        	if (doodle.className == "CornealSuture")
-                        	{
-                        		// Check to see if a Trabectome doodle has been added
-                        		var trabectome = this.drawing.firstDoodleOfClass("Trabectome");
-	                        	if (trabectome)
-	                        	{
-		                        	doodle.setSimpleParameter('rotation', trabectome.rotation + Math.PI);
-		                        	this.drawing.repaint();
-	                        	}
-                        	}
                         	break;
+*/
                     }
                 }
             }
@@ -136,7 +128,7 @@
 		<h2>Trabectome operation note</h2>
 		<div class="section">
 			<h4>Description:</h4>
-			<p>This element allows recording of details of a Trabectome operation</p> 
+			<p>This element allows recording of details of a Trabeculectomy operation</p> 
 			
 			<p>Status: <b>Alpha</b></p>
 		</div>
@@ -165,9 +157,8 @@
 		                <button class="imgbutton" disabled="true" id="lockRPS" title="Lock" onclick="drawingEdit.lock(); return false;" ><img src="../../graphics/lock.gif" /></button>
 		                <button class="imgbutton" disabled="true" id="unlockRPS" title="Unlock" onclick="drawingEdit.unlock(); return false;" ><img src="../../graphics/unlock.gif" /></button>
 		                <br />
-						<button class="imgbutton" id="trabectomeRPS" title="Trabectome" onclick="drawingEdit.addDoodle('Trabectome'); return false;" ><img src="../../graphics/Trabectome.gif" /></button>
+						<button class="imgbutton" id="sidePortRPS" title="Trabectome" onclick="drawingEdit.addDoodle('Trabectome'); return false;" ><img src="../../graphics/Trabectome.gif" /></button>
 						<button class="imgbutton" id="sidePortRPS" title="Side port" onclick="drawingEdit.addDoodle('SidePort'); return false;" ><img src="../../graphics/SidePort.gif" /></button>
-						<button class="imgbutton" id="cornealSutureRPS" title="Corneal suture" onclick="drawingEdit.addDoodle('CornealSuture'); return false;" ><img src="../../graphics/CornealSuture.gif" /></button>
 		                <br />	  	                    
 	                </div>
                 	

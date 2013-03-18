@@ -4012,7 +4012,7 @@ ED.ConjunctivalFlap.prototype.setPropertyDefaults = function()
     
     // Update component of validation array for simple parameters
     this.parameterValidationArray['apexX']['range'].setMinAndMax(-0, +0);
-    this.parameterValidationArray['apexY']['range'].setMinAndMax(-480, -100);
+    this.parameterValidationArray['apexY']['range'].setMinAndMax(-640, -100);
     this.parameterValidationArray['arc']['range'].setMinAndMax(60 * Math.PI/180, 160 * Math.PI/180);
 }
 
@@ -4022,7 +4022,7 @@ ED.ConjunctivalFlap.prototype.setPropertyDefaults = function()
 ED.ConjunctivalFlap.prototype.setParameterDefaults = function()
 {
     this.arc = 120 * Math.PI/180;
-    this.apexY = -460;
+    this.apexY = -620;
 }
 
 /**
@@ -4039,7 +4039,7 @@ ED.ConjunctivalFlap.prototype.draw = function(_point)
 	ED.NerveFibreDefect.superclass.draw.call(this, _point);
 
     // Radius of limbus
-    var r = 280;
+    var r = 380;
 	
 	// Calculate parameters for arcs
 	var theta = this.arc/2;
@@ -4156,7 +4156,7 @@ ED.PartialThicknessScleralFlap.prototype.setPropertyDefaults = function()
     
     // Update component of validation array for simple parameters
     this.parameterValidationArray['apexX']['range'].setMinAndMax(-0, +0);
-    this.parameterValidationArray['apexY']['range'].setMinAndMax(-480, -100);
+    this.parameterValidationArray['apexY']['range'].setMinAndMax(-580, -520);
     this.parameterValidationArray['arc']['range'].setMinAndMax(20 * Math.PI/180, 80 * Math.PI/180);
 }
 
@@ -4166,7 +4166,7 @@ ED.PartialThicknessScleralFlap.prototype.setPropertyDefaults = function()
 ED.PartialThicknessScleralFlap.prototype.setParameterDefaults = function()
 {
     this.arc = 50 * Math.PI/180;
-    this.apexY = -400;
+    this.apexY = -540;
 }
 
 /**
@@ -4183,7 +4183,7 @@ ED.PartialThicknessScleralFlap.prototype.draw = function(_point)
 	ED.NerveFibreDefect.superclass.draw.call(this, _point);
     
     // Radius of limbus
-    var r = 280;
+    var r = 380;
 	
 	// Calculate parameters for arcs
 	var theta = this.arc/2;
