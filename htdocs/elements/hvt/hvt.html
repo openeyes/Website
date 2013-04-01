@@ -1,0 +1,250 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+
+    <!--   Javascript  -->	
+	<script language="JavaScript" src="../../scripts/elements.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../eyedraw2/ED_Drawing.js" type="text/javascript"></script>
+    <script language="JavaScript" src="../../eyedraw2/ED_Strabismus.js" type="text/javascript"></script>	
+	
+    <script type="text/javascript">
+        
+        // Variables assigned to each drawing on this page
+        var drawingEdit;
+        var drawingDisplay;
+        var controller;
+		                                    
+        // Runs on page load
+        function init()
+        {
+            // Get reference to the canvas elements
+            var canvasEdit = document.getElementById('canvasEdit');
+  
+            // Create drawing objects
+            drawingEdit = new ED.Drawing(canvasEdit, ED.eye.Right, 'RPS', true, {graphicsPath:'../../graphics/', scaleOn:'width'});
+            
+            // Instantiate controller object
+            controller = new eyeDrawController(drawingEdit);
+            
+            // Initialise drawings
+            drawingEdit.init();
+
+            // Controller class
+            function eyeDrawController(_drawing)
+            {
+                this.drawing = _drawing;
+                
+                // Specify call back function
+                this.callBack = callBack;
+                this.reset = reset;
+                
+                // Register for notifications with drawing object
+                this.drawing.registerForNotifications(this, 'callBack', []);
+                
+                // Doodles for right and left eye
+                var rightEye;
+                var leftEye;
+
+				// Method called for notification
+				function callBack(_messageArray)
+				{
+					switch (_messageArray['eventName'])
+					{
+					    // Eye draw image files all loaded
+					    case 'ready':
+					    	
+					    	// Grid
+					    	this.drawing.addDoodle('HVTGrid');
+					    	
+					    	// Right eye
+					    	rightEye = this.drawing.addDoodle(
+					        	'HVT',
+					        	{originX:-250, rotation:Math.PI/4},
+					        	{hor:{id:'horSelect', attribute:'value'}, ver:{id:'verSelect', attribute:'value'}, tor:{id:'torSelect', attribute:'value'}}
+					        );
+					    
+					        // Constrain x movement
+					        rightEye.parameterValidationArray['originX']['range'] = new ED.Range(-350, -150);
+					        
+					        // Left eye
+					        leftEye = this.drawing.addDoodle('HVT', {originX:+250, rotation:Math.PI/4});
+					        leftEye.parameterValidationArray['originX']['range'] = new ED.Range(+150, +350);
+					    
+					        this.drawing.deselectDoodles();
+					        break;
+					        
+					    case 'parameterChanged':
+					        var dood = _messageArray['object'].doodle;
+					        if (dood.className == "HVT" && typeof(rightEye) != 'undefined' && typeof(leftEye) != 'undefined')
+					        {
+					            // Right eye selected;
+					            if (dood.originX < 0)
+					            {
+					                // Set other eye properties directly, without triggering a notification
+					                leftEye.originX = -dood.originX;
+					                leftEye.originY = -dood.originY;
+					                leftEye.rotation = Math.PI/2 - dood.rotation;
+					            }
+					            // Left eye selected
+					            else
+					            {
+					                // Set other eye properties directly, without triggering a notification
+					                rightEye.originX = -dood.originX;
+					                rightEye.originY = -dood.originY;
+					                rightEye.rotation = Math.PI/2 - dood.rotation;
+					                
+					                // Update syncronised HTML elements
+					                rightEye.updateDependentParameters('originX');
+					                rightEye.updateDependentParameters('originY');
+					                rightEye.updateDependentParameters('rotation');
+					            }
+					
+					        }
+					    
+					        break;
+					}
+				}
+                
+                                
+                // Reset function
+		        function reset()
+		        {
+		            rightEye.setParameterWithAnimation('hor', 'None');
+		            rightEye.setParameterWithAnimation('ver', 'None');
+		            rightEye.setParameterWithAnimation('tor', 'None');
+		        }
+          
+            }
+            
+ 		}
+ 		
+ 		
+ 		function addToReport()
+        {
+        	// Get text from the applet and force into string type
+			var text = drawingEdit.report();
+		
+			// Use a RegEx to remove final comma and space
+			text = text.replace(/, +$/, '');
+			
+			// Get reference to report textarea
+			var repText = document.getElementById('antseg');
+			
+			repText.value = text;
+       }
+
+
+    </script>
+
+</head>
+
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+
+		<!-- Logo -->
+		<img id="logo" src="../../images/OpenEyes_logo.png" align="left" alt="OpenEyes - an open source electronic patient record" />
+		
+		<!-- Navigation bar -->
+		<div id="main_nav">
+			<ul>
+				<li><a id="home" href="../../index.html">Home</a></li>
+				<li><a id="news" href="../../news.html">News</a></li>
+				<li><a id="screenshots" href="../../screenshots.html">Screenshots</a></li>
+				<li><a id="documentation" href="../../documentation.html">Documentation</a></li>
+				<li><a id="contributors" href="../../contributors.html">Contributors</a></li>
+				<li><a id="development_selected" href="../../development.html">Development</a></li>
+				<li><a id="contact" href="../../contact.html">Contact us</a></li>
+			</ul>
+		</div>
+		
+		<!-- Element Title and Description -->
+		<h2>Recording HVT</h2>
+		<div class="section">
+			<h4>Description:</h4>
+			<p>This element suggests a concept for recording details of alignment/cover test results. The element would be repeated in a grid for each of the nine positions of gaze. The idea is not only to speed up data entry, but also to provide a visual overview of the problem.</p>
+			<p>Click on either 'eye' to move it into a horizontal and/or vertical misalignment. Dragging the yellow handle will enable addition of cyclotropias. Data may also be entered directly into the drop down menus, after which the diagram will update automatically.</p> 
+			
+			<p>Status: <b>Alpha</b></p>
+		</div>
+
+		<!-- Edit mode section -->
+		<div class="section" style="height:280px;" align="left">
+
+			<!-- Right eye -->
+			<div style ="width: 500px; float:left;">
+				<h4>Edit mode:</h4>
+				
+				<!-- Canvas -->
+				<span id="canvasTooltip"></span>
+                <canvas id="canvasEdit" class="ed_canvas_edit" width="300" height="150" tabindex="1" style="border: none;"></canvas>
+			
+				</br>
+				
+				<select id="horSelect">
+		            <option value="XT">XT</option>
+		            <option value="None" selected="true" >None</option>
+		            <option value="ET">ET</option>
+		        </select>
+		
+		        <select id="verSelect">
+		            <option value="R/L">R/L</option>
+		            <option value="None" selected="true" >None</option>
+		            <option value="L/R">L/R</option>
+		        </select>
+		            
+		        <select id="torSelect">
+		            <option value="Excyclotorsion">Excyclotorsion</option>
+		            <option value="None" selected="true" >None</option>
+		            <option value="Incyclotorsion">Incyclotorsion</option>
+		        </select>
+            
+		        </br>
+		        <button class="actbutton" onclick="controller.reset();return false;" >Reset</button>
+		
+			</div>
+
+			<!-- Left eye -->
+			<div style ="width:500px; float:left;">
+				<h4>View mode:</h4>
+		
+				<img width="400" src="./nine.png">
+			</div>
+			
+		<!-- End of Edit mode section -->
+		</div>
+
+		<!-- Steering Group -->			
+		<div class="section" align="left">
+			<h4>Steering Group:</h4>
+			<p>Strabismus</p>
+		</div>
+		
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26543772-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>

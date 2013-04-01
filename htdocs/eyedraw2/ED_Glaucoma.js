@@ -4442,3 +4442,916 @@ ED.Trabectome.prototype.description = function()
 {
     return "Trabecular meshwork ablation of " + this.degreesExtent() + " degrees centred around " + this.clockHour() + " o'clock";
 }
+
+/**
+ * Baerveldt tube
+ *
+ * @class Baerveldt
+ * @property {String} className Name of doodle subclass
+ * @param {Drawing} _drawing
+ * @param {Int} _originX
+ * @param {Int} _originY
+ * @param {Float} _radius
+ * @param {Int} _apexX
+ * @param {Int} _apexY
+ * @param {Float} _scaleX
+ * @param {Float} _scaleY
+ * @param {Float} _arc
+ * @param {Float} _rotation
+ * @param {Int} _order
+ */
+ED.Baerveldt = function(_drawing, _originX, _originY, _radius, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order)
+{
+	// Set classname
+	this.className = "Baerveldt";
+    
+    // Derived parameters (NB must set a value here to define parameter as a property of the object, even though value set later)
+    this.platePosition = 'STQ';
+
+	// Call superclass constructor
+	ED.Doodle.call(this, _drawing, _originX, _originY, _radius, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order);
+}
+
+/**
+ * Sets superclass and constructor
+ */
+ED.Baerveldt.prototype = new ED.Doodle;
+ED.Baerveldt.prototype.constructor = ED.Baerveldt;
+ED.Baerveldt.superclass = ED.Doodle.prototype;
+
+/**
+ * Sets handle attributes
+ */
+ED.Baerveldt.prototype.setHandles = function()
+{
+	this.handleArray[4] = new ED.Handle(null, true, ED.Mode.Apex, false);
+}
+
+/**
+ * Sets default dragging attributes
+ */
+ED.Baerveldt.prototype.setPropertyDefaults = function()
+{
+	this.isMoveable = false;
+	this.isRotatable = true;
+    this.snapToAngles = true;
+    
+    // Update component of validation array for simple parameters
+    this.parameterValidationArray['apexX']['range'].setMinAndMax(-0, +0);
+    this.parameterValidationArray['apexY']['range'].setMinAndMax(-600, -100);
+    
+    // Add complete validation arrays for derived parameters
+    this.parameterValidationArray['platePosition'] = {kind:'derived', type:'string', list:['STQ', 'SNQ', 'INQ', 'ITQ'], animate:true};
+    
+    // Array of angles to snap to
+    var phi = Math.PI/4;
+    this.anglesArray = [phi, 3 * phi, 5 * phi, 7 * phi];
+}
+
+/**
+ * Sets default parameters
+ */
+ED.Baerveldt.prototype.setParameterDefaults = function()
+{
+    this.apexY = -300;
+    this.setParameterFromString('platePosition', 'STQ');
+}
+
+/**
+ * Calculates values of dependent parameters. This function embodies the relationship between simple and derived parameters
+ * The returned parameters are animated if the 'animate' property in the parameterValidationArray is set to true
+ *
+ * @param {String} _parameter Name of parameter that has changed
+ * @value {Undefined} _value Value of parameter to calculate
+ * @returns {Array} Associative array of values of dependent parameters
+ */
+ED.Baerveldt.prototype.dependentParameterValues = function(_parameter, _value)
+{
+    var returnArray = new Array();
+
+    var isRE = (this.drawing.eye == ED.eye.Right);
+    var phi = Math.PI/4;
+    
+    switch (_parameter)
+    {
+        case 'rotation':
+            if (this.rotation > 0 && this.rotation <= 2 * phi)
+            {
+                returnArray['platePosition'] = isRE?'SNQ':'STQ';
+            }
+            else if (this.rotation > 2 * phi && this.rotation <= 4 * phi)
+            {
+                returnArray['platePosition'] = isRE?'INQ':'ITQ';
+            }
+            else if (this.rotation > 4 * phi && this.rotation <= 6 * phi)
+            {
+                returnArray['platePosition'] = isRE?'ITQ':'INQ';
+            }
+            else
+            {
+                returnArray['platePosition'] = isRE?'STQ':'SNQ';
+            }
+            break;
+            
+        case 'platePosition':
+            switch (_value)
+            {
+                case 'STQ':
+                    if (isRE)
+                    {
+                        returnArray['rotation'] = 7 * phi;
+                    }
+                    else
+                    {
+                        returnArray['rotation'] = phi;
+                    }
+                    break;
+                case 'SNQ':
+                    if (isRE)
+                    {
+                        returnArray['rotation'] = phi;
+                    }
+                    else
+                    {
+                        returnArray['rotation'] = 7 * phi;
+                    }
+                    break;
+                case 'INQ':
+                    if (isRE)
+                    {
+                        returnArray['rotation'] = 3 * phi;
+                    }
+                    else
+                    {
+                        returnArray['rotation'] = 5 * phi;
+                    }
+                    break;
+                case 'ITQ':
+                    if (isRE)
+                    {
+                        returnArray['rotation'] = 5 * phi;
+                    }
+                    else
+                    {
+                        returnArray['rotation'] = 3 * phi;
+                    }
+                    break;
+            }
+            break;
+    }
+
+    return returnArray;
+}
+
+/**
+ * Draws doodle or performs a hit test if a Point parameter is passed
+ *
+ * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+ */
+ED.Baerveldt.prototype.draw = function(_point)
+{
+	// Get context
+	var ctx = this.drawing.context;
+	
+	// Call draw method in superclass
+	ED.Baerveldt.superclass.draw.call(this, _point);
+	
+	// Boundary path
+	ctx.beginPath();
+    
+    // Scaling factor
+    var s = 0.41666667;
+    
+    // Vertical shift
+    var d = -740;
+    
+    // Plate
+    ctx.moveTo(-400	* s, 0 * s + d);
+    ctx.bezierCurveTo(-400 * s, -100 * s + d, -300 * s, -200 * s + d, -200 * s, -200 * s + d);
+    ctx.bezierCurveTo(-100 * s, -200 * s + d, -58 * s, -136 * s + d, 0 * s, -135 * s + d);
+    ctx.bezierCurveTo(54 * s, -136 * s + d, 100 * s, -200 * s + d, 200 * s, -200 * s + d);
+    ctx.bezierCurveTo(300 * s, -200 * s + d, 400 * s, -100 * s + d, 400 * s, 0 * s + d);
+    ctx.bezierCurveTo(400 * s, 140 * s + d, 200 * s, 250 * s + d, 0 * s, 250 * s + d);
+    ctx.bezierCurveTo(-200 * s, 250 * s + d, -400 * s, 140 * s + d, -400 * s, 0 * s + d);
+    
+    // Connection flange
+    ctx.moveTo(-160 * s, 230 * s + d);
+    ctx.lineTo(-120 * s, 290 * s + d);
+    ctx.lineTo(120 * s, 290 * s + d);
+    ctx.lineTo(160 * s, 230 * s + d);
+    ctx.bezierCurveTo(120 * s, 250 * s + d, -120 * s, 250 * s + d, -160 * s, 230 * s + d);
+    
+    // Set Attributes
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = "rgba(120,120,120,0.75)";
+    ctx.fillStyle = "rgba(220,220,220,0.5)";
+	
+	// Draw boundary path (also hit testing)
+	this.drawBoundary(_point);
+	
+	// Other stuff here
+	if (this.drawFunctionMode == ED.drawFunctionMode.Draw)
+	{
+        // Spots
+        this.drawSpot(ctx, -240 * s, -40 * s + d, 10, "rgba(150,150,150,0.5)");
+        this.drawSpot(ctx, -120 * s, 40 * s + d, 10, "rgba(150,150,150,0.5)");
+        this.drawSpot(ctx, 120 * s, 40 * s + d, 10, "rgba(150,150,150,0.5)");
+        this.drawSpot(ctx, 240 * s, -40 * s + d, 10, "rgba(150,150,150,0.5)");
+        this.drawSpot(ctx, -100 * s, 260 * s + d, 5, "rgba(150,150,150,0.5)");
+        this.drawSpot(ctx, 100 * s, 260 * s + d, 5, "rgba(150,150,150,0.5)");
+        
+        // Ridge on flange
+        ctx.beginPath()
+        ctx.moveTo(-30 * s, 250 * s + d);
+        ctx.lineTo(-30 * s, 290 * s + d);
+        ctx.moveTo(30 * s, 250 * s + d);
+        ctx.lineTo(30 * s, 290 * s + d);
+        
+        // Tube
+        ctx.moveTo(-20 * s, 290 * s + d);
+        ctx.lineTo(-20 * s, this.apexY);
+        ctx.lineTo(20 * s, this.apexY);
+        ctx.lineTo(20 * s, 290 * s + d);
+        
+        ctx.strokeStyle = "rgba(150,150,150,0.5)";
+        ctx.stroke();
+	}
+	
+	// Coordinates of handles (in canvas plane)
+	this.handleArray[4].location = this.transform.transformPoint(new ED.Point(this.apexX, this.apexY));
+	
+	// Draw handles if selected
+	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
+    
+	// Return value indicating successful hittest
+	return this.isClicked;
+}
+
+/**
+ * Returns a string containing a text description of the doodle
+ *
+ * @returns {String} Description of doodle
+ */
+ED.Baerveldt.prototype.description = function()
+{
+    var descArray = {STQ:'superotemporal', SNQ:'superonasal', INQ:'inferonasal', ITQ:'inferotemporal'};
+    
+    return "Baerveldt tube in the "+ descArray[this.platePosition] + " quadrant";
+}
+
+/**
+ * Ahmed tube
+ *
+ * @class Ahmed
+ * @property {String} className Name of doodle subclass
+ * @param {Drawing} _drawing
+ * @param {Int} _originX
+ * @param {Int} _originY
+ * @param {Float} _radius
+ * @param {Int} _apexX
+ * @param {Int} _apexY
+ * @param {Float} _scaleX
+ * @param {Float} _scaleY
+ * @param {Float} _arc
+ * @param {Float} _rotation
+ * @param {Int} _order
+ */
+ED.Ahmed = function(_drawing, _originX, _originY, _radius, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order)
+{
+	// Set classname
+	this.className = "Ahmed";
+    
+    // Derived parameters (NB must set a value here to define parameter as a property of the object, even though value set later)
+    this.platePosition = 'STQ';
+    
+	// Call superclass constructor
+	ED.Doodle.call(this, _drawing, _originX, _originY, _radius, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order);
+}
+
+/**
+ * Sets superclass and constructor
+ */
+ED.Ahmed.prototype = new ED.Doodle;
+ED.Ahmed.prototype.constructor = ED.Ahmed;
+ED.Ahmed.superclass = ED.Doodle.prototype;
+
+/**
+ * Sets handle attributes
+ */
+ED.Ahmed.prototype.setHandles = function()
+{
+	this.handleArray[4] = new ED.Handle(null, true, ED.Mode.Apex, false);
+}
+
+/**
+ * Sets default dragging attributes
+ */
+ED.Ahmed.prototype.setPropertyDefaults = function()
+{
+	this.isMoveable = false;
+	this.isRotatable = true;
+    this.snapToAngles = true;
+    
+    // Update component of validation array for simple parameters
+    this.parameterValidationArray['apexX']['range'].setMinAndMax(-0, +0);
+    this.parameterValidationArray['apexY']['range'].setMinAndMax(-600, -100);
+    
+    // Add complete validation arrays for derived parameters
+    this.parameterValidationArray['platePosition'] = {kind:'derived', type:'string', list:['STQ', 'SNQ', 'INQ', 'ITQ'], animate:true};
+    
+    // Array of angles to snap to
+    var phi = Math.PI/4;
+    this.anglesArray = [phi, 3 * phi, 5 * phi, 7 * phi];
+}
+
+/**
+ * Sets default parameters
+ */
+ED.Ahmed.prototype.setParameterDefaults = function()
+{
+    this.apexY = -300;
+    this.setParameterFromString('platePosition', 'STQ');
+}
+
+/**
+ * Calculates values of dependent parameters. This function embodies the relationship between simple and derived parameters
+ * The returned parameters are animated if the 'animate' property in the parameterValidationArray is set to true
+ *
+ * @param {String} _parameter Name of parameter that has changed
+ * @value {Undefined} _value Value of parameter to calculate
+ * @returns {Array} Associative array of values of dependent parameters
+ */
+ED.Ahmed.prototype.dependentParameterValues = function(_parameter, _value)
+{
+    var returnArray = new Array();
+    
+    var isRE = (this.drawing.eye == ED.eye.Right);
+    var phi = Math.PI/4;
+    
+    switch (_parameter)
+    {
+        case 'rotation':
+            if (this.rotation > 0 && this.rotation <= 2 * phi)
+            {
+                returnArray['platePosition'] = isRE?'SNQ':'STQ';
+            }
+            else if (this.rotation > 2 * phi && this.rotation <= 4 * phi)
+            {
+                returnArray['platePosition'] = isRE?'INQ':'ITQ';
+            }
+            else if (this.rotation > 4 * phi && this.rotation <= 6 * phi)
+            {
+                returnArray['platePosition'] = isRE?'ITQ':'INQ';
+            }
+            else
+            {
+                returnArray['platePosition'] = isRE?'STQ':'SNQ';
+            }
+            break;
+            
+        case 'platePosition':
+            switch (_value)
+        {
+            case 'STQ':
+                if (isRE)
+                {
+                    returnArray['rotation'] = 7 * phi;
+                }
+                else
+                {
+                    returnArray['rotation'] = phi;
+                }
+                break;
+            case 'SNQ':
+                if (isRE)
+                {
+                    returnArray['rotation'] = phi;
+                }
+                else
+                {
+                    returnArray['rotation'] = 7 * phi;
+                }
+                break;
+            case 'INQ':
+                if (isRE)
+                {
+                    returnArray['rotation'] = 3 * phi;
+                }
+                else
+                {
+                    returnArray['rotation'] = 5 * phi;
+                }
+                break;
+            case 'ITQ':
+                if (isRE)
+                {
+                    returnArray['rotation'] = 5 * phi;
+                }
+                else
+                {
+                    returnArray['rotation'] = 3 * phi;
+                }
+                break;
+        }
+            break;
+    }
+    
+    return returnArray;
+}
+
+/**
+ * Draws doodle or performs a hit test if a Point parameter is passed
+ *
+ * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+ */
+ED.Ahmed.prototype.draw = function(_point)
+{
+	// Get context
+	var ctx = this.drawing.context;
+	
+	// Call draw method in superclass
+	ED.Ahmed.superclass.draw.call(this, _point);
+	
+	// Boundary path
+	ctx.beginPath();
+    
+    // Scaling factor
+    var s = 0.41666667;
+    
+    // Vertical shift
+    var d = -740;
+    
+    // Plate
+    ctx.moveTo(-300	* s, 0 * s + d);
+    ctx.bezierCurveTo(-300 * s, -100 * s + d, -200 * s, -400 * s + d, 0 * s, -400 * s + d);
+    ctx.bezierCurveTo(200 * s, -400 * s + d, 300 * s, -100 * s + d, 300 * s, 0 * s + d);
+    ctx.bezierCurveTo(300 * s, 140 * s + d, 200 * s, 250 * s + d, 0 * s, 250 * s + d);
+    ctx.bezierCurveTo(-200 * s, 250 * s + d, -300 * s, 140 * s + d, -300 * s, 0 * s + d);
+    
+    // Connection flange
+    ctx.moveTo(-160 * s, 230 * s + d);
+    ctx.lineTo(-120 * s, 290 * s + d);
+    ctx.lineTo(120 * s, 290 * s + d);
+    ctx.lineTo(160 * s, 230 * s + d);
+    ctx.bezierCurveTo(120 * s, 250 * s + d, -120 * s, 250 * s + d, -160 * s, 230 * s + d);
+    
+    // Set Attributes
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = "rgba(120,120,120,0.75)";
+    ctx.fillStyle = "rgba(220,220,220,0.5)";
+	
+	// Draw boundary path (also hit testing)
+	this.drawBoundary(_point);
+	
+	// Other stuff here
+	if (this.drawFunctionMode == ED.drawFunctionMode.Draw)
+	{
+        // Spots
+        this.drawSpot(ctx, 0 * s, -230 * s + d, 20 * s, "white");
+        this.drawSpot(ctx, -180 * s, -180 * s + d, 20 * s, "white");
+        this.drawSpot(ctx, 180 * s, -180 * s + d, 20 * s, "white");
+        
+        // Trapezoid mechanism
+        ctx.beginPath()
+        ctx.moveTo(-100 * s, 230 * s + d);
+        ctx.lineTo(100 * s, 230 * s + d);
+        ctx.lineTo(200 * s, 0 * s + d);
+        ctx.lineTo(40 * s, 0 * s + d);
+        ctx.arcTo(0, -540 * s + d, -40 * s, 0 * s + d, 15);
+        ctx.lineTo(-40 * s, 0 * s + d);
+        ctx.lineTo(-200 * s, 0 * s + d);
+        ctx.closePath();
+        
+        ctx.fillStyle = "rgba(250,250,250,0.7)";
+        ctx.fill();
+        
+        // Lines
+        ctx.moveTo(-80 * s, -40 * s + d);
+        ctx.lineTo(-160 * s, -280 * s + d);
+        ctx.moveTo(80 * s, -40 * s + d);
+        ctx.lineTo(160 * s, -280 * s + d);
+        ctx.lineWidth = 8;
+        ctx.strokeStyle = "rgba(250,250,250,0.7)";
+        ctx.stroke();
+
+        // Ridge on flange
+        ctx.beginPath()
+        ctx.moveTo(-30 * s, 250 * s + d);
+        ctx.lineTo(-30 * s, 290 * s + d);
+        ctx.moveTo(30 * s, 250 * s + d);
+        ctx.lineTo(30 * s, 290 * s + d);
+        
+        // Tube
+        ctx.moveTo(-20 * s, 290 * s + d);
+        ctx.lineTo(-20 * s, this.apexY);
+        ctx.lineTo(20 * s, this.apexY);
+        ctx.lineTo(20 * s, 290 * s + d);
+        
+        ctx.strokeStyle = "rgba(150,150,150,0.5)";
+        ctx.stroke();
+	}
+	
+	// Coordinates of handles (in canvas plane)
+	this.handleArray[4].location = this.transform.transformPoint(new ED.Point(this.apexX, this.apexY));
+	
+	// Draw handles if selected
+	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
+    
+	// Return value indicating successful hittest
+	return this.isClicked;
+}
+
+/**
+ * Returns a string containing a text description of the doodle
+ *
+ * @returns {String} Description of doodle
+ */
+ED.Ahmed.prototype.description = function()
+{
+    var descArray = {STQ:'superotemporal', SNQ:'superonasal', INQ:'inferonasal', ITQ:'inferotemporal'};
+    
+    return "Ahmed tube in the "+ descArray[this.platePosition] + " quadrant";
+}
+
+/**
+ * Molteno tube
+ *
+ * @class Molteno
+ * @property {String} className Name of doodle subclass
+ * @param {Drawing} _drawing
+ * @param {Int} _originX
+ * @param {Int} _originY
+ * @param {Float} _radius
+ * @param {Int} _apexX
+ * @param {Int} _apexY
+ * @param {Float} _scaleX
+ * @param {Float} _scaleY
+ * @param {Float} _arc
+ * @param {Float} _rotation
+ * @param {Int} _order
+ */
+ED.Molteno = function(_drawing, _originX, _originY, _radius, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order)
+{
+	// Set classname
+	this.className = "Molteno";
+    
+    // Derived parameters (NB must set a value here to define parameter as a property of the object, even though value set later)
+    this.platePosition = 'STQ';
+    
+	// Call superclass constructor
+	ED.Doodle.call(this, _drawing, _originX, _originY, _radius, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order);
+}
+
+/**
+ * Sets superclass and constructor
+ */
+ED.Molteno.prototype = new ED.Doodle;
+ED.Molteno.prototype.constructor = ED.Molteno;
+ED.Molteno.superclass = ED.Doodle.prototype;
+
+/**
+ * Sets handle attributes
+ */
+ED.Molteno.prototype.setHandles = function()
+{
+	this.handleArray[4] = new ED.Handle(null, true, ED.Mode.Apex, false);
+}
+
+/**
+ * Sets default dragging attributes
+ */
+ED.Molteno.prototype.setPropertyDefaults = function()
+{
+	this.isMoveable = false;
+	this.isRotatable = true;
+    this.snapToAngles = true;
+    
+    // Update component of validation array for simple parameters
+    this.parameterValidationArray['apexX']['range'].setMinAndMax(-0, +0);
+    this.parameterValidationArray['apexY']['range'].setMinAndMax(-600, -100);
+    
+    // Add complete validation arrays for derived parameters
+    this.parameterValidationArray['platePosition'] = {kind:'derived', type:'string', list:['STQ', 'SNQ', 'INQ', 'ITQ'], animate:true};
+    
+    // Array of angles to snap to
+    var phi = Math.PI/4;
+    this.anglesArray = [phi, 3 * phi, 5 * phi, 7 * phi];
+}
+
+/**
+ * Sets default parameters
+ */
+ED.Molteno.prototype.setParameterDefaults = function()
+{
+    this.apexY = -300;
+    this.setParameterFromString('platePosition', 'STQ');
+}
+
+/**
+ * Calculates values of dependent parameters. This function embodies the relationship between simple and derived parameters
+ * The returned parameters are animated if the 'animate' property in the parameterValidationArray is set to true
+ *
+ * @param {String} _parameter Name of parameter that has changed
+ * @value {Undefined} _value Value of parameter to calculate
+ * @returns {Array} Associative array of values of dependent parameters
+ */
+ED.Molteno.prototype.dependentParameterValues = function(_parameter, _value)
+{
+    var returnArray = new Array();
+    
+    var isRE = (this.drawing.eye == ED.eye.Right);
+    var phi = Math.PI/4;
+    
+    switch (_parameter)
+    {
+        case 'rotation':
+            if (this.rotation > 0 && this.rotation <= 2 * phi)
+            {
+                returnArray['platePosition'] = isRE?'SNQ':'STQ';
+            }
+            else if (this.rotation > 2 * phi && this.rotation <= 4 * phi)
+            {
+                returnArray['platePosition'] = isRE?'INQ':'ITQ';
+            }
+            else if (this.rotation > 4 * phi && this.rotation <= 6 * phi)
+            {
+                returnArray['platePosition'] = isRE?'ITQ':'INQ';
+            }
+            else
+            {
+                returnArray['platePosition'] = isRE?'STQ':'SNQ';
+            }
+            break;
+            
+        case 'platePosition':
+            switch (_value)
+        {
+            case 'STQ':
+                if (isRE)
+                {
+                    returnArray['rotation'] = 7 * phi;
+                }
+                else
+                {
+                    returnArray['rotation'] = phi;
+                }
+                break;
+            case 'SNQ':
+                if (isRE)
+                {
+                    returnArray['rotation'] = phi;
+                }
+                else
+                {
+                    returnArray['rotation'] = 7 * phi;
+                }
+                break;
+            case 'INQ':
+                if (isRE)
+                {
+                    returnArray['rotation'] = 3 * phi;
+                }
+                else
+                {
+                    returnArray['rotation'] = 5 * phi;
+                }
+                break;
+            case 'ITQ':
+                if (isRE)
+                {
+                    returnArray['rotation'] = 5 * phi;
+                }
+                else
+                {
+                    returnArray['rotation'] = 3 * phi;
+                }
+                break;
+        }
+            break;
+    }
+    
+    return returnArray;
+}
+
+/**
+ * Draws doodle or performs a hit test if a Point parameter is passed
+ *
+ * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+ */
+ED.Molteno.prototype.draw = function(_point)
+{
+	// Get context
+	var ctx = this.drawing.context;
+	
+	// Call draw method in superclass
+	ED.Molteno.superclass.draw.call(this, _point);
+	
+	// Boundary path
+	ctx.beginPath();
+    
+    // Scaling factor
+    var s = 0.41666667;
+    
+    // Vertical shift
+    var d = -740;
+    
+    // Plate
+    ctx.arc(0, d, 310 * s, 0, Math.PI * 2, true);
+    
+    // Set Attributes
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = "rgba(120,120,120,0.75)";
+    ctx.fillStyle = "rgba(220,220,220,0.5)";
+	
+	// Draw boundary path (also hit testing)
+	this.drawBoundary(_point);
+	
+	// Other stuff here
+	if (this.drawFunctionMode == ED.drawFunctionMode.Draw)
+	{
+        // Inner ring
+        ctx.beginPath();
+        ctx.arc(0, d, 250 * s, 0, Math.PI * 2, true);
+        ctx.stroke();
+        
+        // Suture holes
+        this.drawSpot(ctx, -200 * s, 200 * s + d, 5, "rgba(255,255,255,1)");
+        this.drawSpot(ctx, -200 * s, -200 * s + d, 5, "rgba(255,255,255,1)");
+        this.drawSpot(ctx, 200 * s, -200 * s + d, 5, "rgba(255,255,255,1)");
+        this.drawSpot(ctx, 200 * s, 200 * s + d, 5, "rgba(255,255,255,1)");
+        
+        // Tube
+        ctx.moveTo(-20 * s, 290 * s + d);
+        ctx.lineTo(-20 * s, this.apexY);
+        ctx.lineTo(20 * s, this.apexY);
+        ctx.lineTo(20 * s, 290 * s + d);
+        
+        ctx.strokeStyle = "rgba(150,150,150,0.5)";
+        ctx.stroke();
+	}
+	
+	// Coordinates of handles (in canvas plane)
+	this.handleArray[4].location = this.transform.transformPoint(new ED.Point(this.apexX, this.apexY));
+	
+	// Draw handles if selected
+	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
+    
+	// Return value indicating successful hittest
+	return this.isClicked;
+}
+
+/**
+ * Returns a string containing a text description of the doodle
+ *
+ * @returns {String} Description of doodle
+ */
+ED.Molteno.prototype.description = function()
+{
+    var descArray = {STQ:'superotemporal', SNQ:'superonasal', INQ:'inferonasal', ITQ:'inferotemporal'};
+    
+    return "Molteno tube in the "+ descArray[this.platePosition] + " quadrant";
+}
+
+/**
+ * Scleral Patch
+ *
+ * @class ScleralPatch
+ * @property {String} className Name of doodle subclass
+ * @param {Drawing} _drawing
+ * @param {Int} _originX
+ * @param {Int} _originY
+ * @param {Float} _radius
+ * @param {Int} _apexX
+ * @param {Int} _apexY
+ * @param {Float} _scaleX
+ * @param {Float} _scaleY
+ * @param {Float} _arc
+ * @param {Float} _rotation
+ * @param {Int} _order
+ */
+ED.ScleralPatch = function(_drawing, _originX, _originY, _radius, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order)
+{
+	// Set classname
+	this.className = "Patch";
+
+	// Call superclass constructor
+	ED.Doodle.call(this, _drawing, _originX, _originY, _radius, _apexX, _apexY, _scaleX, _scaleY, _arc, _rotation, _order);
+}
+
+/**
+ * Sets superclass and constructor
+ */
+ED.ScleralPatch.prototype = new ED.Doodle;
+ED.ScleralPatch.prototype.constructor = ED.ScleralPatch;
+ED.ScleralPatch.superclass = ED.Doodle.prototype;
+
+/**
+ * Sets handle attributes
+ */
+ED.ScleralPatch.prototype.setHandles = function()
+{
+    this.handleArray[4] = new ED.Handle(null, true, ED.Mode.Apex, false);
+}
+
+/**
+ * Sets default dragging attributes
+ */
+ED.ScleralPatch.prototype.setPropertyDefaults = function()
+{
+	this.isOrientated = true;
+    
+    // Update component of validation array for simple parameters
+    this.parameterValidationArray['apexX']['range'].setMinAndMax(-20, +200);
+    this.parameterValidationArray['apexY']['range'].setMinAndMax(-200, -20);
+}
+
+/**
+ * Sets default parameters
+ */
+ED.ScleralPatch.prototype.setParameterDefaults = function()
+{
+    this.apexX = 50;
+    this.apexY = -70;
+    this.originY = -260;
+    
+    
+    // Patchs are usually temporal
+//    if(this.drawing.eye == ED.eye.Right)
+//    {
+//        this.originX = -260;
+//        this.rotation = -Math.PI/4;
+//    }
+//    else
+//    {
+//        this.originX = 260;
+//        this.rotation = Math.PI/4;
+//    }
+}
+
+/**
+ * Draws doodle or performs a hit test if a Point parameter is passed
+ *
+ * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+ */
+ED.ScleralPatch.prototype.draw = function(_point)
+{
+	// Get context
+	var ctx = this.drawing.context;
+	
+	// Call draw method in superclass
+	ED.ScleralPatch.superclass.draw.call(this, _point);
+    
+    // Boundary path
+	ctx.beginPath();
+    
+    ctx.rect(-this.apexX, this.apexY, Math.abs(2 * this.apexX), Math.abs(2 * this.apexY));
+    
+	// Close path
+	ctx.closePath();
+    
+    // Colour of fill
+    ctx.fillStyle = "rgba(200,200,50,0.5)";
+    ctx.strokeStyle = "rgba(120,120,120,0)";
+    
+	// Draw boundary path (also hit testing)
+	this.drawBoundary(_point);
+	
+	// Other stuff here
+	if (this.drawFunctionMode == ED.drawFunctionMode.Draw)
+    {
+//        // Suture knots
+//        this.drawSpot(ctx, -50, -50, 5, "blue");
+//        this.drawSpot(ctx, -50, 50, 5, "blue");
+//        this.drawSpot(ctx, 50, -50, 5, "blue");
+//        this.drawSpot(ctx, 50, 50, 5, "blue");
+//        
+//        // Suture thread ends
+//        this.drawLine(ctx, -60, -60, -50, -50, 2, "blue");
+//        this.drawLine(ctx, -50, -50, -60, -40, 2, "blue");
+//        this.drawLine(ctx, -60, 60, -50, 50, 2, "blue");
+//        this.drawLine(ctx, -50, 50, -60, 40, 2, "blue");
+//        this.drawLine(ctx, 60, -60, 50, -50, 2, "blue");
+//        this.drawLine(ctx, 50, -50, 60, -40, 2, "blue");
+//        this.drawLine(ctx, 60, 60, 50, 50, 2, "blue");
+//        this.drawLine(ctx, 50, 50, 60, 40, 2, "blue");
+	}
+    
+    // Coordinates of handles (in canvas plane)
+    this.handleArray[4].location = this.transform.transformPoint(new ED.Point(this.apexX, this.apexY));
+    
+	// Draw handles if selected
+	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
+	
+	// Return value indicating successful hittest
+	return this.isClicked;
+}
+
+/**
+ * Returns a string containing a text description of the doodle
+ *
+ * @returns {String} Description of doodle
+ */
+ED.ScleralPatch.prototype.description = function()
+{
+    return "Scleral patch";
+}
