@@ -15,6 +15,13 @@
 	text-align: right;
 }
 
+.radio {
+	color: #666666;
+	text-align: left;
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
 .complable {
 	margin-right: 4px;
 	text-align: right;

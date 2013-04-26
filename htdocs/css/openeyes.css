@@ -211,6 +211,7 @@ td {
 }
 
 /* Canvas tooltip */
+/*
 #canvasTooltip {
     display: none;
     position: absolute;
@@ -222,4 +223,20 @@ td {
     font-family: Calibri, Tahoma, Geneva, sans-serif;
     font-size: 0.8em;
     background: #FFFFAA; border: 1px solid #AAAAAA; 
+}
+*/
+
+/* Canvas tooltip */
+.canvasTooltip {
+	display: none;
+	position: absolute;
+	width: auto;
+	height: auto;
+	padding: 4px 6px;
+	box-shadow: 1px 3px 8px 1px rgba(0, 0, 0, 0.3);
+	font-family: sans-serif;
+	font-size: 12px;
+	background: #fff;
+	border: 1px solid #ccc; 
+	z-index:99;
 }
