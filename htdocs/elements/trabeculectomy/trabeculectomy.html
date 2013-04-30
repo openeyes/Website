@@ -245,10 +245,6 @@
 								}
 							}
 							break;
-						
-						case 'hover':
-							console.log('hover');
-							break;
 					}
                 }
             }
@@ -321,6 +317,7 @@
 					<button class="imgbutton" id="TrabySutureRPS" title="Trabeculectomy suture" onclick="drawingEdit.addDoodle('TrabySuture'); return false;" ><img src="../../graphics/TrabySuture.gif" /></button>
 					<button class="imgbutton" id="piRPS" title="Peripheral iridectomy" onclick="drawingEdit.addDoodle('PI'); return false;" ><img src="../../graphics/PI.gif" /></button>
 					<button class="imgbutton" id="sidePortRPS" title="Side port" onclick="drawingEdit.addDoodle('SidePort'); return false;" ><img src="../../graphics/SidePort.gif" /></button>
+					<button class="imgbutton" id="sidePortRPS" title="Side port" onclick="drawingEdit.addDoodle('ScleralPatch'); return false;" ><img src="../../graphics/SidePort.gif" /></button>
 	                <br />	  	                    
                 </div>
 	                		
@@ -334,7 +331,7 @@
 			<!-- Controls -->
 			<div style='float:left; width: 385px;height: 320px;'>
 			
-				<table cellspacing="0" width="380" style="border:1px solid gray">
+				<table cellspacing="0" width="380" style="border:1px solid gray; margin-bottom:10px;">
 					<tbody>
 						<tr>
 							<td align="left"><p class="lable" >Stay suture:</p></td>
@@ -416,17 +413,12 @@
 						        </select>
 	    					 </td>
 						</tr>
-						<tr>
-							<td align="left"><p class="lable" > </p></td>
-							<td></td>
-						</tr>
 					</tbody>
 					
 				</table>
 				
-				</br>
 						
-				<table cellspacing="0" width="380" style="border:1px solid gray">
+				<table cellspacing="0" width="380" style="border:1px solid gray;margin-bottom:10px;">
 					<tbody>	
 						<tr>
 							<td align="left"><p class="lable" >Site:</p></td>
@@ -480,36 +472,56 @@
 						        </select>
 	    					 </td>
 						</tr>
+					</tbody>	
+				</table>
+				
+				<table cellspacing="0" width="380" style="border:1px solid gray;">
+					<tbody>	
 						<tr>
-							<td align="left"><p class="lable" > </p></td>
-							<td></td>
+							<td align="left" width="34%"><p class="lable" >Viscoelastic:</p></td>
+							<td align="left" width="66%">
+						        <select id="siteSelect" style="width:auto;">
+						            <option>None</option>
+						            <option>HPMC</option>
+						            <option>Healon</option>
+						            <option>Provisc</option>
+						        </select>
+	    					 </td>
+						</tr>
+						<tr>
+							<td align="left"><p class="lable" >Removed:</p></td>
+							<td align="left">
+								<input class="checkbox" type="checkbox" id="chk_phd"/>
+	    					 </td>
+						</tr>
+						<tr>
+							<td align="left" width="34%"><p class="lable" >Flow:</p></td>
+							<td align="left" width="66%">
+						        <select id="siteSelect" style="width:auto;">
+						            <option>None</option>
+						            <option>Slow</option>
+						            <option>With pressure</option>
+						        </select>
+	    					 </td>
 						</tr>
 					</tbody>	
 				</table>
 			</div>
 				
 			<!-- Other data -->
-			<div style ="width:385px; float:right;">	
-				<table cellspacing="0" width="140" >
+			<div style ="width:385px; float:right;">
+					
+				<table cellspacing="0" width="380" >
 					<tbody>
 						<tr>
-							<td align="left"><p class="lable" >Note:</p></td>
 							<td align="left">
-								<button class="actbutton" title="Creates a text report from the drawing" onclick="addToReport(); return false;" >Report</button>
+								<button class="actbutton" style="margin-top:0px;margin-bottom:6px;" onclick="addToReport(); return false;" >Report</button>
+								<textarea id="antseg" style="height:65px; width:380px;"></textarea>
 							</td>
 						</tr>
 						<tr>
 							<td>
-							</td>
-							<td>
-								<textarea name="antseg" id="antseg" style="height:100px;"></textarea>
-							</td>
-						</tr>
-						<tr>
-							<td>
-							</td>
-							<td>
-								<select style="width:140px;" id="difficultiesSelect" onchange="addToTextarea('difficultiesSelect', 'difficulties')">
+								<select style="width:140px;" id="difficultiesSelect" onchange="addToTextarea('difficultiesSelect', 'difficulties', true)">
 									<option>Per-op difficulties</option>
 									<option>Uncooperative patient</option>
 									<option>Uncontrolled eye movement</option>
@@ -533,16 +545,12 @@
 						</tr>
 						<tr>
 							<td>
-							</td>
-							<td>
-								<textarea id="difficulties" style="height:80px; margin-top:10px;"></textarea>
+								<textarea id="difficulties" style="height:58px; width:380px; margin-top:10px;"></textarea>
 							</td>
 						</tr>
 						<tr>
 							<td>
-							</td>
-							<td>
-								<select style="width:140px;" id="complicationsSelect" onchange="addToTextarea('complicationsSelect', 'complications')">
+								<select style="width:140px;" id="complicationsSelect" onchange="addToTextarea('complicationsSelect', 'complications', true)">
 									<option>Complications</option>
 									<option>Haemorrhage</option>
 									<option>Endothelial damage</option>
@@ -554,9 +562,7 @@
 						</tr>
 						<tr>
 							<td>
-							</td>
-							<td>
-								<textarea name="history" id="complications" style="height:80px; margin-top:10px;"></textarea>
+								<textarea id="complications" style="height:58px; width:380px; margin-top:10px;"></textarea>
 							</td>
 						</tr>
 					</tbody>

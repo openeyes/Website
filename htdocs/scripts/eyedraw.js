@@ -30409,10 +30409,12 @@ ED.TrabyFlap.prototype.setPropertyDefaults = function()
 	this.isMoveable = false;
     this.isArcSymmetrical = true;
     this.snapToArc = true;
+    this.isDeletable = false;
     
     // Update component of validation array for simple parameters
     this.parameterValidationArray['apexX']['range'].setMinAndMax(-50, +50);
     this.parameterValidationArray['apexY']['range'].setMinAndMax(-440, -440);
+    this.parameterValidationArray['rotation']['delta'] = 0.1;
     
     // Add complete validation arrays for derived parameters
     this.parameterValidationArray['site'] = {kind:'derived', type:'string', list:['Superior', 'Superonasal', 'Superotemporal'], animate:true};

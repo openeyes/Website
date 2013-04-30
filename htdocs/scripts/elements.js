@@ -4,7 +4,7 @@
  
 
 // Takes selection from a select dropdown and adds to a text area, with comma if appropriate
-function addToTextarea(selectId, textareaId)
+function addToTextarea(selectId, textareaId, fixed)
 {
 	// Get references to select and textarea
 	var select = document.getElementById(selectId);
@@ -29,7 +29,10 @@ function addToTextarea(selectId, textareaId)
 	textArea.value = textArea.value + text;
 	
 	// Adjust height of target textarea
-	adjustHeight(textareaId, 40);
+	if (typeof(fixed) == 'undefined')
+	{
+		adjustHeight(textareaId, 40);
+	}
 	
 	// Reset select
 	select.selectedIndex = 0;
