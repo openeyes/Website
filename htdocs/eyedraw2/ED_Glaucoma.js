@@ -5250,6 +5250,7 @@ ED.ScleralPatch.superclass = ED.Doodle.prototype;
  */
 ED.ScleralPatch.prototype.setHandles = function()
 {
+	this.handleArray[4] = new ED.Handle(null, true, ED.Mode.Scale, false);
     this.handleArray[4] = new ED.Handle(null, true, ED.Mode.Apex, false);
 }
 
@@ -5304,14 +5305,14 @@ ED.ScleralPatch.prototype.draw = function(_point)
     // Boundary path
 	ctx.beginPath();
     
-    ctx.rect(-this.apexX, this.apexY, Math.abs(2 * this.apexX), Math.abs(2 * this.apexY));
+    ctx.rect(-50, -50, 100, 100);
     
 	// Close path
 	ctx.closePath();
     
     // Colour of fill
     ctx.fillStyle = "rgba(200,200,50,0.5)";
-    ctx.strokeStyle = "rgba(120,120,120,0)";
+    ctx.strokeStyle = "rgba(120,120,120,0.5)";
     
 	// Draw boundary path (also hit testing)
 	this.drawBoundary(_point);

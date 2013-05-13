@@ -95,10 +95,17 @@
 								// Add it to an array
 								suturePointsArray[suturePointsArray.length] = p;
 							
-								// Create a suture and add that to an array
-								var suture = this.drawing.addDoodle('TrabySuture', {originX:p.x, originY:p.y, rotation:p.angle, type:p.type});
-								suture.firstOriginX = p.ex;
-								sutureArray[sutureArray.length] = suture;
+								// Create a suture and add that to an array, missing out the last two
+								if (i < 3)
+								{
+									var suture = this.drawing.addDoodle('TrabySuture', {originX:p.x, originY:p.y, rotation:p.angle, type:p.type});
+									suture.firstOriginX = p.ex;
+									sutureArray[sutureArray.length] = suture;
+								}
+								else
+								{
+									sutureArray[sutureArray.length] = null;
+								}
 							} 
 							
                             this.drawing.deselectDoodles();
@@ -317,7 +324,7 @@
 					<button class="imgbutton" id="TrabySutureRPS" title="Trabeculectomy suture" onclick="drawingEdit.addDoodle('TrabySuture'); return false;" ><img src="../../graphics/TrabySuture.gif" /></button>
 					<button class="imgbutton" id="piRPS" title="Peripheral iridectomy" onclick="drawingEdit.addDoodle('PI'); return false;" ><img src="../../graphics/PI.gif" /></button>
 					<button class="imgbutton" id="sidePortRPS" title="Side port" onclick="drawingEdit.addDoodle('SidePort'); return false;" ><img src="../../graphics/SidePort.gif" /></button>
-					<button class="imgbutton" id="sidePortRPS" title="Side port" onclick="drawingEdit.addDoodle('ScleralPatch'); return false;" ><img src="../../graphics/SidePort.gif" /></button>
+					<button class="imgbutton" id="sidePortRPS" title="Side port" onclick="drawingEdit.addDoodle('ScleralPatch'); return false;" ><img src="../../graphics/ScleralPatch.gif" /></button>
 	                <br />	  	                    
                 </div>
 	                		
