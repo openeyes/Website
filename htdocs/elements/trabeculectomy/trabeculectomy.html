@@ -122,12 +122,14 @@
                             	{
                             		for (var i = 0; i < sutureArray.length; i++)
 									{
-										sutureArray[i].originX = sutureSet[i].xd * trab.right.x * 0.72;
-										sutureArray[i].originY = (trab.height + sutureSet[i].yd * (trab.right.y - trab.height)) * 0.72;
-										
-										// Reset reference points (in doodle coordinates but before rotation applied)
-										suturePointsArray[i].x = sutureArray[i].originX;
-										suturePointsArray[i].y = sutureArray[i].originY;
+										if (sutureArray[i] != null) {
+											sutureArray[i].originX = sutureSet[i].xd * trab.right.x * 0.72;
+											sutureArray[i].originY = (trab.height + sutureSet[i].yd * (trab.right.y - trab.height)) * 0.72;
+											
+											// Reset reference points (in doodle coordinates but before rotation applied)
+											suturePointsArray[i].x = sutureArray[i].originX;
+											suturePointsArray[i].y = sutureArray[i].originY;
+										}
 									}
 									
 									// Trigger notification to apply rotation to sutures
