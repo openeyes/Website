@@ -1,8 +1,0 @@
-Redirect /demo/login.php http://www.aylwards.co.uk/demo/login.php
-Redirect /demo/ http://www.aylwards.co.uk/demo/login.php
-Redirect /demo http://www.aylwards.co.uk/demo/login.php
-
-RewriteEngine on
-RewriteBase /
-RewriteCond %{HTTP_HOST} !^www\.openeyes\.org\.uk$
-RewriteRule (.*) http://www.openeyes.org.uk/$1 [R=Permanent]
