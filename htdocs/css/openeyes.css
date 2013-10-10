@@ -17,7 +17,6 @@
 /* Div contains website content centred in screen */
 #content {
 	/* background-color: yellow; */	/* Put in a background colour for testing */
-	width: 1080px;					/* Width = total of each button plus 1 for each button border = 792 for 7 buttons (8 borders) */
 	height: 50px;
 	margin-left: 0px;
 }
