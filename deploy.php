@@ -85,7 +85,7 @@ foreach($commands AS $command){
 
 $log .= "\n";
 
-file_put_contents ('deploy-log.txt',$log,FILE_APPEND);
+//file_put_contents ('deploy-log.txt',$log,FILE_APPEND);
 
 echo $output; 
 
