@@ -208,7 +208,162 @@
 		{
 		   document.getElementById(id).style.visibility = "hidden";
 		}
-         
+		
+		function clickChange(obj)
+		{
+			if (obj.id == 'chk_adv') {
+				if (obj.checked) {
+					document.getElementById('advinv').style.display = "block";
+					document.getElementById('advanv').style.display = "block";
+					document.getElementById('advnvg').style.display = "block";
+					document.getElementById('advtrd').style.display = "block";
+					document.getElementById('optirm').style.display = "block";
+					document.getElementById('optirs').style.display = "block";
+					document.getElementById('optvbd').style.display = "block";
+					document.getElementById('optvlp').style.display = "block";
+					document.getElementById('optmas').style.display = "block";
+					document.getElementById('optcws').style.display = "block";
+				}
+				else {
+					document.getElementById('advinv').style.display = "none";
+					document.getElementById('advanv').style.display = "none";
+					document.getElementById('advnvg').style.display = "none";
+					document.getElementById('advtrd').style.display = "none";
+					document.getElementById('optirm').style.display = "none";
+					document.getElementById('optirs').style.display = "none";
+					document.getElementById('optvbd').style.display = "none";
+					document.getElementById('optvlp').style.display = "none";
+					document.getElementById('optmas').style.display = "none";
+					document.getElementById('optcws').style.display = "none";
+				}
+			}
+			
+			if (obj.id == 'chk_prl') {
+				if (obj.checked) {
+					document.getElementById('prlvhm').style.display = "block";
+					document.getElementById('prlprh').style.display = "block";
+					document.getElementById('prlnvd').style.display = "block";
+					document.getElementById('prlnve').style.display = "block";
+					document.getElementById('prlprp').style.display = "block";
+					document.getElementById('prlrtt').style.display = "block";
+					document.getElementById('prlcms').style.display = "block";
+					document.getElementById('optirm').style.display = "block";
+					document.getElementById('optirs').style.display = "block";
+					document.getElementById('optvbd').style.display = "block";
+					document.getElementById('optvlp').style.display = "block";
+					document.getElementById('optmas').style.display = "block";
+					document.getElementById('optcws').style.display = "block";
+				}
+				else {
+					document.getElementById('prlvhm').style.display = "none";
+					document.getElementById('prlprh').style.display = "none";
+					document.getElementById('prlnvd').style.display = "none";
+					document.getElementById('prlnve').style.display = "none";
+					document.getElementById('prlprp').style.display = "none";
+					document.getElementById('prlrtt').style.display = "none";
+					document.getElementById('prlcms').style.display = "none";
+					document.getElementById('optirm').style.display = "none";
+					document.getElementById('optirs').style.display = "none";
+					document.getElementById('optvbd').style.display = "none";
+					document.getElementById('optvlp').style.display = "none";
+					document.getElementById('optmas').style.display = "none";
+					document.getElementById('optcws').style.display = "none";
+				}
+			}
+			
+			if (obj.id == 'chk_nvd') {
+				if (obj.checked) {
+					document.getElementById('nvddes').style.display = "block";
+				}
+				else {
+					document.getElementById('nvddes').style.display = "none";
+				}
+			}
+			
+			if (obj.id == 'chk_nve') {
+				if (obj.checked) {
+					document.getElementById('nvedes').style.display = "block";
+				}
+				else {
+					document.getElementById('nvedes').style.display = "none";
+				}
+			}
+			
+			if (obj.id == 'chk_thk') {
+				if (obj.checked) {
+					document.getElementById('maccmo').style.display = "block";
+					document.getElementById('macwit').style.display = "block";
+					document.getElementById('maccen').style.display = "block";
+					document.getElementById('maczon').style.display = "block";
+					document.getElementById('maczth').style.display = "block";
+					document.getElementById('macmns').style.display = "block";
+				}
+				else {
+					document.getElementById('maccmo').style.display = "none";
+					document.getElementById('macwit').style.display = "none";
+					document.getElementById('maccen').style.display = "none";
+					document.getElementById('maczon').style.display = "none";
+					document.getElementById('maczth').style.display = "none";
+					document.getElementById('macmns').style.display = "none";
+				}
+			}
+			
+			if (obj.id == 'chk_cen') {
+				if (obj.checked) {
+					document.getElementById('chk_wit').checked = true;
+				}
+				else {
+				}
+			}
+			
+			gradeFBCalculator();
+		}
+        
+        function gradeFBCalculator() {//debugger
+        	// Reset retinopathy
+	        document.getElementById('retGradeFB').value = "R0";
+	        
+	        // IRMA
+	        if (document.getElementById('slt_irm').value != 'None') document.getElementById('retGradeFB').value = "R2";
+	        
+	        // Venous beading
+	        if (document.getElementById('slt_vbd').value != 'None') document.getElementById('retGradeFB').value = "R2";
+	        
+	        // H/Mas
+	        if (document.getElementById('slt_mas').value == 1 || document.getElementById('slt_mas').value == 2) document.getElementById('retGradeFB').value = "R1";
+	        if (document.getElementById('slt_mas').value >= 3) document.getElementById('retGradeFB').value = "R2";
+	        
+	        // CWS
+	        if (document.getElementById('slt_cws').value > 0) document.getElementById('retGradeFB').value = "R1";
+	        
+	        // Advanced and proliferative
+	        if (document.getElementById('chk_adv').checked) document.getElementById('retGradeFB').value = "R3A";
+	        if (document.getElementById('chk_prl').checked) document.getElementById('retGradeFB').value = "R3A";
+	        
+	        // Reset maculopathy
+	        document.getElementById('macGradeFB').value = "M0";
+	        
+	        // Mas
+	        if (document.getElementById('slt_mma').value == 1 || document.getElementById('slt_mma').value == 2) document.getElementById('macGradeFB').value = "M1";
+	        
+	        // Exudates
+	        if (document.getElementById('slt_exu').value == 1 || document.getElementById('slt_exu').value == 2 || document.getElementById('slt_exu').value == 3 || document.getElementById('slt_exu').value == 5) document.getElementById('macGradeFB').value = "M1";
+	        
+	        // Response to treatment
+	        if (document.getElementById('slt_res').value == 2 || document.getElementById('slt_res').value == 3 || document.getElementById('slt_res').value == 4) document.getElementById('macGradeFB').value = "M1";
+	        
+	        // Reitnal thickening
+	        if (document.getElementById('chk_thk').checked) document.getElementById('macGradeFB').value = "M1";
+	        
+	        // Other
+	        if (document.getElementById('chk_erm').checked) document.getElementById('macGradeFB').value = "M1";
+	        if (document.getElementById('chk_vmt').checked) document.getElementById('macGradeFB').value = "M1";
+	        if (document.getElementById('chk_tau').checked) document.getElementById('macGradeFB').value = "M1";
+	        
+	        // Response to treatment
+	        if (document.getElementById('slt_trs').value > 0) document.getElementById('macGradeFB').value = "M1";
+        }
+        
     </script>
 
 </head>
@@ -307,22 +462,393 @@
 		</div>					
 
 		<!-- Display mode section -->
-		<div class="section" style="height:110px;" align="left">
-			<h4>Display mode:</h4>
+		<div class="section" style="height:1600px;" align="left">
+			<h2>Features based grading:</h2>
 			
-			<!-- Right eye -->
-			<div style ="width:540px; float:left;">
-				<p>Right eye:</p>
+			<div style ="width: 740px; float:left;">
 
+					<h4 style="margin-left:20px;">Advanced diabetic eye disease</h4>
+					<table cellspacing="0" width="540" >
+						<tbody>		
+							<tr style="display:block;">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" >Advanced disease:</p></td>
+								<td align="left" width="40%">
+									<input class="checkbox" type="checkbox" id="chk_adv" onClick="clickChange(this);"/>
+						        </td>
+						        <td align="left" width="20%"></td>
+							</tr>		
+							<tr style="display:none; margin-left:60px;" id="advinv">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" >Iris neovascularisation:</p></td>
+								<td align="left" width="40%">
+									<input class="checkbox" type="checkbox" id="chk_inv" onClick="clickChange(this);"/>
+						        </td>
+						        <td align="left" width="20%"></td>
+							</tr>
+							<tr style="display:none; margin-left:60px;" id="advanv">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" >Angle neovascularisation:</p></td>
+								<td align="left" width="40%">
+									<input class="checkbox" type="checkbox" id="chk_anv" onClick="clickChange(this);"/>
+						        </td>
+						        <td align="left" width="20%"></td>
+							</tr>
+							<tr style="display:none; margin-left:60px;" id="advnvg">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" >Neovascular glaucoma:</p></td>
+								<td align="left" width="40%">
+									<input class="checkbox" type="checkbox" id="chk_nvg" onClick="clickChange(this);"/>
+						        </td>
+						        <td align="left" width="20%"></td>
+							</tr>
+							<tr style="display:none; margin-left:60px;" id="advtrd">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" >Traction retinal detachment:</p></td>
+								<td align="left" width="40%">
+									<select id="slt_trd" style="width:auto;">
+							            <option>No</option>
+							            <option>Fovea not threatened</option>
+							            <option>Traction on fovea</option>
+							            <option>Detached fovea</option>
+							            <option>Combined TRD/RRD</option>
+							        </select>
+						        </td>
+						        <td align="left" width="20%"></td>
+							</tr>
+						</tbody>
+					</table>
+					
+					<h4 style="margin-left:20px;">Proliferative diabetic retinopathy</h4>
+					<table cellspacing="0" width="540" >
+						<tbody>							
+							<tr style="display:block;">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" >Proliferative features:</p></td>
+								<td align="left" width="40%">
+									<input class="checkbox" type="checkbox" id="chk_prl" onClick="clickChange(this);"/>
+						        </td>
+						        <td align="left" width="20%"></td>
+							</tr>
+							<tr style="display:none; margin-left:60px;" id="prlvhm">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" >Vitreous haemorrhage:</p></td>
+								<td align="left" width="40%">
+									<input class="checkbox" type="checkbox" id="chk_vhm" onClick="clickChange(this);"/>
+						        </td>
+						        <td align="left" width="20%"></td>
+							</tr>
+							<tr style="display:none; margin-left:60px;" id="prlprh">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" >Pre-retinal haemorrhage:</p></td>
+								<td align="left" width="40%">
+									<input class="checkbox" type="checkbox" id="chk_prh" onClick="clickChange(this);"/>
+						        </td>
+						        <td align="left" width="20%"></td>
+							</tr>
+							<tr style="display:none; margin-left:60px;" id="prlnvd">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" >Disc new vessels:</p></td>
+								<td align="left" width="40%">
+									<input class="checkbox" type="checkbox" id="chk_nvd" onClick="clickChange(this);"/>
+						        </td>
+						        <td align="left" width="20%"></td>
+							</tr>
+							<tr style="display:none; margin-left:60px;" id="nvddes">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" ></p></td>
+								<td align="left" width="40%">
+									<select style="width:auto;">
+							            <option>NVD Forward</option>
+							            <option>NVD Flat</option>
+								    </select>
+									<select style="width:auto;">
+							            <option>&lt; 1/3 disc area</option>
+							            <option>&gt; 1/3 disc area</option>
+								    </select>								
+						        </td>
+						        <td align="left" width="20%"></td>
+							</tr>
+							<tr style="display:none; margin-left:60px;" id="prlnve">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" >New vessels elsewhere:</p></td>
+								<td align="left" width="40%">
+									<input class="checkbox" type="checkbox" id="chk_nve" onClick="clickChange(this);"/>
+						        </td>
+						        <td align="left" width="20%"></td>
+							</tr>
+							<tr style="display:none; margin-left:60px;" id="nvedes">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" ></p></td>
+								<td align="left" width="40%">
+									<select style="width:auto;">
+							            <option>&lt; 1/2 disc area</option>
+							            <option>&gt; 1/2 disc area</option>
+								    </select>								
+						        </td>
+						        <td align="left" width="20%"></td>
+							</tr>
+							<tr style="display:none; margin-left:60px;" id="prlprp">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" >Panretinal photocoagulation:</p></td>
+								<td align="left" width="40%">
+									<input class="checkbox" type="checkbox" id="chk_prp" onClick="clickChange(this);"/>
+						        </td>
+						       <td align="left" width="20%"></td>
+							</tr>
+							<tr style="display:none; margin-left:60px;" id="prlrtt">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" >Response to treatment:</p></td>
+								<td align="left" width="40%">
+									<select id="slt_rtt" style="width:auto;">
+							            <option>No previous treatment</option>
+							            <option>Active</option>
+							            <option>Partially regressed</option>
+							            <option>Regressed</option>
+							        </select>
+						        </td>
+						        <td align="left" width="20%"></td>
+							</tr>
+							<tr style="display:none; margin-left:60px;" id="prlcms">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" >Comments:</p></td>
+								<td align="left" width="40%">
+									<textarea></textarea>
+						        </td>
+						        <td align="left" width="20%"></td>
+							</tr>
+						</tbody>
+					</table>
+					
+					<h4 style="margin-left:20px;">Non-proliferative features</h4>
+					<table cellspacing="0" width="540" >
+						<tbody>	
+							<tr style="display:block" id="nprirm">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" >IRMA:</p></td>
+								<td align="left" width="40%">
+									<select id="slt_irm" style="width:auto;" onchange="gradeFBCalculator();">
+							            <option value="None">None</option>
+							            <option value="1 quadrant">1 quadrant</option>
+							            <option value="2 quadrant">2 quadrants</option>
+							            <option value="3 quadrant">3 quadrants</option>
+							            <option value="4 quadrant">4 quadrants</option>
+							        </select>
+						        </td>
+						        <td align="left" width="20%"><p class="lable" style="display:none" id="optirm">(Optional)</p></td>
+							</tr>
+							<tr style="display:block;" id="nprims">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" >IRMA severity:</p></td>
+								<td align="left" width="40%">
+									<input class="checkbox" type="checkbox" id="chk_ims" onClick="clickChange(this);"/>
+						        </td>
+						        <td align="left" width="20%"><p class="lable" style="display:none" id="optirs">(Optional)</p></td>
+							</tr>
+							<tr style="display:block" id="nprvbd">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" >Venous beading:</p></td>
+								<td align="left" width="40%">
+									<select id="slt_vbd" style="width:auto;" onchange="gradeFBCalculator();">
+							            <option value="None">None</option>
+							            <option value="1 quadrant">1 quadrant</option>
+							            <option value="2 or more quadrants">2 or more quadrants</option>
+							        </select>
+						        </td>
+						        <td align="left" width="20%"><p class="lable" style="display:none" id="optvbd">(Optional)</p></td>
+							</tr>
+							<tr style="display:block;" id="nprvlp">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" >Venous loops:</p></td>
+								<td align="left" width="40%">
+									<input class="checkbox" type="checkbox" id="chk_ims" onClick="clickChange(this);"/>
+						        </td>
+						        <td align="left" width="20%"><p class="lable" style="display:none" id="optvlp">(Optional)</p></td>
+							</tr>
+							<tr style="display:block" id="nprvmas">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" >H/MAs:</p></td>
+								<td align="left" width="40%">
+									<select id="slt_mas" style="width:120px;" onchange="gradeFBCalculator();">
+										<option value=0>None</option>
+							            <option value=1>Ma only</option>
+							            <option value=2>H/Ma &lt; next level</option>
+							            <option value=3>&gt;= 4 blot heams in any quadrant and &gt;= 8 in total</option>
+							            <option value=4>&gt; 2a in any quadrant</option>
+							            <option value=5>&gt; 2a in all quadrants</option>
+							        </select>
+						        </td>
+						        <td align="left" width="20%"><p class="lable" style="display:none" id="optmas">(Optional)</p></td>
+							</tr>
+							<tr style="display:block" id="nprvcws">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" >Cotton wool spots:</p></td>
+								<td align="left" width="40%">
+									<select id="slt_cws" style="width:auto;" onchange="gradeFBCalculator();">
+							            <option value=0>None</option>
+							            <option value=1>&lt; 5</option>
+							            <option value=2>&gt; 5</option>
+							        </select>
+						        </td>
+						        <td align="left" width="20%"><p class="lable" style="display:none" id="optcws">(Optional)</p></td>
+							</tr>									
+						</tbody>
+					</table>
+	
+					<h4 style="margin-left:20px;">Maculopathy</h4>
+					<table cellspacing="0" width="540" >
+						<tbody>	
+							<tr style="display:block" id="macmas">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" >Haems/Mas:</p></td>
+								<td align="left" width="40%">
+									<select id="slt_mma" style="width:auto;" onchange="gradeFBCalculator();">
+							            <option value=0>None</option>
+							            <option value=1>&lt;= 500um from centre</option>
+							            <option value=2>&gt; 500um to 1DD from centre</option>
+							            <option value=3>&gt; 1DD from centre</option>
+							        </select>
+						        </td>
+						        <td align="left" width="20%"></td>
+							</tr>
+							<tr style="display:block" id="macexu">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" >Exudates:</p></td>
+								<td align="left" width="40%">
+									<select id="slt_exu" style="width:auto;" onchange="gradeFBCalculator();"> 
+							            <option value=0>None</option>
+							            <option value=1>Under fovea</option>
+							            <option value=2>&lt; 500um from centre</option>
+							            <option value=3>&lt; 1DD from centre</option>
+							            <option value=4>&gt; 1DD from centre</option>
+							            <option value=5>Groups &gt; 1DD from centre</option>
+							        </select>
+						        </td>
+						        <td align="left" width="20%"></td>
+							</tr>
+							<tr style="display:block" id="macres">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" >Response to treatment:</p></td>
+								<td align="left" width="40%">
+									<select id="slt_res" style="width:auto;" onchange="gradeFBCalculator();">
+							            <option value=0>None</option>
+							            <option value=1>Exudates resolved</option>
+							            <option value=2>Exudates reduced</option>
+							            <option value=3>Exudates unchanged</option>
+							            <option value=4>Exudates increased</option>
+							        </select>
+						        </td>
+						        <td align="left" width="20%"></td>
+							</tr>
+							
+							<tr style="display:block;" id="macthk">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" >Retinal thickening:</p></td>
+								<td align="left" width="40%">
+									<input class="checkbox" type="checkbox" id="chk_thk" onClick="clickChange(this);"/>
+						        </td>
+						        <td align="left" width="20%"><p class="lable" style="display:none" id="optvlp">(Optional)</p></td>
+							</tr>
+							<tr style="display:none; margin-left:60px;" id="maccmo">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" >Cystoid macular oedema:</p></td>
+								<td align="left" width="40%">
+									<input class="checkbox" type="checkbox" id="chk_cmo" onClick="clickChange(this);"/>
+						        </td>
+						        <td align="left" width="20%"></td>
+							</tr>
+							<tr style="display:none; margin-left:60px;" id="maccen">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" >At centre of fovea:</p></td>
+								<td align="left" width="40%">
+									<input class="checkbox" type="checkbox" id="chk_cen" onClick="clickChange(this);"/>
+						        </td>
+						        <td align="left" width="20%"></td>
+							</tr>
+							<tr style="display:none; margin-left:60px;" id="macwit">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" >Within 500um of centre:</p></td>
+								<td align="left" width="40%">
+									<input class="checkbox" type="checkbox" id="chk_wit" onClick="clickChange(this);"/>
+						        </td>
+						        <td align="left" width="20%"></td>
+							</tr>
+							<tr style="display:none; margin-left:60px;" id="maczon">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" >Zone or zones one disc area or larger, any part of which is within one disc diameter of the centre of the macula:</p></td>
+								<td align="left" width="40%">
+									<input class="checkbox" type="checkbox" id="chk_zon" onClick="clickChange(this);"/>
+						        </td>
+						        <td align="left" width="20%"></td>
+							</tr>
+							<tr style="display:none; margin-left:60px;" id="maczth">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" >Exudates at or within 500 microns of the centre of the macula, if associated with thickening of the adjacent retina:</p></td>
+								<td align="left" width="40%">
+									<input class="checkbox" type="checkbox" id="chk_zth" onClick="clickChange(this);"/>
+						        </td>
+						        <td align="left" width="20%"></td>
+							</tr>
+							<tr style="display:none; margin-left:60px;" id="macmns">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" >Macular oedema but no CSMO:</p></td>
+								<td align="left" width="40%">
+									<input class="checkbox" type="checkbox" id="chk_mns" onClick="clickChange(this);"/>
+						        </td>
+						        <td align="left" width="20%"></td>
+							</tr>
+							
+							<tr style="display:block;" id="macerm">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" >Epiretinal membrane:</p></td>
+								<td align="left" width="40%">
+									<input class="checkbox" type="checkbox" id="chk_erm" onClick="clickChange(this);"/>
+						        </td>
+						        <td align="left" width="20%"><p class="lable" style="display:block" id="optvlp">(Optional)</p></td>
+							</tr>
+							<tr style="display:block;" id="macvmt">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" >Vitreomacular traction:</p></td>
+								<td align="left" width="40%">
+									<input class="checkbox" type="checkbox" id="chk_vmt" onClick="clickChange(this);"/>
+						        </td>
+						        <td align="left" width="20%"><p class="lable" style="display:block" id="optvmt">(Optional)</p></td>
+							</tr>	
+							<tr style="display:block;" id="mactau">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" >Taut thickened posterior hyaloid:</p></td>
+								<td align="left" width="40%">
+									<input class="checkbox" type="checkbox" id="chk_tau" onClick="clickChange(this);"/>
+						        </td>
+						        <td align="left" width="20%"><p class="lable" style="display:block" id="opttau">(Optional)</p></td>
+							</tr>
+							<tr style="display:block" id="macplm">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" >Post-laser macular signs:</p></td>
+								<td align="left" width="40%">
+									<select id="slt_plm" style="width:auto;" onchange="gradeFBCalculator();">
+							            <option value=0>No laser spots visible</option>
+							            <option value=1>laser scars visible</option>
+							            <option value=2>Burn creep under fovea</option>
+							        </select>
+						        </td>
+						        <td align="left" width="20%"></td>
+							</tr>
+							<tr style="display:block" id="mactrs">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" >Thickening response to treatment:</p></td>
+								<td align="left" width="40%">
+									<select id="slt_trs" style="width:auto;" onchange="gradeFBCalculator();">
+							            <option value=0>Resolved</option>
+							            <option value=1>Reduced</option>
+							            <option value=2>Unchanged</option>
+							            <option value=3>Increased</option>
+							        </select>
+						        </td>
+						        <td align="left" width="20%"></td>
+							</tr>
+							<tr style="display:block" id="maccft">
+								<td align="left" width="40%"><p class="lable" style="width:240px;" >Central foveal thickness:</p></td>
+								<td align="left" width="40%">
+									<input class="textbox" onClick="clickChange(this);"/>
+						        </td>
+						        <td align="left" width="20%"></td>
+							</tr>											
+						</tbody>
+					</table>
 
 			</div>
-			
-			<!-- Left eye -->
-			<div style ="width:540px; float:left;">
-				<p>Left eye:</p>
-				
-			</div>				
 
+			<!-- Left eye -->
+			<div style ="width: 340px; float:left;">
+				<!-- Grading selects -->
+				<p>Retinopathy:</p>
+		        <select style="width:100px;" id="retGradeFB" onchange="gradeFBChange(this);">
+                    <option value="R0">R0</option>
+                    <option value="R1">R1</option>
+                    <option value="R2">R2</option>
+                    <option value="R3S">R3S</option>
+                    <option value="R3A">R3A</option>
+                    <option value="U">U</option>
+                </select>
+                <br />
+                <!-- <p style="margin-top:10px; width:400px; height:100px;" id="retGradeFBDesc">No retinopathy</p> -->
+                <br />
+
+				<p>Maculopathy:</p>
+                <select style="width:100px;" id="macGradeFB" onchange="gradeFBChange(this);">
+                    <option value="M0">M0</option>
+                    <option value="M1">M1</option>
+                </select>
+                <br />
+                <!-- <p style="margin-top:10px; width:400px; height:120px;" id="macGradeFBDesc">No maculopathy</p> -->
+                <br />			
+			</div>
+			
 		<!-- End of Display mode section -->
 		</div>	
 
