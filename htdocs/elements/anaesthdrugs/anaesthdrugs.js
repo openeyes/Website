@@ -75,7 +75,7 @@ function addRow(_value)
 	var cell2 = newRow.insertCell(2);
 	var duration = document.createElement("canvas");
 	duration.setAttribute('width', 600);
-	duration.setAttribute('height', 20);
+	duration.setAttribute('height', 30);
 	duration.setAttribute('id', 'duration' + scriptCount);
 	duration.setAttribute('class', 'durationCanvas');
 	cell2.appendChild(duration);
@@ -233,6 +233,7 @@ function canvasInit(_canvasId)
                 // Eye draw image files all loaded
                 case 'ready':
                     doodle = this.drawing.addDoodle('AgentDuration');
+                    //doodle = this.drawing.addDoodle('AgentDose');
                     //this.drawing.deselectDoodles();
                     break;
                 case 'mouseout':
