@@ -14,25 +14,54 @@
 	<script language="JavaScript" src="anaesthdrugs.js" type="text/javascript"></script>	
     <script type="text/javascript">
 
-		// Common Drugs (written out here from database with principal eye inserted where appropriate). Last is placeholder for search selection
+		// Common Drugs
 		var commonDrugSet = 
 		[
-			{id: 0, name: "Cisatracurium Besylate", route: "IV", frequency: "qid", duration: "1 week", type: "Antibacterial", no_pres: false, is_ophthalmic: true},
-			{id: 1, name: "Desflurane", route: "IV", frequency: "qid", duration: "1 month", type: "Steroid", no_pres: false, is_ophthalmic: true},
-			{id: 2, name: "Hyoscyamine", route: "IV", frequency: "did", duration: "1 month", type: "Non-steroidal anti-inflammatory", no_pres: false, is_ophthalmic: true},
-			{id: 3, name: "Propofol", route: "IV", frequency: "qid", duration: "1 month", type: "Mydriatic", no_pres: false, is_ophthalmic: true},
-			{id: 4, name: "Rapacuronium", route: "IM", frequency: "tid", duration: "1 week", type: "Glaucoma", no_pres: false, is_ophthalmic: true},
-			{id: 5, name: "Sevoflurane", route: "IV", frequency: "bd", duration: "1 week", type: "Glaucoma", no_pres: false, is_ophthalmic: true},
-			{id: 6, name: "Succinylcholine", route: "IM", frequency: "od", duration: "1 week", type: "Glaucoma", no_pres: false, is_ophthalmic: false},
-			{id: 7, name: "Thiopental", route: "IV", frequency: "qid", duration: "1 week", type: "Antibacterial", no_pres: true, is_ophthalmic: true},
-			{id: 8, name: "", route: "", frequency: "", duration: "", type: "Any", no_pres: false, is_ophthalmic: true}
+			{id:0, name:"Propofol 1%", route:"IV", dose:0, unit:"mg/kg/hr", type:"range", inTable:false},
+			{id:1, name:"Propofol 2%", route:"IV", dose:0, unit:"mg/kg/hr", type:"range", inTable:false},
+			{id:2, name:"Remifentanil", route:"IV", dose:0, unit:"ug/kg/hr", type:"range", inTable:false},
+			{id:3, name:"Paracetamol", route:"IV", dose:0, unit:"mg", type:"range", inTable:false},
+			{id:4, name:"Diclofenac", route:"IV", dose:0, unit:"mg", type:"range", inTable:false},
+			{id:5, name:"Compound Sodium Lactate", route:"IV", dose:0, unit:"mls", type:"range", inTable:false},
+			{id:6, name:"0.9% Saline", route:"IV", dose:0, unit:"mls", type:"range", inTable:false},
+			{id:7, name:"5% Dextrose", route:"IV", dose:0, unit:"mls", type:"range", inTable:false},
+			{id:8, name:"10% Dextrose", route:"IV", dose:0, unit:"mls", type:"range", inTable:false},
+			{id:9, name:"Propofol bolus", route:"IV", dose:0, unit:"mg", type:"fixed", inTable:false},
+			{id:10, name:"Remifentanil bolus", route:"IV", dose:0, unit:"ug", type:"fixed", inTable:false},
+			{id:11, name:"Fentanil", route:"IV", dose:0, unit:"ug", type:"fixed", inTable:false},
+			{id:12, name:"Alfentanil", route:"IV", dose:0, unit:"mg", type:"fixed", inTable:false},
+			{id:13, name:"Morphine", route:"IV", dose:0, unit:"mg", type:"fixed", inTable:false},
+			{id:14, name:"Ondansetron", route:"IV", dose:0, unit:"mg", type:"fixed", inTable:false},
+			{id:15, name:"Dexamethasone", route:"IV", dose:0, unit:"mg", type:"fixed", inTable:false},
+			{id:16, name:"Glycopyrollate", route:"IV", dose:0, unit:"mg", type:"fixed", inTable:false},
+			{id:17, name:"Atropine", route:"IV", dose:0, unit:"mg", type:"fixed", inTable:false},
+			{id:18, name:"Ephedrine", route:"IV", dose:0, unit:"mg", type:"fixed", inTable:false},
+			{id:19, name:"Metaraminol", route:"IV", dose:0, unit:"mg", type:"fixed", inTable:false},
+			{id:20, name:"Midazolam", route:"IV", dose:0, unit:"mg", type:"fixed", inTable:false},
+			{id:21, name:"Lignocaine", route:"IV", dose:0, unit:"mg", type:"fixed", inTable:false},
+			{id:22, name:"Dexmedatomidine", route:"IV", dose:0, unit:"ug", type:"fixed", inTable:false},			
+			{id:23, name:"G.Proxymetacaine 0.5%", route:"Eye", dose:0, unit:"drops", type:"fixed", inTable:false},			
+			{id:24, name:"G.Tetracaine 0.5%", route:"Eye", dose:0, unit:"drops", type:"fixed", inTable:false},			
+			{id:25, name:"Lignocaine 2%", route:"Eye", dose:0, unit:"mls", type:"fixed", inTable:false},			
+			{id:26, name:"Bupivacaine 0.5%", route:"Eye", dose:0, unit:"mls", type:"fixed", inTable:false},			
+			{id:27, name:"Bupivacaine 0.75%", route:"Eye", dose:0, unit:"mls", type:"fixed", inTable:false},			
+			{id:28, name:"Ropivacaine 0.5%", route:"Eye", dose:0, unit:"mls", type:"fixed", inTable:false},			
+			{id:29, name:"Ropivacaine 0.75%", route:"Eye", dose:0, unit:"mls", type:"fixed", inTable:false},			
+			{id:30, name:"Ropivacaine 1%", route:"Eye", dose:0, unit:"mls", type:"fixed", inTable:false},			
+			{id:31, name:"Hyalase", route:"Eye", dose:0, unit:"IU", type:"fixed", inTable:false}			
+
 		];
+		
+		// ArrayS to track drawing objects and controllers
+		var drawingArray = new Array();
+		var controllerArray = new Array();
+		var selectedDoodle = null;
 
 		// Counter to track rows
-		var scriptCount = 0;
+		var rowCount = 0;
 		
 		// Value of last index
-		var lastIndex = 8;
+		//var lastIndex = 8;
 		
 		// Principal eye
 		var principalEye = 'LE';
@@ -40,15 +69,10 @@
         // Runs on page load
         function init()
         {
-        	updateSelect("drugSelector", "Vitreoretinal");
-        	document.getElementById('drugSelector').focus();
-        }
-        
-        // Called by click on no preservative checkbox or change in drug type selector
-        function changeDrugSelect()
-        {
-        	updateSelect("drugSelector", "Vitreoretinal");
-        	document.getElementById('drugSelector').focus();
+        	updateSelect("infusion", 0, 8);
+        	updateSelect("drug", 9, 22);
+        	updateSelect("block", 23, 31);
+        	document.getElementById('infusionSelector').focus();
         }
 	            
     </script>
@@ -58,14 +82,12 @@
 <div id="screen" align="center">
 	<div id="content">
 
-		
-
 		<!-- Description section -->
 		<div class="section">
 			<h4>Description:</h4>
-			<p>This element handles the prescribing of ophthalmic drops and other drugs. It is linked to a formulary of approved drugs for any particular site. The formulary contains useful information like the standard dosage, and whether the drug contains preservative or not. A specialty may have a list of drugs that they commonly prescribe, and these are available with a single click from a drop down menu. All other drugs in the formulary can be prescribed by using the incremental search box. The drop down and the search can both be filtered to return drugs of a certain type, or drops without preservative.</p>
-			<p>Any aspect of the prescription for each drug can be altered by editing the appropriate drop-down in the table.</p>
-			<p>Saved sets of drugs (such as a standard post-operative prescription) can be set up and prescribed with one click using the 'Standard Sets' drop down menu.</p>
+			<p>This element allows the recording of drugs administered during a general anaesthetic. Selection of a drug places a marker in the time grid. For drugs that are infused over time, the marker can be moved and stretched to indicate the duration of the infusion. When the marker is added, or when the timeline is subsequently selected, the dose can be edited by typing in the text box that appears.</p>
+			<p>Selecting a drug which is already in the table will add a new marker to the existing entry.</p>
+			<p>NB. The live version will place the marker at the current timepoint, and will have a moving red time indicator (see the anaesthetic monitoring element for a working demo).</p>
 			<p>Status: <b>Alpha</b></p>
 		</div>
 
@@ -101,25 +123,34 @@
 			<!-- Left column -->
 			<div style ="width: 220px; float:left;">
 								
-				<!-- Select for common diagnoses -->
-				<select class="sidebar" id="drugSelector" style="width: 170px;" onchange="addRow(this.value);">
+				<!-- Selects for anaesthetic drugs -->
+				<select class="sidebar" id="infusionSelector" style="width: 170px;" onchange="addRow('infusionSelector', this.value);">
 				</select>
-			
+				<select class="sidebar" id="drugSelector" style="width: 170px;" onchange="addRow('drugSelector', this.value);">
+				</select>
+				<select class="sidebar" id="blockSelector" style="width: 170px;" onchange="addRow('blockSelector', this.value);">
+				</select>
+								
+				<!-- Dose box -->
+				</br>
+				<input type="text" class="entrytext" id="doseBox" title="Dose" onkeyup="doseKeyUp(event);" style="display:none;">
+							
 			</div>
 			
 			<!-- Right column -->
 			<div style ="width:860px; float:left; background-image:url(../../graphics/DrugGrid.png);background-repeat:no-repeat;">
 			
-				<!-- Prescription -->
+				<!-- Time values -->
+				<span class="time" style="margin-left:254px;">09:30</span>
+				<span class="time">10:00</span>
+				<span class="time">10:30</span>
+				<span class="time">11:00</span>
+				<span class="time">11:30</span>
+
+				</br>
+				
+				<!-- Drug list (infusions) -->
 				<table name="table" id="presTable" align="center" cellspacing="0" width="900">
-					<thead class="tabletitles">
-						<tr>
-							<th align="left" width="18%"><p class="tableText"><b>Drug</b></p></th>
-							<th align="left" width="8%"><p class="tableText"><b>Route</b></p></th>
-							<th align="left" width="68%"><p class="tableText"><b>Duration</b></p></th>
-							<th align="left" width="6%"></td>
-						</tr>
-					</thead>
 					<tbody id="tableBody">
 					</tbody>
 				</table>
@@ -127,36 +158,12 @@
 			</div>
 				
 		<!-- End of Edit mode section -->
-		</div>					
-
-		<!-- Display mode section -->
-		<div class="section" style="height:120px;" align="left">
-			<h4>Display mode:</h4>
-			
-			<table style="border: none;" width="300">
-				<tbody>
-					<tr>
-						<td style="border: none;" align="left" width="60%">G Chloramphenicol</td>
-						<td style="border: none;" align="left" width="10%">qid</td>
-						<td style="border: none;" align="left" width="10%">RE</td>
-						<td style="border: none;" align="left" width="20%">1 month</td>
-					</tr>
-					<tr>
-						<td style="border: none;" align="left">G Dexamethasone 0.1%</td>
-						<td style="border: none;" align="left">qid</td>
-						<td style="border: none;" align="left">RE</td>
-						<td style="border: none;" align="left">1 week</td>
-					</tr>
-				</tbody>
-			</table>	
-
-		<!-- End of Display mode section -->
-		</div>	
+		</div>
 
 		<!-- Steering Group -->			
 		<div class="section" align="left">
 			<h4>Steering Group:</h4>
-			<p>General</p>
+			<p>Anaesthetics</p>
 		</div>
 		
 		<!-- Blank Line -->
@@ -166,7 +173,6 @@
 	</div>
 </div>
 
-<!--
 <script type="text/javascript">
 
   var _gaq = _gaq || [];
@@ -180,6 +186,5 @@
   })();
 
 </script>
--->
 </body>
 </html>

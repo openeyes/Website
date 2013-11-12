@@ -1,105 +1,127 @@
-// Change the options in the _select according to filters
-function updateSelect(_selectId)
+// Change the options in the _select
+function updateSelect(_type, _startId, _endId)
 {
+	// ID of select
+	var id = _type + 'Selector';
+	
 	// Get reference to the select
-	var sel = document.getElementById(_selectId);
+	var sel = document.getElementById(id);
 	
 	// Remove all options
 	sel.options.length = 0;
 	
 	// Populate select according to state of no preservative flag and type
-	sel.options[sel.options.length] = new Option("Common drugs","");
-	for (var i = 0; i < lastIndex; i++)
+	sel.options[sel.options.length] = new Option("-- Select " + _type + " --","");
+	for (var i = _startId; i <= _endId; i++)
 	{
 		sel.options[sel.options.length] = new Option(this.commonDrugSet[i].name, this.commonDrugSet[i].id);
 	}		
 }
 
-// Clear table
-function clearTable()
-{
-	if (scriptCount > 0)
-	{
-		for (scriptCount--; scriptCount >= 0; scriptCount--)
-		{
-			document.getElementById('presTable').deleteRow(scriptCount + 1);
-		}
-	}
-	
-	scriptCount = 0;
-}
-
 // Delete row
-function deleteRow(obj)
-{
+function deleteRow(obj) {
 	// Get index of row
-	var rowIndex = obj.parentNode.parentNode.sectionRowIndex + 1;
+	var rowIndex = obj.parentNode.parentNode.sectionRowIndex;
 	
 	// Delete it
 	document.getElementById('presTable').deleteRow(rowIndex);
 	
-	// Augment row counter
-	scriptCount--;
+	// Delete corresponding drawing object and controller
+	drawingArray.splice(rowIndex, 1);
+	controllerArray.splice(rowIndex, 1);
+	
+	// Reset drug set
+	for (var i in this.commonDrugSet) {
+		var drug = this.commonDrugSet[i];
+		
+		if (drug.id == obj.parentNode.parentNode.getAttribute('drugid')) {
+			drug.inTable = false;
+		}
+	}
+	
+	// Decrement row counter
+	rowCount--;
 }
 
 // Add row
-function addRow(_value)
-{
+function addRow(_selectId, _value) {
 	// Get index of selected drug
 	var index = _value
 	
 	// Get reference to table
 	var table = document.getElementById('presTable');
 	
-	// Index of next row is equal to number of rows
-	var nextRowIndex = table.tBodies[0].rows.length;
+	if (!this.commonDrugSet[index].inTable) {
 	
-	// Add new row
-	var newRow = table.tBodies[0].insertRow(nextRowIndex);
-	
-	// Name
-	var paraNode = document.createElement("p");
-	paraNode.setAttribute('class','tableText');
-	var textNode = document.createTextNode(this.commonDrugSet[index].name);
-	paraNode.appendChild(textNode);
-	var cell0 = newRow.insertCell(0);
-	//cell0.setAttribute('width', '40%');
-	cell0.appendChild(paraNode);
-	
-	// Route
-	var cell1 = newRow.insertCell(1);
-	var routes = ['PR', 'IM', 'IV'];
-	cell1.appendChild(tableSelect(routes, this.commonDrugSet[index].route, 'route'));
-
-	// Duration
-	var cell2 = newRow.insertCell(2);
-	var duration = document.createElement("canvas");
-	duration.setAttribute('width', 600);
-	duration.setAttribute('height', 30);
-	duration.setAttribute('id', 'duration' + scriptCount);
-	duration.setAttribute('class', 'durationCanvas');
-	cell2.appendChild(duration);
-	canvasInit('duration' + scriptCount);
-	
-	// Delete aref
-	var cell3 = newRow.insertCell(3);
-	var deleteButton = document.createElement('a');
-	deleteButton.setAttribute('onClick','deleteRow(this);');
-	deleteButton.innerText = "Delete";
-	cell3.appendChild(deleteButton);
+		// Index of next row is equal to number of rows
+		var nextRowIndex = table.tBodies[0].rows.length;
+		
+		// Add new row
+		var newRow = table.tBodies[0].insertRow(nextRowIndex);
+		
+		// Store drug id as an attribute of the row (to assist row deleting)
+		newRow.setAttribute('drugid', this.commonDrugSet[index].id);
+		
+		// Name
+		var paraNode = document.createElement("p");
+		paraNode.setAttribute('class','tableText');
+		var textNode = document.createTextNode(this.commonDrugSet[index].name);
+		paraNode.appendChild(textNode);
+		var cell0 = newRow.insertCell(0);
+		cell0.appendChild(paraNode);
+		cell0.setAttribute('width', '18%')
+		
+		// Route
+		var cell1 = newRow.insertCell(1);
+		var routes = ['PR', 'IM', 'IV'];
+		cell1.appendChild(tableSelect(routes, this.commonDrugSet[index].route, 'route'));
+		cell1.setAttribute('width', '8%')
+		
+		// Duration
+		var cell2 = newRow.insertCell(2);
+		var duration = document.createElement("canvas");
+		duration.setAttribute('width', 600);
+		duration.setAttribute('height', 30);
+		duration.setAttribute('id', 'duration' + this.commonDrugSet[index].id); // ID of canvas relates to id of drug
+		duration.setAttribute('class', 'durationCanvas');
+		cell2.appendChild(duration);
+		cell2.setAttribute('width', '68%')
+		canvasInit('duration' + this.commonDrugSet[index].id, this.commonDrugSet[index].unit, this.commonDrugSet[index].type);
+		
+		// Delete aref
+		var cell3 = newRow.insertCell(3);
+		var deleteButton = document.createElement('a');
+		deleteButton.setAttribute('onClick','deleteRow(this);');
+		deleteButton.innerText = "Delete";
+		cell3.appendChild(deleteButton);
+		cell3.setAttribute('width', '6%')
+		
+		// Mark drug as having been used
+		this.commonDrugSet[index].inTable = true;
+				
+		// Augment row counter
+		rowCount++;	
+	}
+	else {
+		//this.drawingArray[this.commonDrugSet[index].index].addDoodle('AgentDuration');
+		
+		// Iterate through drawing array looking for matching drawing and adding new doodle
+		for (var i in this.drawingArray) {
+			if (this.drawingArray[i].IDSuffix == 'duration' + this.commonDrugSet[index].id) {
+				this.drawingArray[i].addDoodle('AgentDuration', {originX: -200, unit:this.commonDrugSet[index].unit, type:this.commonDrugSet[index].type});
+			}
+		}
+	}
 	
 	// Reset select index
-	document.getElementById('drugSelector').selectedIndex = 0;
-	
-	// Augment row counter
-	scriptCount++;
+	document.getElementById(_selectId).selectedIndex = 0;
 }
 
 // Construct and return select for array
 function tableSelect(optionArray, selectedValue, name)
 {
 	var tableSelect = document.createElement('select');
-	tableSelect.setAttribute('name', name + scriptCount);
+	tableSelect.setAttribute('name', name + rowCount);
 	tableSelect.setAttribute('class', 'tableSelect');
 	
 	// Iterate through array adding options
@@ -115,99 +137,24 @@ function tableSelect(optionArray, selectedValue, name)
 	return tableSelect;
 }
 
-// Calls php script to do incremental search
-function incrementalSearch(searchText)
-{
-	// Values
-	var selectName = 'namelist';
-	var noPresFlag = document.getElementById('chk_pres').checked;
-	var category = document.getElementById('drugCategory').value;
-    			
-	// Define server connection
-    http.open('get', 'ajaxSearchDrugs.php?txt=' + searchText + '&select=' + selectName + '&nonPreserved=' + noPresFlag + '&category=' + category);
-    
-    // Assign handler for the response
-    http.onreadystatechange = processResponse;
-	
-    // Send the request to the server
-    http.send(null);
-}
-
-// Function called from selection in namelist by double click or CR key press
-function nameSelected(id, code)
-{
-	// Get selected option
-	var sel = document.getElementById(id);
-	var chosenOption = sel.options[sel.selectedIndex];
-	
-	//alert(chosenOption.value);
-	var jsonString = chosenOption.value;
-	var jsObject = JSON.parse(jsonString);
-	console.log(jsObject.frequency);
-	
-	// Add to placeholder in commonDrugSet
-	this.commonDrugSet[lastIndex].name = jsObject.name;
-	this.commonDrugSet[lastIndex].route = jsObject.route;
-	this.commonDrugSet[lastIndex].frequency = jsObject.frequency;
-	this.commonDrugSet[lastIndex].duration = jsObject.duration;
-	this.commonDrugSet[lastIndex].is_ophthalmic = jsObject.is_ophthalmic;
-
-	// Insert into table
-	addRow(lastIndex);
-
-	// Display term 
-	//document.getElementById('diagnosis_display').innerHTML = chosenOption.text;
-	
-	// Show clear button
-	//document.getElementById('clearButton').style.display = "block";
-	
-	// Clear nameselected
-	document.getElementById('results').innerHTML = "";
-}
-
-// Macros
-function runMacro(_value)
-{
-	switch (_value)
-	{
-		case "Post-op":
-			addRow(0);
-			addRow(1);
-			addRow(3);
-			break;
-				
-		case "First clinic":
-			addRow(1);		
-			break;
-				
-		case "High pressure":
-			addRow(3);
-			addRow(4);		
-			break;
-								
-		default:
-			console.log('Default');
-			break;
-	}
-	
-	// Reset select index
-	document.getElementById('setSelector').selectedIndex = 0;
-}
-
 // Initialises canvas
-function canvasInit(_canvasId)
+function canvasInit(_canvasId, _unit, _type)
 {
     // Get reference to the drawingEdit canvas
     var canvasEdit = document.getElementById(_canvasId);
 
     // Create a drawingEdit (Set to scale on width (otherwise compresses doodle)
-    drawingEdit = new ED.Drawing(canvasEdit, ED.eye.Right, 'RPS', true, {graphicsPath:'../../graphics/', scaleOn:'Width'});
-    
+    var drawing = new ED.Drawing(canvasEdit, ED.eye.Right, _canvasId, true, {graphicsPath:'../../graphics/', scaleOn:'Width'});
+
     // Instantiate a controller object
-    var controller = new eyeDrawController(drawingEdit);
+    var controller = new eyeDrawController(drawing);
+
+    // Store drawing object and controller in array
+    drawingArray.push(drawing);
+    controllerArray.push(drawing);
     
     // Initialise drawing
-    drawingEdit.init();
+    drawing.init();
     
     // Set focus to canvasEdit element
     canvasEdit.focus();
@@ -216,6 +163,9 @@ function canvasInit(_canvasId)
     function eyeDrawController(_drawing)
     {
         this.drawing = _drawing;
+        
+        // Flag to ensure focus is given to dose box even after redraw
+        this.drugFocus = false;
         
         // Specify call back function
         this.callBack = callBack;
@@ -232,14 +182,70 @@ function canvasInit(_canvasId)
             {
                 // Eye draw image files all loaded
                 case 'ready':
-                    doodle = this.drawing.addDoodle('AgentDuration');
-                    //doodle = this.drawing.addDoodle('AgentDose');
-                    //this.drawing.deselectDoodles();
+                    // Deselect doodles in all drawings
+                	for (var i in drawingArray) {
+						drawingArray[i].deselectDoodles();
+					}
+                    selectedDoodle = this.drawing.addDoodle('AgentDuration', {originX: -200, unit:_unit, type:_type});
+                    //selectedDoodle.unit = _unit;
                     break;
+                    
                 case 'mouseout':
-                	this.drawing.deselectDoodles();
+                	//this.drawing.deselectDoodles();
+                	break;
+                	
+                case 'doodleAdded':
+                	selectedDoodle = _messageArray['selectedDoodle'];
+					flipDoseBox('', true);
+					this.drugFocus = true;
+                	break;
+                	
+                case 'doodleSelected':
+                 	// Deselect doodles in other drawings
+                	for (var i in drawingArray) {
+                							
+						if (drawingArray[i].IDSuffix != _messageArray['selectedDoodle'].drawing.IDSuffix) {
+
+							drawingArray[i].deselectDoodles();
+						}
+					}
+                	selectedDoodle = _messageArray['selectedDoodle'];
+                	flipDoseBox(selectedDoodle.dose, true);
+                	this.drugFocus = true;
+                	break;
+                	
+                case 'doodleDeselected':
+                	selectedDoodle = null;
+					flipDoseBox('', false);
+					this.drugFocus = false;
+                	break;
+                	
+                case 'drawingRepainted':
+                	//console.log('repainted');
+                	if (this.drugFocus) document.getElementById('doseBox').focus();
                 	break;
             }
         }
+        
+        function flipDoseBox(_dose, _show) {
+        	document.getElementById('doseBox').value = _dose;
+	        if (_show) {
+	        	document.getElementById('doseBox').style.display = 'block';
+	        	document.getElementById('doseBox').focus();
+	        }
+	        else
+	        {
+	        	document.getElementById('doseBox').blur();
+	        	document.getElementById('doseBox').style.display = 'none'        
+	        }
+        }
     }
 }
+
+function doseKeyUp(_event) {
+	if (selectedDoodle) {
+		selectedDoodle.dose = document.getElementById('doseBox').value;
+		selectedDoodle.drawing.repaint();
+	}
+}
+
