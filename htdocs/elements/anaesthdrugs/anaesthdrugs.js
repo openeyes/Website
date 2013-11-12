@@ -73,7 +73,7 @@ function addRow(_selectId, _value) {
 		
 		// Route
 		var cell1 = newRow.insertCell(1);
-		var routes = ['PR', 'IM', 'IV'];
+		var routes = ['IV', 'Eye'];
 		cell1.appendChild(tableSelect(routes, this.commonDrugSet[index].route, 'route'));
 		cell1.setAttribute('width', '8%')
 		
