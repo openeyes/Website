@@ -6,9 +6,15 @@
 
 /* Select */
 select {
-	width: 170px;
+	width: auto;
 	height: 20px;
-	margin-top: 20px;
+	margin-top: 10px;
+	margin-left: 10px;
+}
+
+input {
+	margin-top: 10px;
+	margin-left: 10px;
 }
 
 span {
@@ -228,12 +234,4 @@ input.entrytext {
     margin-left: 0px;
     width: 200px;
     height: 180px;
-}
-
-li {
-	color: #666666;
-	padding-top: 2px;
-	text-align: left;
-	margin-left: 50px;
-	padding-bottom: 2px;
 }

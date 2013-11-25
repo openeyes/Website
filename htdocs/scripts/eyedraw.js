@@ -243,17 +243,15 @@ ED.randomArray = [0.6570, 0.2886, 0.7388, 0.1621, 0.9896, 0.0434, 0.1695, 0.9099
  * @property {Bool} isActive Flag indicating that the mouse is interacting with the drawing
  * @property {Bool} isNew Flag indicating that the drawing is new (false after doodles loaded from an input string)
  * @property {Bool} isReady Flag indicating that the drawing has finished loading (set by widget controller)
- * @property {String} squiggleColour Colour of line for freehand drawing
- * @property {Int} squiggleWidth Width of line for freehand drawing
- * @property {Int} squiggleStyle Style of freehand drawing (solid or outline)
+ * @property {Bool} showDoodleControls Flag indicating whether doodles should display controls when selected
  * @property {Float} scaleOn Options for setting scale to either width or height
  * @param {Canvas} _canvas Canvas element
  * @param {Eye} _eye Right or left eye
- * @param {String} _IDSuffix String suffix to identify HTML elements related to this drawing
+ * @param {String} _idSuffix String suffix to identify HTML elements related to this drawing
  * @param {Bool} _isEditable Flag indicating whether canvas is editable or not
  * @param {Array} _options Associative array of optional parameters
  */
-ED.Drawing = function(_canvas, _eye, _IDSuffix, _isEditable, _options) {
+ED.Drawing = function(_canvas, _eye, _idSuffix, _isEditable, _options) {
 	// Defaults for optional parameters
 	var offsetX = 0;
 	var offsetY = 0;
@@ -275,7 +273,7 @@ ED.Drawing = function(_canvas, _eye, _IDSuffix, _isEditable, _options) {
 	// Initialise properties
 	this.canvas = _canvas;
 	this.eye = _eye;
-	this.IDSuffix = _IDSuffix;
+	this.idSuffix = _idSuffix;
 	this.isEditable = _isEditable;
 	this.hoverTimer = null;
 	this.convertToImage = (toImage && !this.isEditable) ? true : false;
@@ -300,14 +298,15 @@ ED.Drawing = function(_canvas, _eye, _IDSuffix, _isEditable, _options) {
 	this.isActive = false;
 	this.isNew = true;
 	this.isReady = false;
+	this.showDoodleControls = false;
 
-	// Freehand drawing properties
-	this.squiggleColour = new ED.Colour(0, 255, 0, 1);
-	this.squiggleWidth = ED.squiggleWidth.Medium;
-	this.squiggleStyle = ED.squiggleStyle.Outline;
+	// Freehand drawing properties NB from November 2013 moved to Freehand doodle
+// 	this.squiggleColour = new ED.Colour(0, 255, 0, 1);
+// 	this.squiggleWidth = ED.squiggleWidth.Medium;
+// 	this.squiggleStyle = ED.squiggleStyle.Outline;
 
 	// Put settings into display canvas
-	this.refreshSquiggleSettings();
+// 	this.refreshSquiggleSettings();
 
 	// Associative array of bound element no doodle values (ie value associated with deleted doodle)
 	this.boundElementDeleteValueArray = new Array();
@@ -358,17 +357,17 @@ ED.Drawing = function(_canvas, _eye, _IDSuffix, _isEditable, _options) {
 	this.clear();
 
 	// Get reference to button elements
-	this.moveToFrontButton = document.getElementById('moveToFront' + this.IDSuffix);
-	this.moveToBackButton = document.getElementById('moveToBack' + this.IDSuffix);
-	this.flipVerButton = document.getElementById('flipVer' + this.IDSuffix);
-	this.flipHorButton = document.getElementById('flipHor' + this.IDSuffix);
-	this.deleteSelectedDoodleButton = document.getElementById('deleteSelectedDoodle' + this.IDSuffix);
-	this.lockButton = document.getElementById('lock' + this.IDSuffix);
-	this.unlockButton = document.getElementById('unlock' + this.IDSuffix);
-	this.squiggleSpan = document.getElementById('squiggleSpan' + this.IDSuffix);
-	this.colourPreview = document.getElementById('colourPreview' + this.IDSuffix);
-	this.fillRadio = document.getElementById('fillRadio' + this.IDSuffix);
-	this.thickness = document.getElementById('thicknessSelect' + this.IDSuffix);
+	this.moveToFrontButton = document.getElementById('moveToFront' + this.idSuffix);
+	this.moveToBackButton = document.getElementById('moveToBack' + this.idSuffix);
+	this.flipVerButton = document.getElementById('flipVer' + this.idSuffix);
+	this.flipHorButton = document.getElementById('flipHor' + this.idSuffix);
+	this.deleteSelectedDoodleButton = document.getElementById('deleteSelectedDoodle' + this.idSuffix);
+	this.lockButton = document.getElementById('lock' + this.idSuffix);
+	this.unlockButton = document.getElementById('unlock' + this.idSuffix);
+	//this.squiggleSpan = document.getElementById('squiggleSpan' + this.idSuffix);
+	//this.colourPreview = document.getElementById('colourPreview' + this.idSuffix);
+	//this.fillRadio = document.getElementById('fillRadio' + this.idSuffix);
+	//this.thickness = document.getElementById('thicknessSelect' + this.idSuffix);
 
 	// Selection rectangle
 	this.selectionRectangleIsBeingDragged = false;
@@ -422,7 +421,7 @@ ED.Drawing = function(_canvas, _eye, _IDSuffix, _isEditable, _options) {
         var point = new ED.Point(e.targetTouches[0].pageX - canvas_pos[0] - this.offsetLeft, e.targetTouches[0].pageY - canvas_pos[1]);
         e.preventDefault();
       } else {
-        console.log('touches undefined');
+        ED.errorHandler('ED.Drawing', 'Class', 'Touches undefined: ');
       }
       drawing.mousedown(point);
     }, false);
@@ -745,7 +744,6 @@ ED.Drawing.prototype.drawAllDoodles = function() {
 		ctx.stroke();
 	}
 
-
 	// Draw doodles
 	for (var i = 0; i < this.doodleArray.length; i++) {
 		// Save context (draw method of each doodle may alter it)
@@ -781,7 +779,7 @@ ED.Drawing.prototype.mousedown = function(_point) {
 	var found = false;
 	this.lastSelectedDoodle = this.selectedDoodle;
 	this.selectedDoodle = null;
-
+	
 	// Cycle through doodles from front to back doing hit test
 	for (var i = this.doodleArray.length - 1; i > -1; i--) {
 		if (!found) {
@@ -799,9 +797,18 @@ ED.Drawing.prototype.mousedown = function(_point) {
 					this.doodleArray[i].isSelected = true;
 					this.selectedDoodle = this.doodleArray[i];
 					found = true;
+					
+					// Check if newly selected
+					if (this.lastSelectedDoodle != this.selectedDoodle) {
+						// Run onDeselection code for last doodle
+						if (this.lastSelectedDoodle) this.lastSelectedDoodle.onDeselection();
+						
+						// Run onSelection code
+						this.selectedDoodle.onSelection();
 
-					// Notify
-					this.notify("doodleSelected");
+						// Notify
+						this.notify("doodleSelected");
+					}
 
 					// If for drawing, mouse down starts a new squiggle
 					if (!this.doubleClick && this.doodleArray[i].isForDrawing) {
@@ -826,14 +833,20 @@ ED.Drawing.prototype.mousedown = function(_point) {
 		// Ensure drag flagged is off for each doodle
 		this.doodleArray[i].isBeingDragged = false;
 	}
-	
-	// Notify if doodle is deselected
+
+	// If no doodles selected, run onDeselection code for last doodle
+	if (!this.selectedDoodle) {
+		if (this.lastSelectedDoodle) this.lastSelectedDoodle.onDeselection();
+	}
+			
+	// Notify if doodle is deselected ***TODO*** move to onDeselection code for doodle to make this trigger for all deselections
 	if (this.lastSelectedDoodle) {
-		if (!this.selectedDoodle) {
+		if (this.lastSelectedDoodle != this.selectedDoodle) {
+			// Notify
 			this.notify("doodleDeselected");
 		}
 	}
-
+	
 	// Drawing
 	if (this.newPointOnClick && !found) {
 		var mousePosDoodlePlane = this.inverseTransform.transformPoint(_point);
@@ -1334,8 +1347,9 @@ ED.Drawing.prototype.mouseout = function(_point) {
 ED.Drawing.prototype.keydown = function(e) {
 	// Keyboard action works on selected doodle
 	if (this.selectedDoodle != null) {
-		// Label doodle is special case
-		if (this.selectedDoodle.className == "Label") {
+		// Label doodle is special case - Deprecated since doodle control bar
+		// if (this.selectedDoodle.className == "Label") {
+		if (false) {
 			// Code to send to doodle
 			var code = 0;
 
@@ -1706,6 +1720,7 @@ ED.Drawing.prototype.deleteDoodle = function(_doodle) {
 
 					// If its selected, deselect it
 					if (this.selectedDoodle != null && this.selectedDoodle.id == _doodle.id) {
+						this.selectedDoodle.onDeselection();
 						this.selectedDoodle = null;
 					}
 
@@ -1904,6 +1919,7 @@ ED.Drawing.prototype.deselectDoodles = function() {
 		this.doodleArray[i].isSelected = false;
 	}
 
+	if (this.selectedDoodle) this.selectedDoodle.onDeselection();
 	this.selectedDoodle = null;
 
 	// Refresh drawing
@@ -2011,8 +2027,9 @@ ED.Drawing.prototype.addDoodle = function(_className, _parameterDefaults, _param
 
 	// Check if one is already there if unique)
 	if (!(newDoodle.isUnique && this.hasDoodleOfClass(_className))) {
-		// Ensure no other doodles are selected
+		// Ensure no other doodles are selected, and run onDeselection code if appropriate
 		for (var i = 0; i < this.doodleArray.length; i++) {
+			if (this.doodleArray[i].isSelected) this.doodleArray[i].onDeselection();
 			this.doodleArray[i].isSelected = false;
 		}
 
@@ -2129,6 +2146,9 @@ ED.Drawing.prototype.addDoodle = function(_className, _parameterDefaults, _param
 			this.repaint();
 		}
 
+		// Run onSelection code
+		this.selectedDoodle.onSelection();
+		
 		// Notify
 		this.notify("doodleAdded", newDoodle);
 
@@ -2278,7 +2298,16 @@ ED.Drawing.prototype.eventHandler = function(_type, _doodleId, _className, _elem
 									element.value = validityArray.value;
 								}
 								break;
-
+								
+							case 'text':
+								if (attribute) {
+									ED.errorHandler('ED.Drawing', 'eventHandler', 'Binding to a textfield with a non-standard attribute not yet supported');
+								} else {
+									console.log('setting textfield - needs testing with a suitable doodle');
+									element.value = validityArray.value;
+								}
+								break;
+								
 							default:
 								if (attribute) {
 									element.setAttribute(attribute, validityArray.value);
@@ -2355,6 +2384,14 @@ ED.Drawing.prototype.updateBindings = function(_doodle) {
 					}
 					break;
 
+				case 'text':
+					if (attribute) {
+						ED.errorHandler('ED.Drawing', 'updateBindings', 'Binding to a textfield with a non-standard attribute not yet supported');
+					} else {
+						element.value = value;
+					}
+					break;
+					
 				default:
 					if (attribute) {
 						element.setAttribute(attribute, value);
@@ -2788,7 +2825,7 @@ ED.Drawing.prototype.repaint = function() {
 		if (this.flipHorButton !== null) this.flipHorButton.disabled = false;
 		if (this.deleteSelectedDoodleButton !== null && this.selectedDoodle.isDeletable) this.deleteSelectedDoodleButton.disabled = false;
 		if (this.lockButton !== null) this.lockButton.disabled = false;
-		if (this.squiggleSpan !== null && this.selectedDoodle.isDrawable) this.squiggleSpan.style.display = "inline-block";
+		//if (this.squiggleSpan !== null && this.selectedDoodle.isDrawable) this.squiggleSpan.style.display = "inline-block";
 	} else {
 		if (this.moveToFrontButton !== null) this.moveToFrontButton.disabled = true;
 		if (this.moveToBackButton !== null) this.moveToBackButton.disabled = true;
@@ -2796,7 +2833,7 @@ ED.Drawing.prototype.repaint = function() {
 		if (this.flipHorButton !== null) this.flipHorButton.disabled = true;
 		if (this.deleteSelectedDoodleButton !== null) this.deleteSelectedDoodleButton.disabled = true;
 		if (this.lockButton !== null) this.lockButton.disabled = true;
-		if (this.squiggleSpan !== null) this.squiggleSpan.style.display = "none";
+		//if (this.squiggleSpan !== null) this.squiggleSpan.style.display = "none";
 	}
 
 	// Go through doodles looking for any that are locked and enable/disable unlock button
@@ -2822,7 +2859,7 @@ ED.Drawing.prototype.repaint = function() {
 		// Go through doodles looking for any that unique, and disable the corresponding add button
 		for (var i = 0; i < this.doodleArray.length; i++) {
 			// Button ID is concatenation of class name and id suffix
-			var addButton = document.getElementById(this.doodleArray[i].className + this.IDSuffix);
+			var addButton = document.getElementById(this.doodleArray[i].className + this.idSuffix);
 			if (addButton) {
 				addButton.disabled = this.doodleArray[i].isUnique;
 			}
@@ -2909,72 +2946,72 @@ ED.Drawing.prototype.nextDoodleId = function() {
  * @param {Object} _colour Colour object
  * @returns {String} _hexColour A string describing the colour to use for freehand drawing
  */
-ED.Drawing.prototype.setSquiggleColour = function(_colour) {
-	this.squiggleColour = _colour;
-
-	this.refreshSquiggleSettings()
-}
+// ED.Drawing.prototype.setSquiggleColour = function(_colour) {
+// 	this.squiggleColour = _colour;
+// 
+// 	this.refreshSquiggleSettings()
+// }
 
 /**
  * Changes the line width for freehand drawing
  *
  * @returns {Int} _hexColour A number describing the width
  */
-ED.Drawing.prototype.setSquiggleWidth = function(_width) {
-	this.squiggleWidth = _width;
-
-	this.refreshSquiggleSettings()
-}
+// ED.Drawing.prototype.setSquiggleWidth = function(_width) {
+// 	this.squiggleWidth = _width;
+// 
+// 	this.refreshSquiggleSettings()
+// }
 
 /**
  * Changes the line width for freehand drawing
  *
  * @returns {int} _style A string describing the style to use for freehand drawing
  */
-ED.Drawing.prototype.setSquiggleStyle = function(_style) {
-	this.squiggleStyle = _style;
-
-	this.refreshSquiggleSettings()
-}
+// ED.Drawing.prototype.setSquiggleStyle = function(_style) {
+// 	this.squiggleStyle = _style;
+// 
+// 	this.refreshSquiggleSettings()
+// }
 
 /**
  * Refreshes the display of settings for freehand drawing
  *
  * @returns {String} _hexColour A string describing the colour to use for freehand drawing
  */
-ED.Drawing.prototype.refreshSquiggleSettings = function() {
-	// Get reference to canvas
-	var displayCanvas = document.getElementById("squiggleSettings" + this.IDSuffix);
-
-	if (displayCanvas) {
-		// Get context
-		var ctx = displayCanvas.getContext('2d');
-
-		// Reset canvas
-		displayCanvas.width = displayCanvas.width;
-		ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-		// Set colours
-		ctx.strokeStyle = this.squiggleColour.rgba();
-		ctx.fillStyle = this.squiggleColour.rgba();;
-
-		// Line width
-		ctx.beginPath();
-		ctx.moveTo(3, 8);
-		ctx.lineTo(20, 8);
-		ctx.lineWidth = this.squiggleWidth / 2;
-		ctx.stroke();
-
-		// Outline or solid
-		ctx.beginPath();
-		ctx.rect(5, 19, 13, 8);
-		ctx.lineWidth = 3;
-		ctx.stroke();
-		if (this.squiggleStyle == ED.squiggleStyle.Solid) {
-			ctx.fill();
-		}
-	}
-}
+// ED.Drawing.prototype.refreshSquiggleSettings = function() {
+// 	// Get reference to canvas
+// 	var displayCanvas = document.getElementById("squiggleSettings" + this.idSuffix);
+// 
+// 	if (displayCanvas) {
+// 		// Get context
+// 		var ctx = displayCanvas.getContext('2d');
+// 
+// 		// Reset canvas
+// 		displayCanvas.width = displayCanvas.width;
+// 		ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+// 
+// 		// Set colours
+// 		ctx.strokeStyle = this.squiggleColour.rgba();
+// 		ctx.fillStyle = this.squiggleColour.rgba();;
+// 
+// 		// Line width
+// 		ctx.beginPath();
+// 		ctx.moveTo(3, 8);
+// 		ctx.lineTo(20, 8);
+// 		ctx.lineWidth = this.squiggleWidth / 2;
+// 		ctx.stroke();
+// 
+// 		// Outline or solid
+// 		ctx.beginPath();
+// 		ctx.rect(5, 19, 13, 8);
+// 		ctx.lineWidth = 3;
+// 		ctx.stroke();
+// 		if (this.squiggleStyle == ED.squiggleStyle.Solid) {
+// 			ctx.fill();
+// 		}
+// 	}
+// }
 
 /**
  * An object of the Report class is used to extract data for the Royal College of Ophthalmologists retinal detachment dataset.
@@ -3392,6 +3429,11 @@ ED.Doodle = function(_drawing, _parameterJSON) {
 		// Optional array for saving non-bound parameters
 		if (!this.savedParameterArray) {
 			this.savedParameterArray = [];
+		}
+		
+		// Optional array for parameters linked to elements in doodle control panel
+		if (!this.controlParameterArray) {
+			this.controlParameterArray = [];
 		}
 
 		// Optional array for saving details of object parameters for reconstitution from string
@@ -3838,7 +3880,8 @@ ED.Doodle.prototype.drawBoundary = function(_point) {
 /**
  * Draws extra items if the doodle is highlighted
  */
-ED.Doodle.prototype.drawHighlightExtras = function() {}
+ED.Doodle.prototype.drawHighlightExtras = function() {
+}
 
 /**
  * Shows doodle parameter controls. Doodle must set display:true in parameterValidationArray
@@ -3850,7 +3893,7 @@ ED.Doodle.prototype.setDisplayOfParameterControls = function(_flag) {
 		var validation = this.parameterValidationArray[parameter];
 		if (validation.display) {
 			// Construct id of element
-			var id = parameter + this.className + this.drawing.IDSuffix;
+			var id = parameter + this.className + this.drawing.idSuffix;
 
 			// Look for corresponding element and toggle display
 			var element = document.getElementById(id);
@@ -3878,6 +3921,18 @@ ED.Doodle.prototype.setDisplayOfParameterControls = function(_flag) {
 ED.Doodle.prototype.groupDescription = function() {
 	return "";
 }
+
+/**
+ * Runs when doodle is selected by the user
+ */
+// ED.Doodle.prototype.onSelection = function() {
+// }
+
+/**
+ * Runs when doodle is deselected by the user
+ */
+// ED.Doodle.prototype.onDeselection = function() {
+// }
 
 /**
  * Returns a string containing a text description of the doodle (overridden by subclasses)
@@ -4057,11 +4112,16 @@ ED.Doodle.prototype.validateParameter = function(_parameter, _value) {
 				}
 				break;
 				
-			case 'colour':
-				// ***TODO*** add some actual validation here
+			case 'colourString':
+				// ***TODO*** Add some actual validation here
 				valid = true;
 				break;
-
+				
+			case 'freeText':
+				// ***TODO*** Add some actual validation here
+				valid = true;
+				break;
+				
 			default:
 				ED.errorHandler('ED.Drawing', 'eventHandler', 'Illegal validation type');
 				break;
@@ -4081,6 +4141,130 @@ ED.Doodle.prototype.validateParameter = function(_parameter, _value) {
 	returnArray['valid'] = valid;
 	returnArray['value'] = value;
 	return returnArray;
+}
+
+/**
+ * Generates a unique id for a control element bound to a parameter ***TODO*** improve this
+ *
+ * @param {String} _parameter Name of the parameter
+ * @returns {String} ID for a control element
+ */
+ED.Doodle.prototype.parameterControlElementId = function(_parameter) {
+	return this.drawing.canvas.id + '_' + _parameter + '_control';
+}
+
+/**
+ * Runs when doodle is selected by the user
+ */
+ED.Doodle.prototype.onSelection = function() {
+	// Show control bar
+	if (this.drawing.showDoodleControls) {
+		var controlDiv = document.getElementById(this.drawing.canvas.id + '_' + 'controls');
+
+		for (var parameter in this.controlParameterArray) {
+			// Create element and add to control bar
+			var element = this.parameterElement(parameter);
+			controlDiv.appendChild(element);
+		
+			// Add binding
+			this.addBinding(parameter, {id:this.parameterControlElementId(parameter)});
+		}
+	}
+}
+
+/**
+ * Runs when doodle is deselected by the user
+ */
+ED.Doodle.prototype.onDeselection = function() {
+	// Hide control bar
+	if (this.drawing.showDoodleControls) {
+		// Remove all bindings
+		for (var parameter in this.controlParameterArray) {
+			this.removeBinding(parameter);
+		}
+	
+		// Remove all child elements in control div
+		var controlDiv = document.getElementById(this.drawing.canvas.id + '_' + 'controls');
+		while(controlDiv.hasChildNodes()){
+			controlDiv.removeChild(controlDiv.lastChild);
+		}
+	}
+}
+
+/**
+ * Creates an element for parameter in the doodle control bar
+ *
+ * @param {String} _parameter Name of the parameter
+ * @returns {String} _id ID for a control element
+ */
+ED.Doodle.prototype.parameterElement = function(_parameter) {
+	var element;
+	switch (this.parameterValidationArray[_parameter].type) {
+		case 'string':
+			// Create a select element
+			element = document.createElement('select');
+			element.setAttribute('id', this.parameterControlElementId(_parameter));
+			
+			// Add options from validation array
+			for (var i in this.parameterValidationArray[_parameter].list) {
+				var option = document.createElement('option');
+				option.innerText = this.parameterValidationArray[_parameter].list[i];
+				//if (option.innerText == this[_parameter]) option.selected = true;
+				element.appendChild(option);
+			}
+			break;
+			
+		case 'bool':
+			// Create a checkbox element
+			element = document.createElement('input');
+    		element.type = 'checkbox';
+    		element.setAttribute('id', this.parameterControlElementId(_parameter));
+    		break;
+    		
+		case 'colourString':
+			// Create a colour picker
+			element = document.createElement('select');
+			element.setAttribute('id', this.parameterControlElementId(_parameter));
+			
+			// Add options from validation array
+			for (var i in this.parameterValidationArray[_parameter].list) {
+				var option = document.createElement('option');
+				// Hack until colour picker worked out
+				if (this.parameterValidationArray[_parameter].list[i] == "FF0000FF") {
+					option.innerText = "Red";
+				}
+				else if (this.parameterValidationArray[_parameter].list[i] == "00FF00FF") {
+					option.innerText = "Green";
+				}
+				else {
+					option.innerText = "Blue";
+				}
+				option.value = this.parameterValidationArray[_parameter].list[i];
+				element.appendChild(option);
+			}
+    		break;
+    		
+		case 'freeText':
+			// Create a text input element
+			element = document.createElement('input');
+    		element.type = 'text';
+    		element.setAttribute('id', this.parameterControlElementId(_parameter));
+    		break;
+			
+		default:
+			ED.errorHandler('ED.Doodle', 'parameterElement', 'Unexpected type: ' + this.parameterValidationArray[_parameter].type + ' for parameter: ' + _parameter);
+			break;
+	}
+	// Create label  ***TODO*** deal with optional label and language
+	var label = document.createElement('label');
+	label.innerText = this.controlParameterArray[_parameter];
+		
+	// Wrap in div to allow display in vertical block
+	var div = document.createElement('div');
+	div.appendChild(label);
+	div.appendChild(element);
+	
+	return div;
 }
 
 /**
@@ -4214,10 +4398,14 @@ ED.Doodle.prototype.setParameterFromString = function(_parameter, _value) {
 				this[_parameter] = (_value == 'true');
 				break;
 
-			case 'colour':
-				this[_parameter].setWithHexString(_value);
+			case 'colourString':
+				this[_parameter] = _value;
 				break;
 				
+			case 'freeText':
+				this[_parameter] = _value;
+				break;
+								
 			default:
 				ED.errorHandler('ED.Doodle', 'setParameterFromString', 'Illegal validation type: ' + validation.type);
 				break;
@@ -4396,6 +4584,14 @@ ED.Doodle.prototype.getParameter = function(_parameter) {
 				value = this[_parameter].toString();
 				break;
 
+			case 'colourString':
+				value = this[_parameter];
+				break;
+
+			case 'freeText':
+				value = this[_parameter];
+				break;
+								
 			default:
 				ED.errorHandler('ED.Doodle', 'getParameter', 'Illegal validation type');
 				break;
@@ -4485,7 +4681,14 @@ ED.Doodle.prototype.addBinding = function(_parameter, _fieldParameters) {
 					if (attribute) {
 						ED.errorHandler('ED.Doodle', 'addBinding', 'Binding to a checkbox with a non-standard attribute not yet supported');
 					} else {
-						this.setParameterFromString(_parameter, element.checked.toString());
+						// For parameters linked to an element with a saved value, set value to that of bound element
+						if (this.savedParameterArray.indexOf(_parameter) < 0) {
+							this.setParameterFromString(_parameter, element.checked.toString());
+						}
+						// Otherwise set element value to saved doodle parameter
+						else {
+							this.drawing.updateBindings(this);
+						}
 						element.addEventListener('change', listener = function(event) {
 							drawing.eventHandler('onchange', id, className, this.id, this.checked.toString());
 						}, false);
@@ -4495,7 +4698,7 @@ ED.Doodle.prototype.addBinding = function(_parameter, _fieldParameters) {
 				case 'select-one':
 					if (attribute) {
 						if (element.selectedIndex > -1) {
-							// For parameters linked to a saved value, set value to that of bound element NB if this works, all the cases in this switch need updating
+							// For parameters linked to a saved value, set value to that of bound element
 							if (this.savedParameterArray.indexOf(_parameter) < 0) {
 								this.setParameterFromString(_parameter, element.options[element.selectedIndex].getAttribute(attribute));
 							}
@@ -4504,15 +4707,37 @@ ED.Doodle.prototype.addBinding = function(_parameter, _fieldParameters) {
 							drawing.eventHandler('onchange', id, className, this.id, this.options[this.selectedIndex].getAttribute(attribute));
 						}, false);
 					} else {
-						// For parameters linked to a saved value, set value to that of bound element NB if this works, all the cases in this switch need updating
+						// For parameters linked to an element with a saved value, set value to that of bound element
 						if (this.savedParameterArray.indexOf(_parameter) < 0) {
 							this.setParameterFromString(_parameter, element.value);
+						}
+						// Otherwise set element value to saved doodle parameter
+						else {
+							this.drawing.updateBindings(this);
 						}
 						element.addEventListener('change', listener = function(event) {
 							drawing.eventHandler('onchange', id, className, this.id, this.value);
 						}, false);
 					}
 					break;
+					
+				case 'text':
+					if (attribute) {
+						ED.errorHandler('ED.Doodle', 'addBinding', 'Binding to a text field with a non-standard attribute not yet supported');
+					} else {
+						// For parameters linked to an element with a saved value, set value to that of bound element
+						if (this.savedParameterArray.indexOf(_parameter) < 0) {
+							this.setParameterFromString(_parameter, element.value);
+						}
+						// Otherwise set element value to saved doodle parameter
+						else {
+							this.drawing.updateBindings(this);
+						}
+						element.addEventListener('change', listener = function(event) {
+							drawing.eventHandler('onchange', id, className, this.id, this.value);
+						}, false);
+					}
+					break;				
 
 				default:
 					if (attribute) {
@@ -4728,19 +4953,13 @@ ED.Doodle.prototype.locationRelativeToFovea = function() {
  * Adds a new squiggle to the doodle's squiggle array
  */
 ED.Doodle.prototype.addSquiggle = function() {
-	// Get preview colour (returned as rgba(r,g,b))
-	var colourString = this.drawing.colourPreview.style.backgroundColor;
-
-	// Use regular expression to extract rgb values from returned value
-	var colourArray = colourString.match(/\d+/g);
-
-	// Get solid or clear
-	var filled = this.drawing.fillRadio.checked;
+	// Get colour (stored as a HEX string in the doodle) and create colour object
+	var colourObject = new ED.Colour(0, 0, 0, 1);
+	colourObject.setWithHexString(this.colourString);
 
 	// Line thickness
-	var thickness = this.drawing.thickness.value;
 	var lineThickness;
-	switch (thickness) {
+	switch (this.thickness) {
 		case "Thin":
 			lineThickness = ED.squiggleWidth.Thin;
 			break;
@@ -4755,9 +4974,8 @@ ED.Doodle.prototype.addSquiggle = function() {
 			break;
 	}
 
-	// Create new squiggle of selected colour
-	var colour = new ED.Colour(colourArray[0], colourArray[1], colourArray[2], 1);
-	var squiggle = new ED.Squiggle(this, colour, lineThickness, filled);
+	// Create new squiggle
+	var squiggle = new ED.Squiggle(this, colourObject, lineThickness, this.filled);
 
 	// Add it to squiggle array
 	this.squiggleArray.push(squiggle);
@@ -5695,10 +5913,10 @@ ED.Squiggle.prototype.json = function() {
  * A colour in the RGB space;
  * Usage: var c = new ED.Colour(0, 0, 255, 0.75); ctx.fillStyle = c.rgba();
  *
- * @property {Int} red The red value
- * @property {Int} green The green value
- * @property {Int} blue The blue value
- * @property {Float} alpha The alpha value
+ * @property {Int} red The red value as an integer from 0 to 255
+ * @property {Int} green The green value as an integer from 0 to 255
+ * @property {Int} blue The blue value as an integer from 0 to 255
+ * @property {Float} alpha The alpha value as a float from 0 to 1
  * @param {Int} _red
  * @param {Int} _green
  * @param {Int} _blue
@@ -5724,6 +5942,27 @@ ED.Colour.prototype.setWithHexString = function(_hexString) {
 	if (_hexString.length > 6) {
 		this.alpha = parseInt((_hexString.charAt(6) + _hexString.charAt(7)), 16);
 	}
+}
+
+/**
+ * Outputs the colour as a hex string
+ *
+ * @returns {String} Colour in hex format (eg 'E0AB4F')
+ */
+ED.Colour.prototype.hexString = function() {
+	var hexString = "";
+	
+	// temporary while awaiting internet! Works for red and green only
+	if (this.red > 0) return "FF0000FF";
+	else return "00FF00FF";
+	
+	// ***TODO*** add some string reality checks here
+// 	this.red = parseInt((_hexString.charAt(0) + _hexString.charAt(1)), 16);
+// 	this.green = parseInt((_hexString.charAt(2) + _hexString.charAt(3)), 16);
+// 	this.blue = parseInt((_hexString.charAt(4) + _hexString.charAt(5)), 16);
+// 	if (_hexString.length > 6) {
+// 		this.alpha = parseInt((_hexString.charAt(6) + _hexString.charAt(7)), 16);
+// 	}
 }
 
 /**
@@ -5848,36 +6087,22 @@ ED.Categories['SubretinalPFCL'] = {
 };
 
 /**
- * @fileOverview Contains doodle subclasses for general use
- * @author <a href="mailto:bill.aylward@mac.com">Bill Aylward</a>
- * @version 1.0
+ * OpenEyes
  *
- * Modification date: 6th October 2012
- * Copyright 2011 OpenEyes
- *
+ * (C) Moorfields Eye Hospital NHS Foundation Trust, 2008-2011
+ * (C) OpenEyes Foundation, 2011-2013
  * This file is part of OpenEyes.
+ * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
  *
- * OpenEyes is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * OpenEyes is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with OpenEyes.  If not, see <http://www.gnu.org/licenses/>.
+ * @package OpenEyes
+ * @link http://www.openeyes.org.uk
+ * @author OpenEyes <info@openeyes.org.uk>
+ * @copyright Copyright (c) 2008-2011, Moorfields Eye Hospital NHS Foundation Trust
+ * @copyright Copyright (c) 2011-2013, OpenEyes Foundation
+ * @license http://www.gnu.org/licenses/gpl-3.0.html The GNU General Public License V3.0
  */
-
-/**
- * Defines the EyeDraw namespace
- * @namespace Namespace for all EyeDraw classes
- */
-if (ED == null || typeof(ED) != "object") {
-	var ED = new Object();
-}
 
 /**
  * Freehand drawing
@@ -5890,9 +6115,20 @@ if (ED == null || typeof(ED) != "object") {
 ED.Freehand = function(_drawing, _parameterJSON) {
 	// Set classname
 	this.className = "Freehand";
+	
+	// Derived parameters
+	this.colourString = "FF0000FF";
+	this.filled = true;
+	this.thickness = 'Thin'
+
+	// Saved parameters
+	this.savedParameterArray = ['originX', 'originY', 'colourString', 'filled', 'thickness'];
+	
+	// Parameters in doodle control bar (parameter name: parameter label)
+	this.controlParameterArray = {'colourString':'Colour', 'filled':'Fill', 'thickness':'Thickness'};
 
 	// Call superclass constructor
-ED.Doodle.call(this, _drawing, _parameterJSON);
+	ED.Doodle.call(this, _drawing, _parameterJSON);
 }
 
 /**
@@ -5914,6 +6150,25 @@ ED.Freehand.prototype.setHandles = function() {
  */
 ED.Freehand.prototype.setPropertyDefaults = function() {
 	this.isDrawable = true;
+	
+	// Add complete validation arrays for derived parameters
+	this.parameterValidationArray['colourString'] = {
+		kind: 'derived',
+		type: 'colourString',
+		list: ['FF0000FF', '00FF00FF', '0000FFFF'],
+		animate: false
+	};
+	this.parameterValidationArray['filled'] = {
+		kind: 'derived',
+		type: 'bool',
+		display: true
+	};
+	this.parameterValidationArray['thickness'] = {
+		kind: 'derived',
+		type: 'string',
+		list: ['Thin', 'Medium', 'Thick'],
+		animate: false
+	};
 }
 
 /**
@@ -5939,16 +6194,21 @@ ED.Freehand.prototype.draw = function(_point) {
 	// Boundary path
 	ctx.beginPath();
 
-	// Freehand
-	ctx.rect(-150, -150, 300, 300);
+	// Freehand drawing area
+	var halfWidth = 200;
+	ctx.rect(-halfWidth, -halfWidth, halfWidth * 2, halfWidth * 2);
 
 	// Close path
 	ctx.closePath();
 
-	// Set line attributes
+	// Create colour object for squiggle
+	var colourObject = new ED.Colour(0, 0, 0, 1);
+	colourObject.setWithHexString(this.colourString);
+	
+	// Set attributes for border (colour changes to indicate drawing mode)
 	ctx.lineWidth = 2;
 	this.isFilled = false;
-	ctx.strokeStyle = "rgba(0, 0, 0, 0)";
+	ctx.strokeStyle = "rgba(255, 255, 255, 0)";
 	if (this.isSelected) ctx.strokeStyle = "gray";
 	if (this.isForDrawing) ctx.strokeStyle = "blue";
 
@@ -5961,12 +6221,13 @@ ED.Freehand.prototype.draw = function(_point) {
 		for (var i = 0; i < this.squiggleArray.length; i++) {
 			var squiggle = this.squiggleArray[i];
 
+			// New path for squiggle
 			ctx.beginPath();
 
 			// Squiggle attributes
 			ctx.lineWidth = squiggle.thickness;
-			ctx.strokeStyle = squiggle.colour;
-			ctx.fillStyle = squiggle.colour;
+			ctx.strokeStyle = squiggle.colour.rgba();
+			ctx.fillStyle = squiggle.colour.rgba();
 
 			// Iterate through squiggle points
 			for (var j = 0; j < squiggle.pointsArray.length; j++) {
@@ -5982,7 +6243,7 @@ ED.Freehand.prototype.draw = function(_point) {
 	}
 
 	// Coordinates of handles (in canvas plane)
-	this.handleArray[2].location = this.transform.transformPoint(new ED.Point(150, -150));
+	this.handleArray[2].location = this.transform.transformPoint(new ED.Point(halfWidth, -halfWidth));
 
 	// Draw handles if selected but not if for drawing
 	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
@@ -5990,6 +6251,7 @@ ED.Freehand.prototype.draw = function(_point) {
 	// Return value indicating successful hittest
 	return this.isClicked;
 }
+
 
 /**
  *	Mouse test - used for testing detection of mouse pointer
@@ -6194,7 +6456,7 @@ ED.Label = function(_drawing, _parameterJSON) {
 	this.className = "Label";
 
 	// Private parameters
-	this.labelText = "Start typing..";
+	this.labelText = "";
 	this.lastOriginX = 0;
 	this.lastOriginY = 0;
 
@@ -6216,6 +6478,9 @@ ED.Label = function(_drawing, _parameterJSON) {
 	
 	// Saved parameters
 	this.savedParameterArray = ['originX', 'originY', 'apexX', 'apexY', 'labelText', 'lastOriginX', 'lastOriginY'];
+	
+	// Parameters in doodle control bar (parameter name: parameter label)
+	this.controlParameterArray = {'labelText':'Text'};
 
 	// Call superclass constructor
 	ED.Doodle.call(this, _drawing, _parameterJSON);
@@ -6245,7 +6510,7 @@ ED.Label.prototype.setPropertyDefaults = function() {
 	// Add complete validation arrays for derived parameters
 	this.parameterValidationArray['labelText'] = {
 		kind: 'derived',
-		type: 'string',
+		type: 'freeText',
 		animate: false
 	};
 }
@@ -6254,7 +6519,6 @@ ED.Label.prototype.setPropertyDefaults = function() {
  * Sets default parameters
  */
 ED.Label.prototype.setParameterDefaults = function() {
-	this.setParameterFromString('labelText', 'Start typing..');
 	this.setOriginWithDisplacements(0, -100);
 	this.lastOriginX = this.originX;
 	this.lastOriginY = this.originY;
@@ -6377,36 +6641,47 @@ ED.Label.prototype.draw = function(_point) {
 }
 
 /**
+ * Runs when doodle is selected by the user
+ */
+ED.Label.prototype.onSelection = function() {
+	// Call method in superclass
+	ED.Label.superclass.onSelection.call(this);
+
+	// Set focus to control to allow immediate typing
+	document.getElementById(this.parameterControlElementId('labelText')).focus();
+}
+
+/**
  * Adds a letter to the label text
  *
  * @param {Int} _keyCode Keycode of pressed key
  */
-ED.Label.prototype.addLetter = function(_keyCode) {
-	// Need code here to convert to character
-	var character = String.fromCharCode(_keyCode);
-
-	if (!this.isEdited) {
-		this.labelText = "";
-		this.isEdited = true;
-	}
-
-	// Use backspace to edit
-	if (_keyCode == 8) {
-		if (this.labelText.length > 0) this.labelText = this.labelText.substring(0, this.labelText.length - 1);
-	} else {
-		if (this.labelText.length < this.maximumLength) this.labelText += character;
-	}
-
-	// Save changes by triggering parameterChanged method in controller
-	if (this.isEdited) {
-		// Create notification message
-		var object = new Object;
-		object.doodle = this;
-
-		// Trigger notification
-		this.drawing.notify('parameterChanged', object);
-	}
-}
+// ED.Label.prototype.addLetter = function(_keyCode) {
+// 	// Need code here to convert to character
+// 	var character = String.fromCharCode(_keyCode);
+// 
+// 	if (!this.isEdited) {
+// 		this.labelText = "";
+// 		this.isEdited = true;
+// 	}
+// 
+// 	// Use backspace to edit
+// 	if (_keyCode == 8) {
+// 		if (this.labelText.length > 0) this.labelText = this.labelText.substring(0, this.labelText.length - 1);
+// 	} else {
+// 		if (this.labelText.length < this.maximumLength) this.labelText += character;
+// 	}
+// 
+// 	// Save changes by triggering parameterChanged method in controller
+// 	if (this.isEdited) {
+// 		// Create notification message
+// 		var object = new Object;
+// 		object.doodle = this;
+// 
+// 		// Trigger notification
+// 		this.drawing.notify('parameterChanged', object);
+// 	}
+// }
 
 /**
  * OpenEyes
@@ -12545,9 +12820,15 @@ ED.AntSeg = function(_drawing, _parameterJSON) {
 	// Derived parameters
 	this.pupilSize = 'Large';
 	this.pxe = false;
+	this.coloboma = false;
+	this.colour = 'Blue';
+	this.ectropion = false;
 
 	// Saved parameters
-	this.savedParameterArray = ['apexY', 'pxe'];
+	this.savedParameterArray = ['apexY', 'pxe', 'coloboma', 'colour', 'ectropion'];
+	
+	// Parameters in doodle control bar (parameter name: parameter label)
+	this.controlParameterArray = {'pxe':'PXE', 'coloboma':'Coloboma', 'colour':'Colour', 'ectropion':'Ectropion uveae'};
 
 	// Call superclass constructor
 	ED.Doodle.call(this, _drawing, _parameterJSON);
@@ -12574,7 +12855,7 @@ ED.AntSeg.prototype.setPropertyDefaults = function() {
 	this.version = 1.1;
 	this.isDeletable = false;
 	this.isMoveable = false;
-	this.isRotatable = false;
+	this.isRotatable = true;
 	this.isUnique = true;
 
 	// Update component of validation array for simple parameters (enable 2D control by adding -50,+50 apexX range
@@ -12589,6 +12870,22 @@ ED.AntSeg.prototype.setPropertyDefaults = function() {
 		animate: true
 	};
 	this.parameterValidationArray['pxe'] = {
+		kind: 'derived',
+		type: 'bool',
+		display: true
+	};
+	this.parameterValidationArray['coloboma'] = {
+		kind: 'derived',
+		type: 'bool',
+		display: true
+	};
+	this.parameterValidationArray['colour'] = {
+		kind: 'derived',
+		type: 'string',
+		list: ['Blue', 'Brown', 'Gray', 'Green'],
+		animate: false
+	};
+	this.parameterValidationArray['ectropion'] = {
 		kind: 'derived',
 		type: 'bool',
 		display: true
@@ -12638,6 +12935,9 @@ ED.AntSeg.prototype.dependentParameterValues = function(_parameter, _value) {
 					break;
 			}
 			break;
+		case 'coloboma':
+			this.isRotatable = _value == "true"?true:false;
+			break;
 	}
 
 	return returnArray;
@@ -12668,17 +12968,55 @@ ED.AntSeg.prototype.draw = function(_point) {
 
 	// Do a 360 arc
 	ctx.arc(0, 0, ro, arcStart, arcEnd, true);
+					
+	if (!this.coloboma) {
+		// Move to inner circle
+		ctx.moveTo(ri, 0);
 
-	// Move to inner circle
-	ctx.moveTo(ri, 0);
+		// Arc round edge of pupil
+		ctx.arc(0, 0, ri, arcEnd, arcStart, false);
+	}
+	else {
+		// Angular size of coloboma
+		var colAngle = (Math.PI/3) * 280/ri;
+		var colAngleOuter = Math.PI/6;
+		var rimSize = 20;
+		
+		var p1 = new ED.Point(0,0);
+		p1.setWithPolars(ri, Math.PI + colAngle/2);
+		var p2 = new ED.Point(0,0);
+		p2.setWithPolars(ro - rimSize, Math.PI + colAngleOuter/2);
+		
+		// Coloboma
+		ctx.moveTo(-p2.x, p2.y);
+		ctx.arc(0, 0, ro - rimSize, Math.PI/2 - colAngleOuter/2, Math.PI/2 + colAngleOuter/2, false);
 
-	// Arc back the other way
-	ctx.arc(0, 0, ri, arcEnd, arcStart, false);
+		// Arc round edge of pupil
+		ctx.arc(0, 0, ri, Math.PI/2 + colAngle/2, Math.PI/2 - colAngle/2, false);
+		
+		// Back to start
+		ctx.lineTo(-p2.x, p2.y);
+	}
 
-	// Set line attributes
+	// Edge attributes
 	ctx.lineWidth = 4;
-	ctx.fillStyle = "rgba(100, 200, 250, 0.5)";
 	ctx.strokeStyle = "gray";
+	
+	// Iris colour
+	switch (this.colour) {
+		case 'Blue':
+			ctx.fillStyle = "rgba(100, 200, 250, 0.5)";
+			break;
+		case 'Brown':
+			ctx.fillStyle = "rgba(172, 100, 55, 0.5)";
+			break;
+		case 'Gray':
+			ctx.fillStyle = "rgba(125, 132, 116, 0.5)";
+			break;
+		case 'Green':
+			ctx.fillStyle = "rgba(114, 172, 62, 0.5)";
+			break;			
+	}
 
 	// Draw boundary path (also hit testing)
 	this.drawBoundary(_point);
@@ -12708,6 +13046,21 @@ ED.AntSeg.prototype.draw = function(_point) {
 				ctx.arc(0, 0, rp, i * phi, i * phi + phi / 2, false);
 				ctx.stroke();
 			}
+		}
+		
+		// Ectropion uveae
+		if (this.ectropion) {
+			ctx.beginPath();
+			if (this.coloboma) {
+				ctx.arc(0, 0, ri, Math.PI/2 - colAngle/2, Math.PI/2 + colAngle/2, true);
+			}
+			else {
+				ctx.arc(0, 0, ri + 16, arcStart, arcEnd, true);
+			}
+			ctx.lineWidth = 32;
+			ctx.lineCap = "round";
+			ctx.strokeStyle = "brown";
+			ctx.stroke();
 		}
 	}
 
@@ -14337,7 +14690,7 @@ ED.BusaccaNodule.prototype.draw = function(_point) {
 	ctx.arc(0, -r, 30, 0, 2 * Math.PI, false);
 
 	// Colour of fill
-	ctx.fillStyle = "rgba(237,174,94,1)";
+	ctx.fillStyle = "rgba(150,100,50,1)";
 
 	// Set line attributes
 	ctx.lineWidth = 1;
@@ -22382,7 +22735,7 @@ ED.IrisNaevus.prototype.setPropertyDefaults = function() {
  * Sets default parameters
  */
 ED.IrisNaevus.prototype.setParameterDefaults = function() {
-	this.originY = -226;
+	this.originY = -320;
 	this.scaleX = 1.8;
 }
 
@@ -22669,7 +23022,7 @@ ED.KoeppeNodule.prototype.draw = function(_point) {
 	ctx.arc(0, -r, 20, 0, 2 * Math.PI, false);
 
 	// Colour of fill
-	ctx.fillStyle = "rgba(237,194,124,1)";
+	ctx.fillStyle = "rgba(150,100,50,1)";
 
 	// Set line attributes
 	ctx.lineWidth = 1;
@@ -26616,8 +26969,15 @@ ED.PI = function(_drawing, _parameterJSON) {
 	// Set classname
 	this.className = "PI";
 
+	// Derived parameters
+	this.type = 'Surgical';
+	this.patent = true;
+
 	// Saved parameters
-	this.savedParameterArray = ['rotation'];
+	this.savedParameterArray = ['rotation', 'type', 'patent'];
+	
+	// Parameters in doodle control bar (parameter name: parameter label)
+	this.controlParameterArray = {'type':'Type', 'patent':'Patent'};
 	
 	// Call superclass constructor
 	ED.Doodle.call(this, _drawing, _parameterJSON);
@@ -26636,6 +26996,19 @@ ED.PI.superclass = ED.Doodle.prototype;
 ED.PI.prototype.setPropertyDefaults = function() {
 	this.isScaleable = false;
 	this.isMoveable = false;
+	
+	// Add complete validation arrays for derived parameters
+	this.parameterValidationArray['type'] = {
+		kind: 'derived',
+		type: 'string',
+		list: ['Surgical', 'Laser'],
+		animate: false
+	};
+	this.parameterValidationArray['patent'] = {
+		kind: 'derived',
+		type: 'bool',
+		display: true
+	};
 }
 
 /**
@@ -26662,15 +27035,17 @@ ED.PI.prototype.draw = function(_point) {
 
 	// Boundary path
 	ctx.beginPath();
-
-	// Draw base
-	var phi = Math.PI / 24;
-	ctx.arc(0, 0, r, -phi - Math.PI / 2, phi - Math.PI / 2, false);
-	ctx.lineTo(0, -r * 0.8);
-	ctx.closePath();
-
-	// Colour of fill
-	ctx.fillStyle = "rgba(218,230,241,1)";
+	switch (this.type) {
+		case 'Surgical':
+			var phi = Math.PI / 24;
+			ctx.arc(0, 0, r, -phi - Math.PI / 2, phi - Math.PI / 2, false);
+			ctx.lineTo(0, -r * 0.8);
+			ctx.closePath();
+			break;
+		case 'Laser':
+			ctx.arc(0, -r * 0.9, 36, 0, Math.PI * 2, true);
+			break;
+	}
 
 	// Set line attributes
 	ctx.lineWidth = 4;
@@ -26678,6 +27053,10 @@ ED.PI.prototype.draw = function(_point) {
 	// Colour of outer line is dark gray
 	ctx.strokeStyle = "rgba(120,120,120,0.75)";;
 
+	// Colour of fill
+	if (this.patent) ctx.fillStyle = "rgba(255,255,255,1)";
+	else ctx.fillStyle = "rgba(150,150,150,1)";
+	
 	// Draw boundary path (also hit testing)
 	this.drawBoundary(_point);
 
@@ -26693,7 +27072,6 @@ ED.PI.prototype.draw = function(_point) {
 ED.PI.prototype.description = function() {
 	return "Peripheral iridectomy at " + this.clockHour() + " o'clock";
 }
-
 /**
  * OpenEyes
  *
@@ -29017,7 +29395,7 @@ ED.PosteriorSynechia.prototype.setPropertyDefaults = function() {
 	// Update component of validation array for simple parameters
 	this.parameterValidationArray['apexX']['range'].setMinAndMax(-0, +0);
 	this.parameterValidationArray['apexY']['range'].setMinAndMax(-380, -0);
-	this.parameterValidationArray['arc']['range'].setMinAndMax(Math.PI / 12, Math.PI * 2 / 3);
+	this.parameterValidationArray['arc']['range'].setMinAndMax(Math.PI / 6, Math.PI * 2 / 3);
 
 	// Add complete validation arrays for derived parameters
 	this.parameterValidationArray['size'] = {
@@ -29089,8 +29467,8 @@ ED.PosteriorSynechia.prototype.draw = function(_point) {
 
 	// Set outer radius according to pupil
 	var ro = 200;
-	var doodle = this.drawing.lastDoodleOfClass("AntSeg");
-	if (doodle) ro = -doodle.apexY;
+	var iris = this.drawing.lastDoodleOfClass("AntSeg");
+	if (iris) ro = -iris.apexY;
 
 	// Outer radius is position of apex handle
 	var ri = -this.apexY;
@@ -29132,8 +29510,21 @@ ED.PosteriorSynechia.prototype.draw = function(_point) {
 	// Close path
 	ctx.closePath();
 
-	// Colour of fill
-	ctx.fillStyle = "rgba(100, 200, 250, 0.5)";
+	// Iris colour
+	switch (iris.colour) {
+		case 'Blue':
+			ctx.fillStyle = "rgba(100, 200, 250, 0.5)";
+			break;
+		case 'Brown':
+			ctx.fillStyle = "rgba(172, 100, 55, 0.5)";
+			break;
+		case 'Gray':
+			ctx.fillStyle = "rgba(125, 132, 116, 0.5)";
+			break;
+		case 'Green':
+			ctx.fillStyle = "rgba(114, 172, 62, 0.5)";
+			break;			
+	}
 
 	// Set line attributes
 	ctx.lineWidth = 4;
@@ -29152,7 +29543,7 @@ ED.PosteriorSynechia.prototype.draw = function(_point) {
 		ctx.lineWidth = 6;
 		ctx.strokeStyle = "white";
 		ctx.stroke();
-		ctx.strokeStyle = "rgba(100, 200, 250, 0.5)";
+		ctx.strokeStyle = ctx.fillStyle;
 		ctx.stroke();
 
 		// Re-do the boundary to match pupil edge and overlap gaps at join
