@@ -79,16 +79,18 @@
 		
 		<div class="section">
 			<h4>Description:</h4>
-			<p>This element allows the input of details of the iris as described in the draft National Glaucoma Dataset of the Royal College of Ophthalmologists section 3.25 (Conjunctiva), section 3.27 (bleb), section 3.39 (Cornea), sections 3.41 to 3.42 (Iris), and sections 3.43 to 3.44 (Pupil)</p>
+			<p>This element allows the input of details of the cornea and iris as described in the draft National Glaucoma Dataset of the Royal College of Ophthalmologists section 3.39 (Cornea), sections 3.41 to 3.42 (Iris), and sections 3.43 to 3.44 (Pupil).</p>
+			<p>This element also displays a new feature in the drawing package whereby certain aspects of a 'doodle' can be controlled by a pop up menu. Try adding a Corneal Graft for example. There is also a new freehand drawing doodle which allows any shape to be drawn.</p>
+			
 			<p>Status: <b>Alpha</b></p>
 		</div>
 
 		<!-- Edit mode section -->
-		<div class="section" style="height:440px;" align="left">
+		<div class="section" style="height:540px;" align="left">
 			<h4>Edit mode:</h4>
 						
 			<!-- Right eye -->
-			<div style ="width: 800px; float:left;">
+			<div style ="width: 640px; float:left;">
 			
             	<!-- Doodle toolbar -->
 				<div class="toolbar">
@@ -110,6 +112,24 @@
 					</button>
 					<button class="imgbutton" title="Ciliary Injection" onclick="drawingEdit.addDoodle('CiliaryInjection'); return false;" >
 						<img src="../../graphics/CiliaryInjection.gif" />
+					</button>
+					<button class="imgbutton" title="Corneal Oedema" onclick="drawingEdit.addDoodle('CornealOedema'); return false;" >
+						<img src="../../graphics/CornealOedema.gif" />
+					</button>
+					<button class="imgbutton" title="Corneal Graft" onclick="drawingEdit.addDoodle('CornealGraft'); return false;" >
+						<img src="../../graphics/CornealGraft.gif" />
+					</button>
+					<button class="imgbutton" title="Fuchs" onclick="drawingEdit.addDoodle('Fuchs'); return false;" >
+						<img src="../../graphics/Fuchs.gif" />
+					</button>
+					<button class="imgbutton" title="Krukenberg Spindle" onclick="drawingEdit.addDoodle('KrukenbergSpindle'); return false;" >
+						<img src="../../graphics/KrukenbergSpindle.gif" />
+					</button>
+					<button class="imgbutton" title="Posterior Embryotoxon" onclick="drawingEdit.addDoodle('PosteriorEmbryotoxon'); return false;" >
+						<img src="../../graphics/PosteriorEmbryotoxon.gif" />
+					</button>
+					<button class="imgbutton" title="Keratic Precipitates" onclick="drawingEdit.addDoodle('KeraticPrecipitates'); return false;" >
+						<img src="../../graphics/KeraticPrecipitates.gif" />
 					</button>
 					<button class="imgbutton" title="PI" onclick="drawingEdit.addDoodle('PI'); return false;" >
 						<img src="../../graphics/PI.gif" />
@@ -144,7 +164,12 @@
 				
 		        <!-- Doodle control panel -->
 		        <div id="canvasEdit_controls" style="background-color: #DAE6F1; float:left;">
-		        </div>				
+		        </div>
+		        
+		        <div style='float:left;'>
+			        <p>Free text</p>
+					<textarea rows="4" cols="50"></textarea>
+		        </div>			
    			
 			</div>
 			
