@@ -327,12 +327,13 @@
 			<p>This element allows the input of a family history, and uses standard genetic pedigree symbols</p>
 			<p>Click on a family member, then click one of the buttons on the top row to add another. The pedigree redraws automatically after each addition. Selecting a family member brings up control panel where details can be edited.</p>
 			<p>Question: Should we have one pedigree for each disease, or store affected state for more than one disease on each pedigree?</p>
+			<p>NB - A current limitation is that only one chain of ancestors can be added (that is, you can't add parents to a partner of a member of the proband's family). However, this should be more than sufficient to graphically represent most family histories</p>
 			
 			<p>Status: <b>Alpha</b></p>
 		</div>
 
 		<!-- Edit mode section -->
-		<div class="section" style="height:550px;" align="left">
+		<div class="section" style="height:600px;" align="left">
 			<h4>Edit mode:</h4>
 						
 			<!-- Right eye -->
@@ -340,12 +341,12 @@
 			
             	<!-- Doodle toolbar -->
 				<div class="toolbar">
-			        <button onclick="addChild('F');return false;" >Add daughter</button>
-					<button onclick="addChild('M');return false;" >Add son</button>
-					<button onclick="addSibling('F', '>');return false;" >Add older sister</button>
-					<button onclick="addSibling('F', '<');return false;" >Add younger sister</button>
-					<button onclick="addSibling('M', '>');return false;" >Add older brother</button>
-					<button onclick="addSibling('M', '<');return false;" >Add younger brother</button><br />
+			        <button class="actbutton" onclick="addChild('F');return false;" >Add daughter</button>
+					<button class="actbutton"onclick="addChild('M');return false;" >Add son</button></br>
+					<button class="actbutton"onclick="addSibling('F', '>');return false;" >Add sister &#8592;</button>
+					<button class="actbutton"onclick="addSibling('F', '<');return false;" >Add sister &#8594;</button>
+					<button class="actbutton"onclick="addSibling('M', '>');return false;" >Add brother &#8592;</button>
+					<button class="actbutton"onclick="addSibling('M', '<');return false;" >Add brother&#8594;</button></br></br>
                 </div>
 	        			   				
 				<!-- Canvas -->
