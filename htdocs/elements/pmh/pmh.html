@@ -77,6 +77,16 @@
 		function entryKeyUp(_event) {
 			alert('Incremental search of all SNOMED codes for systemic disorders');
 		}
+		
+		function allWell() {
+			var buttons = document.getElementsByTagName('input');
+			for (var i in buttons) {
+				var button = buttons[i];
+				if (button.value == 'n') {
+					button.checked = true;
+				}
+			}
+		}
 	            
     </script>
 
@@ -115,7 +125,9 @@
 			</select>
 			</br>
 			<!-- text box for incremental search -->
-			<input type="text" class="entrytext" title="Any diagnosis can be found by typing here" onkeyup="entryKeyUp(event);"><br/>	
+			<input type="text" class="entrytext" title="Any diagnosis can be found by typing here" onkeyup="entryKeyUp(event);">
+			<button style="margin-left: 40px; width: 50px; height: 20px; display:inline;" title="No illness" onclick="allWell();">Well</button>
+			<br/>	
 
 			<table id="diagTable" width="800px">
 				<thead>
