@@ -77,6 +77,9 @@ function addEnd(_obj) {
 	var textNode = document.createTextNode(dts);
 	cell.appendChild(textNode);
 	
+	// Uncheck management plan
+	var check = document.getElementById('mp' + rowIndex);
+	check.checked = false;	
 }
 
 // Add row
@@ -155,6 +158,7 @@ function addRow(_value)
 	// Management plan
 	var cell8 = newRow.insertCell(8);
 	var check = document.createElement('input');
+	check.setAttribute('id', 'mp' + (nextRowIndex + 1));
 	check.type = 'checkbox';
 	cell8.appendChild(check);
 					

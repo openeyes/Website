@@ -6186,12 +6186,13 @@ ED.FamilyMember = function(_drawing, _parameterJSON) {
 	this.affected = false;
 	this.deceased = false;
 	this.isProband = false;
+	this.condition = "";
 
 	// Saved parameters (NB not for saving in JSON, but stops controls resetting values)
-	this.savedParameterArray = ['gender', 'affected', 'deceased'];
+	this.savedParameterArray = ['gender', 'affected', 'deceased', 'condition'];
 	
 	// Parameters in doodle control bar (parameter name: parameter label)
-	this.controlParameterArray = {'gender':'Gender', 'affected':'Affected', 'deceased':'Deceased'};
+	this.controlParameterArray = {'gender':'Gender', 'affected':'Affected', 'deceased':'Deceased', 'condition':'Text'};
 	
 	// Call superclass constructor
 	ED.Doodle.call(this, _drawing, _parameterJSON);
@@ -6244,6 +6245,11 @@ ED.FamilyMember.prototype.setPropertyDefaults = function() {
 		type: 'bool',
 		display: true
 	};
+	this.parameterValidationArray['condition'] = {
+		kind: 'derived',
+		type: 'freeText',
+		animate: false
+	};
 }
 
 /**
@@ -6277,6 +6283,10 @@ ED.FamilyMember.prototype.dependentParameterValues = function(_parameter, _value
 			if (this.node) this.node.member.deceased = _value == "true"?true:false;
 			updateMemberSet(this.node.member.name, 'deceased', this.node.member.deceased);
 			break;
+// 		case 'condition':
+// 			if (this.node) this.node.member.condition = _value == "true"?true:false;
+// 			updateMemberSet(this.node.member.name, 'deceased', this.node.member.deceased);
+// 			break;
 	}
 
 	return returnArray;
@@ -6353,7 +6363,13 @@ ED.FamilyMember.prototype.draw = function(_point) {
 			ctx.fillStyle = "rgba(150,150,150,0.75)"; 
 			ctx.fill();
 			ctx.stroke();
-		}				
+		}
+		
+		// Draw condition
+		ctx.font = "24px sans-serif";
+		ctx.fillStyle = "rgba(100,100,100,0.75)"; 
+		var width = ctx.measureText(this.condition).width + 10 * 2;
+		ctx.fillText(this.condition, -width / 2 + 10, 64);			
 	}
 	
 	// Return value indicating successful hittest
