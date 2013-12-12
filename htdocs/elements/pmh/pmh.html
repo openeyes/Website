@@ -87,6 +87,23 @@
 				}
 			}
 		}
+		
+		// Make additonal options for IHD visible or not
+		function ihd(_obj) {
+			if (_obj.value == 'y') {
+				//console.log(document.getElementById('an').style.display);
+				document.getElementById('an').style.display = "";
+				document.getElementById('mi').style.display = "";
+				document.getElementById('cg').style.display = "";
+				document.getElementById('st').style.display = "";
+			}
+			else {
+				document.getElementById('an').style.display = "none";
+				document.getElementById('mi').style.display = "none";
+				document.getElementById('cg').style.display = "none";
+				document.getElementById('st').style.display = "none";
+			}
+		}
 	            
     </script>
 
@@ -98,15 +115,10 @@
 
 		<div class="section">
 			<h4>Description:</h4>
-			<p>This element records the past medical history as described in the draft National Glaucoma Dataset of the Royal College of Ophthalmologists sections 7.21 to 7.43. It will appear in the examination event, and opened by default for new glaucoma patients.</p>
-			<p>Specific conditions that require mandatory yes:no answers are listed first, and any other condition can be added by using either the drop down menu, or the incremental search. Dates are 'fuzzy' in that they can be edited with as much specificity as required (NB Both incremental search and fuzzy dates are implemented in the current release, but not in this demo).</p>
-			<p>The list of diagnoses will also appear in the patient summary page and the glaucoma management plan.</p>
-			<p>Questions for the user group include;
-			<ol>
-			  <li>What order should the mandatory specific conditions appear in?</li>
-			  <li>What should be the content of the drop down menu</li>
-			  <li>How should we handle the additional functions described in the dataset for heart block, IHD and DM?</li>
-			</ol>
+			<p>This element records the past medical history as described in the draft National Glaucoma Dataset of the Royal College of Ophthalmologists sections 7.21 to 7.43. It will appear while recording an examination, and opened by default for new glaucoma patients.</p>
+			<p>Specific conditions that require mandatory yes:no answers are listed first (indicated by a red symbol), and any other common conditions have optional entries for yes or no. Less common conditions can be added by using either the drop down menu, or the incremental search. Dates are 'fuzzy' in that they can be edited with as much specificity as required (NB Both incremental search and fuzzy dates are implemented in the current release, but not in this demo).</p>
+			<p>The list of diagnoses should also appear in the patient summary page and the glaucoma management plan.</p>
+
 			<p>Status: <b>Alpha</b></p>
 		</div>
 
@@ -115,67 +127,48 @@
 			<h4>Systemic Diagnosis:</h4>
 			<select id="diagSelect" style="width:auto;" onchange="addRow(this.selectedIndex);">
 				<option value="">Select a commonly used diagnosis</option>
-				<option value="13645005">Chronic obstructive lung disease</option>
 				<option value="90688005">Chronic renal failure</option>
 				<option value="34486009">Hyperthyroidism</option>
 				<option value="40930008">Hypothyroidism</option>
 				<option value="19346006">Marfan's syndrome</option>
-				<option value="22298006">Myocardial infarction</option>
 				<option value="69896004">Rheumatoid arthritis</option>
 			</select>
 			</br>
 			<!-- text box for incremental search -->
 			<input type="text" class="entrytext" title="Any diagnosis can be found by typing here" onkeyup="entryKeyUp(event);">
-			<button style="margin-left: 40px; width: 50px; height: 20px; display:inline;" title="No illness" onclick="allWell();">Well</button>
-			<br/>	
+<!-- 			<button style="margin-left: 40px; width: 50px; height: 20px; display:inline;" title="No illness" onclick="allWell();">Well</button> 
+			<br/>	-->
 
 			<table id="diagTable" width="800px">
 				<thead>
 					<th width="15%">Date</th>
-					<th width="65%">Diagnosis</th>
+					<th width="62%">Diagnosis</th>
 					<th width="10%">Yes</th>
 					<th width="10%">No</th>
+					<th width="3%"></th>
 				</thead>
 				<tbody id="tableBody">
 				<tr>
 					<td><p class="tableText">12/11/13</p></td>
-					<td><p class="tableText">Heart disease</p></td>
+					<td><p class="tableText">Asthma</p></td>
+					<td style="text-align:center">
+						<input type="radio" name="as" value="y">
+					</td>
+					<td style="text-align:center">
+						<input type="radio" name="as" value="n">
+					</td>
+					<td style="color:red;">*</td>
+				</tr>
+				<tr>
+					<td><p class="tableText">12/11/13</p></td>
+					<td><p class="tableText">Chronic Obstructive Airways Disease</p></td>
 					<td style="text-align:center">
 						<input type="radio" name="hd" value="y">
 					</td>
 					<td style="text-align:center">
 						<input type="radio" name="hd" value="n">
 					</td>
-				</tr>
-				<tr>
-					<td><p class="tableText">12/11/13</p></td>
-					<td><p class="tableText">Heart block</p></td>
-					<td style="text-align:center">
-						<input type="radio" name="hb" value="y">
-					</td>
-					<td style="text-align:center">
-						<input type="radio" name="hb" value="n">
-					</td>
-				</tr>
-				<tr>
-					<td><p class="tableText">12/11/13</p></td>
-					<td><p class="tableText">Cerebrovascular accident</p></td>
-					<td style="text-align:center">
-						<input type="radio" name="cva" value="y">
-					</td>
-					<td style="text-align:center">
-						<input type="radio" name="cva" value="n">
-					</td>
-				</tr>
-				<tr>
-					<td><p class="tableText">12/11/13</p></td>
-					<td><p class="tableText">Diabetes Mellitus</p></td>
-					<td style="text-align:center">
-						<input type="radio" name="dm" value="y">
-					</td>
-					<td style="text-align:center">
-						<input type="radio" name="dm" value="n">
-					</td>
+					<td style="color:red;">*</td>
 				</tr>
 				<tr>
 					<td><p class="tableText">12/11/13</p></td>
@@ -186,6 +179,80 @@
 					<td style="text-align:center">
 						<input type="radio" name="ht" value="n">
 					</td>
+					<td style="color:red;">*</td>
+				</tr>
+				<tr>
+					<td><p class="tableText">12/11/13</p></td>
+					<td><p class="tableText">Ischaemic Heart Disease</p></td>
+					<td style="text-align:center">
+						<input type="radio" name="hb" value="y" onclick="ihd(this);">
+					</td>
+					<td style="text-align:center">
+						<input type="radio" name="hb" value="n" onclick="ihd(this);">
+					</td>
+					<td style="color:red;">*</td>
+				</tr>
+				<tr style="display:none;" id="an">
+					<td><p class="tableText"></p></td>
+					<td><p class="tableText" style="margin-left:30px;">Angina</p></td>
+					<td style="text-align:center">
+						<input type="checkbox"/>
+					</td>
+					<td style="text-align:center">
+					</td>
+					<td style="color:red;"></td>
+				</tr>
+				<tr style="display:none;" id="mi">
+					<td><p class="tableText"></p></td>
+					<td><p class="tableText" style="margin-left:30px;">Myocardial infarction</p></td>
+					<td style="text-align:center">
+						<input type="checkbox"/>
+					</td>
+					<td style="text-align:center">
+					</td>
+					<td style="color:red;"></td>
+				</tr>
+				<tr style="display:none;" id="cg">
+					<td><p class="tableText"></p></td>
+					<td><p class="tableText" style="margin-left:30px;">CABG</p></td>
+					<td style="text-align:center">
+						<input type="checkbox"/>
+					</td>
+					<td style="text-align:center">
+					</td>
+					<td style="color:red;"></td>
+				</tr>
+				<tr style="display:none;" id="st">
+					<td><p class="tableText"></p></td>
+					<td><p class="tableText" style="margin-left:30px;">Stent</p></td>
+					<td style="text-align:center">
+						<input type="checkbox"/>
+					</td>
+					<td style="text-align:center">
+					</td>
+					<td style="color:red;"></td>
+				</tr>
+				<tr>
+					<td><p class="tableText">12/11/13</p></td>
+					<td><p class="tableText">Diabetes Mellitus</p></td>
+					<td style="text-align:center">
+						<input type="radio" name="dm" value="y">
+					</td>
+					<td style="text-align:center">
+						<input type="radio" name="dm" value="n">
+					</td>
+					<td style="color:red;">*</td>
+				</tr>
+				<tr>
+					<td><p class="tableText">12/11/13</p></td>
+					<td><p class="tableText">Cold extremities</p></td>
+					<td style="text-align:center">
+						<input type="radio" name="ce" value="y">
+					</td>
+					<td style="text-align:center">
+						<input type="radio" name="ce" value="n">
+					</td>
+					<td style="color:red;"></td>
 				</tr>
 				<tr>
 					<td><p class="tableText">12/11/13</p></td>
@@ -196,6 +263,7 @@
 					<td style="text-align:center">
 						<input type="radio" name="rd" value="n">
 					</td>
+					<td style="color:red;"></td>
 				</tr>
 				<tr>
 					<td><p class="tableText">12/11/13</p></td>
@@ -206,17 +274,20 @@
 					<td style="text-align:center">
 						<input type="radio" name="mg" value="n">
 					</td>
+					<td style="color:red;"></td>
 				</tr>
 				<tr>
 					<td><p class="tableText">12/11/13</p></td>
-					<td><p class="tableText">Asthma</p></td>
+					<td><p class="tableText">Cerebrovascular accident</p></td>
 					<td style="text-align:center">
-						<input type="radio" name="as" value="y">
+						<input type="radio" name="cv" value="y">
 					</td>
 					<td style="text-align:center">
-						<input type="radio" name="as" value="n">
+						<input type="radio" name="cv" value="n">
 					</td>
+					<td style="color:red;"></td>
 				</tr>
+
 				<tr>
 					<td><p class="tableText">12/11/13</p></td>
 					<td><p class="tableText">Sleep apnoea</p></td>
@@ -226,6 +297,7 @@
 					<td style="text-align:center">
 						<input type="radio" name="sa" value="n">
 					</td>
+					<td style="color:red;"></td>
 				</tr>
 				</tbody>
 			</table>			
