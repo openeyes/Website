@@ -6389,7 +6389,8 @@ ED.FamilyMember.prototype.setNode = function(_node) {
 
 	this.isProband = this.node.member.isProband;
 	this.affected = this.node.member.affected;
-	this.deceased = this.node.member.deceased;	
+	this.deceased = this.node.member.deceased;
+	this.condition = this.node.member.condition;	
 }
 /**
  * OpenEyes

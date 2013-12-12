@@ -101,7 +101,7 @@ PD.Family = function(_memberSet, _canvas, _drawing) {
     for (i = 0; i < _memberSet.length; i++)
     {        
         // Create a new member and it to the member array
-        var member = new PD.Member(i, _memberSet[i].name, _memberSet[i].gender, _memberSet[i].age, _memberSet[i].isProband, _memberSet[i].affected, _memberSet[i].deceased);
+        var member = new PD.Member(i, _memberSet[i].name, _memberSet[i].gender, _memberSet[i].age, _memberSet[i].isProband, _memberSet[i].affected, _memberSet[i].deceased, _memberSet[i].condition);
         this.memberArray.push(member);
         
         // Add entry to associative array
@@ -375,7 +375,7 @@ PD.Family.prototype.repaint = function() {
 /*
  * A member of a pedigree
  */
-PD.Member = function(_index, _name, _gender, _age, _isProband, _affected, _deceased) {
+PD.Member = function(_index, _name, _gender, _age, _isProband, _affected, _deceased, _condition) {
     this.index = _index;
     this.name = _name;
     
@@ -413,6 +413,13 @@ PD.Member = function(_index, _name, _gender, _age, _isProband, _affected, _decea
     }
     else {
     	this.deceased = false;
+    }
+
+    if (typeof(_condition) != 'undefined') {
+    	this.condition = _condition;
+    }
+    else {
+    	this.condition = '';
     }
     
     this.father = null;
