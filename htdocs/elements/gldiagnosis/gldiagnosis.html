@@ -1,0 +1,159 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>OpenEyes</title>
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+
+    <!--   Javascript  -->	
+	<script language="JavaScript" src="../../scripts/eyedraw.js" type="text/javascript"></script>
+    <script type="text/javascript">
+    
+    	var primCode = "";
+    	var code = "";
+    
+    	var codeSet = {
+			193531003:"Borderline glaucoma",
+			4210003:"Ocular hypertension",
+			84494001:"Open-angle glaucoma",
+			50485007:"Normal tension glaucoma",
+			392291006:"Angle-closure glaucoma",
+			30041005:"Acute angle-closure glaucoma",
+			71111008:"Glaucoma of childhood",
+			46168003:"Pigmentary glaucoma",
+			111514006:"Pseudoexfoliation glaucoma",
+			15374009:"Aphakic glaucoma",
+			37155002:"Glaucoma associated with ocular inflammation",
+			232086000:"Neovascular glaucoma",
+			68241007:"Glaucoma associated with ocular trauma",
+			1654001:"Corticosteroid-induced glaucoma",
+			232090003:"Glaucoma following surgery",
+			84333006:"Phacogenic glaucoma",
+			95717004:"Secondary glaucoma",
+		}
+               
+        // Runs on page load
+        function init()
+        {
+        }
+        
+        function primarySelect(_sel) {
+	        primCode = _sel.options[_sel.selectedIndex].value;
+        }
+
+        function secondarySelect(_sel) {
+	        var secCode = _sel.options[_sel.selectedIndex].value;
+	        if (secCode != "0") code = secCode;
+	        else code = primCode;
+	        
+	        document.getElementById('result').innerHTML = code + ": " + codeSet[code];
+        }
+        
+        function reset() {
+	        document.getElementById('result').innerHTML = "None";
+	        document.getElementById('primary').selectedIndex = 0;
+	        document.getElementById('secondary').selectedIndex = 0;
+        }
+        	            
+    </script>
+
+</head>
+
+<body onload="init();">
+<div id="screen" align="center">
+	<div id="content">
+
+		
+		<div class="section">
+			<h4>Description:</h4>
+			<p>This element explores methods of entering common glaucoma diagnoses. The idea is to require the user to enter a primary diagnosis, and any factor that the diagnosis is secondary too. If there is no factor, then 'Primary' is selected. The saved SNOMED code and its preferred term (not necessarily the term we need to use) is shown for illustration purposes.</p><p>NB Most of the codes in the second menu are children of 'Open-Angle glaucoma', so we may have to consider storing both diagnoses if there are other combinations which are legitimate (eg Normal tension glaucoma secondary to xxx?)</p>
+			<p>Status: <b>Alpha</b></p>
+		</div>
+
+		<!-- Edit mode section -->
+		<div class="section" style="height:320px;" align="left">
+			<h4>Edit mode:</h4>
+						
+			<!-- Right eye -->
+			<div style ="width: 540px; float:left;">
+				<p>Right eye:</p>
+			   				
+				<div style="float:left; width: 220px; height: 220px;">
+				
+					<p>Primary</p>
+					<select id="primary" onchange="primarySelect(this);">
+						<option value="">-- Please select --</option>
+						<option value="193531003">Glaucoma suspect</option>
+						<option value="4210003">Ocular hypertension</option>
+						<option value="84494001">Open-angle glaucoma</option>
+						<option value="50485007">Normal tension glaucoma</option>
+						<option value="392291006">Angle-closure glaucoma</option>
+						<option value="30041005">Acute angle-closure glaucoma</option>
+						<option value="71111008">Glaucoma of childhood</option>
+					</select>
+									
+					<p style="margin-top:50px;">Saved code:</p>
+					<h4 id='result'>None</h4>
+					
+					<button class="actbutton" style="margin-top:30px;" onclick="reset();">Reset</button>
+
+				</div>
+				<div style="float:right; width: 220px; height: 220px;">
+					<p>Secondary</p>
+					<select id='secondary' onchange=secondarySelect(this)>
+						<option value="">-- Please select --</option>
+						<option value="0">Primary</option>
+						<option value="46168003">Pigment dispersion syndrome</option>
+						<option value="111514006">Pseudoexfoliation</option>
+						<option value="15374009">Aphakia</option>
+						<option value="37155002">Uveitis</option>
+						<option value="232086000">Neovascularisation</option>
+						<option value="68241007">Trauma</option>
+						<option value="1654001">Steroid use</option>
+						<option value="232090003">Post surgery</option>
+						<option value="95717004">Secondary</option>
+					</select>
+
+				</div>
+			</div>
+ 
+			<!-- Left eye -->
+			<div style ="width:540px; float:left;">
+				<p>Left eye:</p>
+			</div>
+
+			
+		<!-- End of Edit mode section -->
+		</div>					
+
+		<!-- Steering Group -->			
+		<div class="section" align="left">
+			<h4>Steering Group:</h4>
+			<p>Glaucoma</p>
+		</div>
+		
+		<!-- Blank Line -->
+		<div class="section">
+		</div>
+
+	</div>
+</div>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-26543772-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</body>
+</html>
