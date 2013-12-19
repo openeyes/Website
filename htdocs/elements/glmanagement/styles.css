@@ -67,15 +67,18 @@ table {
 }
 
 /* Table borders */
+/*
 table, th, td {
 	border: 1px solid gray;
 	border-collapse:collapse;
 }
+*/
 
 /* Padding between borders and text */
 th, td {
 	padding-top: 2px;
 	padding-left: 5px;
+	vertical-align:top;
 }
 
 /* Header row */
@@ -228,4 +231,12 @@ input.entrytext {
     margin-left: 0px;
     width: 200px;
     height: 180px;
+}
+
+li {
+	color: #666666;
+	padding-top: 2px;
+	text-align: left;
+	margin-left: 50px;
+	padding-bottom: 2px;
 }
