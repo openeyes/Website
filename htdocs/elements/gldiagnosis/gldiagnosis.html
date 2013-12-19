@@ -33,6 +33,12 @@
 			232090003:"Glaucoma following surgery",
 			84333006:"Phacogenic glaucoma",
 			95717004:"Secondary glaucoma",
+			44219007:"Pseudoexfoliation of lens capsule",
+			392133001:"Pigment dispersion syndrome",
+			24010005:"Aphakia",
+			128473001:"Uveitis",
+			51995000:"Rubeosis iridis",
+			51995000:"Injury of eye"
 		}
                
         // Runs on page load
@@ -40,22 +46,31 @@
         {
         }
         
-        function primarySelect(_sel) {
+        function primarySelect(_sel, _res) {
 	        primCode = _sel.options[_sel.selectedIndex].value;
+	        
+	        if (typeof(_res) != 'undefined') {
+		        document.getElementById(_res).innerHTML = primCode + ": " + codeSet[primCode];
+	        }
         }
 
-        function secondarySelect(_sel) {
+        function secondarySelect(_sel, _res) {
 	        var secCode = _sel.options[_sel.selectedIndex].value;
 	        if (secCode != "0") code = secCode;
 	        else code = primCode;
 	        
-	        document.getElementById('result').innerHTML = code + ": " + codeSet[code];
+	        if (_res == 'result3') {
+		        document.getElementById(_res).innerHTML += "\r" + code + ": " + codeSet[code];
+	        }
+	        else {
+	        	document.getElementById(_res).innerHTML = code + ": " + codeSet[code];
+	        }
         }
         
-        function reset() {
-	        document.getElementById('result').innerHTML = "None";
-	        document.getElementById('primary').selectedIndex = 0;
-	        document.getElementById('secondary').selectedIndex = 0;
+        function reset(_num) {
+	        document.getElementById('result' + _num).innerHTML = "None";
+	        document.getElementById('primary' + _num).selectedIndex = 0;
+	        document.getElementById('secondary' + _num).selectedIndex = 0;
         }
         	            
     </script>
@@ -69,13 +84,16 @@
 		
 		<div class="section">
 			<h4>Description:</h4>
-			<p>This element explores methods of entering common glaucoma diagnoses. The idea is to require the user to enter a primary diagnosis, and any factor that the diagnosis is secondary too. If there is no factor, then 'Primary' is selected. The saved SNOMED code and its preferred term (not necessarily the term we need to use) is shown for illustration purposes.</p><p>NB Most of the codes in the second menu are children of 'Open-Angle glaucoma', so we may have to consider storing both diagnoses if there are other combinations which are legitimate (eg Normal tension glaucoma secondary to xxx?)</p>
+			<p>This element explores different methods of entering common glaucoma diagnoses</p>
+			<p>NB There my be individual items missing from each menu, but the idea is to illustrate different methods of selecting common diagnoses</p>
+			<p>NB Irrespective of this, any number of diagnoses can be attached to a patient, and any diagnosis can be found using a text search</p>
 			<p>Status: <b>Alpha</b></p>
 		</div>
 
 		<!-- Edit mode section -->
-		<div class="section" style="height:320px;" align="left">
-			<h4>Edit mode:</h4>
+		<div class="section" style="height:380px;" align="left">
+			<h4>Option 1:</h4>
+			<p>This is the current method in OpenEyes, consisting of a single drop down containing common diagnoses</p>
 						
 			<!-- Right eye -->
 			<div style ="width: 540px; float:left;">
@@ -83,8 +101,8 @@
 			   				
 				<div style="float:left; width: 220px; height: 220px;">
 				
-					<p>Primary</p>
-					<select id="primary" onchange="primarySelect(this);">
+					<p>Principal</p>
+					<select id="primary1" onchange="secondarySelect(this, 'result1');">
 						<option value="">-- Please select --</option>
 						<option value="193531003">Glaucoma suspect</option>
 						<option value="4210003">Ocular hypertension</option>
@@ -96,12 +114,13 @@
 					</select>
 									
 					<p style="margin-top:50px;">Saved code:</p>
-					<h4 id='result'>None</h4>
+					<h4 id='result1'>None</h4>
 					
-					<button class="actbutton" style="margin-top:30px;" onclick="reset();">Reset</button>
+					<button class="actbutton" style="margin-top:30px;" onclick="reset('1');">Reset</button>
 
 				</div>
 				<div style="float:right; width: 220px; height: 220px;">
+<!--
 					<p>Secondary</p>
 					<select id='secondary' onchange=secondarySelect(this)>
 						<option value="">-- Please select --</option>
@@ -115,6 +134,119 @@
 						<option value="1654001">Steroid use</option>
 						<option value="232090003">Post surgery</option>
 						<option value="95717004">Secondary</option>
+					</select>
+-->
+
+				</div>
+			</div>
+ 
+			<!-- Left eye -->
+			<div style ="width:540px; float:left;">
+				<p>Left eye:</p>
+			</div>
+
+			
+		<!-- End of Edit mode section -->
+		</div>
+		
+		<!-- Edit mode section -->
+		<div class="section" style="height:380px;" align="left">
+			<h4>Option 2:</h4>
+			<p>The idea here is to require the user to first enter a primary diagnosis, and then any factor that the diagnosis is secondary too. If there is no factor, then 'Primary' is selected</p>
+			<p>NB Most of the codes in the second menu are children of 'Open-Angle glaucoma', so we may have to consider storing both diagnoses if there are other combinations which are legitimate (eg Normal tension glaucoma secondary to xxx?)</p>
+						
+			<!-- Right eye -->
+			<div style ="width: 540px; float:left;">
+				<p>Right eye:</p>
+			   				
+				<div style="float:left; width: 220px; height: 220px;">
+				
+					<p>Primary</p>
+					<select id="primary2" onchange="primarySelect(this);">
+						<option value="">-- Please select --</option>
+						<option value="193531003">Glaucoma suspect</option>
+						<option value="4210003">Ocular hypertension</option>
+						<option value="84494001">Open-angle glaucoma</option>
+						<option value="50485007">Normal tension glaucoma</option>
+						<option value="392291006">Angle-closure glaucoma</option>
+						<option value="30041005">Acute angle-closure glaucoma</option>
+						<option value="71111008">Glaucoma of childhood</option>
+					</select>
+									
+					<p style="margin-top:50px;">Saved code:</p>
+					<h4 id='result2'>None</h4>
+					
+					<button class="actbutton" style="margin-top:30px;" onclick="reset('2');">Reset</button>
+
+				</div>
+				<div style="float:right; width: 220px; height: 220px;">
+					<p>Secondary</p>
+					<select id='secondary2' onchange="secondarySelect(this, 'result2');">
+						<option value="">-- Please select --</option>
+						<option value="0">Primary</option>
+						<option value="46168003">Pigment dispersion syndrome</option>
+						<option value="111514006">Pseudoexfoliation</option>
+						<option value="15374009">Aphakia</option>
+						<option value="37155002">Uveitis</option>
+						<option value="232086000">Neovascularisation</option>
+						<option value="68241007">Trauma</option>
+						<option value="1654001">Steroid use</option>
+						<option value="232090003">Post surgery</option>
+						<option value="95717004">Secondary</option>
+					</select>
+
+				</div>
+			</div>
+ 
+			<!-- Left eye -->
+			<div style ="width:540px; float:left;">
+				<p>Left eye:</p>
+			</div>
+
+			
+		<!-- End of Edit mode section -->
+		</div>					
+
+		<!-- Edit mode section -->
+		<div class="section" style="height:380px;" align="left">
+			<h4>Option 3:</h4>
+			<p>In this option there are two diagnoses collected against the episode, a primary one (which would replace the current 'principal' diagnosis, and a secondary diagnosis. This approach may also be useful for Medical retina (for example, Choroidal neovasularisation secondary to ARMD)</p>
+						
+			<!-- Right eye -->
+			<div style ="width: 540px; float:left;">
+				<p>Right eye:</p>
+			   				
+				<div style="float:left; width: 220px; height: 220px;">
+				
+					<p>Primary</p>
+					<select id="primary3" onchange="primarySelect(this, 'result3');">
+						<option value="">-- Please select --</option>
+						<option value="193531003">Glaucoma suspect</option>
+						<option value="4210003">Ocular hypertension</option>
+						<option value="84494001">Open-angle glaucoma</option>
+						<option value="50485007">Normal tension glaucoma</option>
+						<option value="392291006">Angle-closure glaucoma</option>
+						<option value="30041005">Acute angle-closure glaucoma</option>
+						<option value="71111008">Glaucoma of childhood</option>
+					</select>
+									
+					<p style="margin-top:50px;">Saved codes:</p>
+					<h4 id='result3'>None</h4>
+					
+					<button class="actbutton" style="margin-top:30px;" onclick="reset('3');">Reset</button>
+
+				</div>
+				<div style="float:right; width: 220px; height: 220px;">
+					<p>Secondary</p>
+					<select id='secondary3' onchange="secondarySelect(this, 'result3');">
+						<option value="">-- Please select --</option>
+						<option value="0">None</option>
+						<option value="392133001">Pigment dispersion syndrome</option>
+						<option value="111514006">Pseudoexfoliation of lens capsule</option>
+						<option value="24010005">Aphakia</option>
+						<option value="128473001">Uveitis</option>
+						<option value="51995000">Rubeosis iridis</option>
+						<option value="51995000">Injury of eye</option>
 					</select>
 
 				</div>
