@@ -60,7 +60,7 @@
 	        else code = primCode;
 	        
 	        if (_res == 'result3') {
-		        document.getElementById(_res).innerHTML += "\r" + code + ": " + codeSet[code];
+		        if (secCode != "0") document.getElementById(_res).innerHTML += "\r" + code + ": " + codeSet[code];
 	        }
 	        else {
 	        	document.getElementById(_res).innerHTML = code + ": " + codeSet[code];
@@ -100,7 +100,7 @@
 			   				
 				<div style="float:left; width: 220px; height: 220px;">
 				
-					<p>Principal</p>
+					<p>Principal diagnosis:</p>
 					<select id="primary1" onchange="secondarySelect(this, 'result1');">
 						<option value="">-- Please select --</option>
 						<option value="193531003">Glaucoma suspect</option>
@@ -170,7 +170,7 @@
 			   				
 				<div style="float:left; width: 220px; height: 220px;">
 				
-					<p>Primary</p>
+					<p>Primary diagnosis:</p>
 					<select id="primary2" onchange="primarySelect(this);">
 						<option value="">-- Please select --</option>
 						<option value="193531003">Glaucoma suspect</option>
@@ -189,7 +189,7 @@
 
 				</div>
 				<div style="float:right; width: 220px; height: 220px;">
-					<p>Secondary</p>
+					<p>Secondary to:</p>
 					<select id='secondary2' onchange="secondarySelect(this, 'result2');">
 						<option value="">-- Please select --</option>
 						<option value="0">Primary</option>
@@ -227,7 +227,7 @@
 			   				
 				<div style="float:left; width: 220px; height: 220px;">
 				
-					<p>Primary</p>
+					<p>Primary diagnosis:</p>
 					<select id="primary3" onchange="primarySelect(this, 'result3');">
 						<option value="">-- Please select --</option>
 						<option value="193531003">Glaucoma suspect</option>
@@ -246,7 +246,7 @@
 
 				</div>
 				<div style="float:right; width: 220px; height: 220px;">
-					<p>Secondary</p>
+					<p>Secondary diagnosis:</p>
 					<select id='secondary3' onchange="secondarySelect(this, 'result3');">
 						<option value="">-- Please select --</option>
 						<option value="0">None</option>
