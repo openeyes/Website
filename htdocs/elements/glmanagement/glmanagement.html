@@ -42,16 +42,12 @@
 	        document.getElementById('procSelect').style.display = "none";
         	document.getElementById('laserSelect').style.display = "none";
         	document.getElementById('responseSelect').style.display = "none";
-        	      
-	        switch (_sel.value) {
-
-		        case 'Glaucoma surgery':
-					document.getElementById('procSelect').style.display = "";
-		        	break;
-
-		        case 'Laser':
-					document.getElementById('laserSelect').style.display = "";
-		        	break;
+        	
+        	if (_sel.value == 1) {
+        		document.getElementById('surgSelect').style.display = "";
+	        }
+	        else  {
+        		document.getElementById('surgSelect').style.display = "none";
 	        }
         }
         
@@ -59,11 +55,32 @@
 	        if (_val == 'no') document.getElementById('actionTable').style.display="";
 	        else document.getElementById('actionTable').style.display="none";
         }
-        
+ 
+        function surgChange(_sel) {
+        	document.getElementById('procSelect').style.display = "none";
+        	document.getElementById('laserSelect').style.display = "none";
+        	document.getElementById('responseSelect').style.display = "none";
+	        if (_sel.value == "Glaucoma") {
+	        	document.getElementById('procSelect').style.display="";
+	        }
+	        else if (_sel.value == "Laser") {
+	        	document.getElementById('laserSelect').style.display="";
+	        }
+        }
+               
         function procChange(_sel) {
 	        if (_sel.value != '-- Please Select --') document.getElementById('responseSelect').style.display = "";
 	        else document.getElementById('responseSelect').style.display = "none";
         }
+        
+        function impChange(_sel) {
+        	if (_sel.value == 1) {
+	        	document.getElementById('progCause').style.display = "";
+        	}
+        	else {
+	        	document.getElementById('progCause').style.display = "none";
+        	}
+	    }
 	            
     </script>
 
@@ -243,15 +260,30 @@
 								<p style="margin-top:-5px;">Impression:</p>
 							</td>
 							<td width="35%">
-								<select>
-									<option>-- Please Select --</option>
-									<option>Stable</option>
-									<option>Possible progression</option>
-									<option>Likely progression</option>
-									<option>Definite progression</option>
+								<select onchange="impChange(this);">
+									<option value=0>-- Please Select --</option>
+									<option value=0>Response to treatment</option>
+									<option value=0>Stable</option>
+									<option value=0>Uncontrolled IOP</option>
+									<option value=1>Possible progression</option>
+									<option value=1>Likely progression</option>
+									<option value=1>Definite progression</option>
+									<option value=0>Drop related problems</option>
 								</select>
 							</td>
 							<td width="25%">
+								<span id="progCause" style="display:none;">
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Angle</p>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Disc</p>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Visual fields</p>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Imaging</p>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Subjective</p>
+								</span>
 							</td>
 							<td width="25%">
 							</td>
@@ -300,21 +332,29 @@
 							<td>
 								<select onchange = "surgeryChange(this);">
 									<option>-- Please Select --</option>
-									<option>Offered</option>
-									<option>Glaucoma surgery</option>
-									<option>Cataract surgery</option>
-									<option>Laser</option>
-									<option>Other</option>
+									<option value=1>Discussed</option>
+									<option value=1>Offered</option>
+									<option value=1>Considering</option>
+									<option value=1>Accepted</option>
+									<option>Declined</option>
 								</select>
 							</td>
 							<td>
+								<select id="surgSelect" style="display:none;" onchange="surgChange(this);">
+									<option>-- Please Select --</option>
+									<option>Glaucoma</option>
+									<option>Laser</option>
+									<option>Cataract</option>
+									<option>Other</option>
+								</select>
 								<select id="procSelect" style="display:none;" onchange="procChange(this);">
 									<option>-- Please Select --</option>
 									<option>Trabeculectomy</option>
 									<option>Tube</option>
-									<option>etc. (Maria to provide full list)</option>
+									<option>Surgical PI</option>
+									<option>Etc</option>
 								</select>
-								<select id="laserSelect" style="display:none;">
+								<select id="laserSelect" style="display:none;" onchange="procChange(this);">
 									<option>-- Please Select --</option>
 									<option>Diode</option>
 									<option>PI</option>
@@ -394,6 +434,7 @@
 									<option>10</option>
 									<option>11</option>
 									<option>12</option>
+									<option>18</option>
 								</select>
 							</td>
 							<td width="25%">
