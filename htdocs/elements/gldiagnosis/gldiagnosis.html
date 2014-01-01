@@ -16,6 +16,7 @@
     	var code = "";
     
     	var codeSet = {
+    		0:"No SNOMED code",
 			193531003:"Borderline glaucoma",
 			4210003:"Ocular hypertension",
 			84494001:"Open-angle glaucoma",
@@ -81,7 +82,19 @@
 		        
 		        // Populate according to primary diagnosis
 		        switch (_sel.options[_sel.selectedIndex].innerHTML) {
+		        	case "No evidence of glaucoma *":
+		        		break;
+		        		
 			        case "Glaucoma suspect":
+			        	secSel.options[secSel.options.length] = new Option('Pigment Dispersion Syndrome *', 0);
+			        	secSel.options[secSel.options.length] = new Option('Pseudoexfoliation of lens capsule *', 0);
+			        	secSel.options[secSel.options.length] = new Option('Aphakia *', 0);
+			        	secSel.options[secSel.options.length] = new Option('Uveitis *', 0);
+			        	secSel.options[secSel.options.length] = new Option('Neovascularisation *', 0);
+			        	secSel.options[secSel.options.length] = new Option('Steroid use *', 0);
+			        	secSel.options[secSel.options.length] = new Option('Post eye surgery *', 0);
+			        	secSel.style.display = "";
+			        	usePrim = false;
 			        	break;
 			        	
 			        case "Ocular hypertension":
@@ -189,12 +202,10 @@
 			<p>Status: <b>Alpha</b></p>
 		</div>
 
-		<!-- Edit mode section -->
 		<div class="section" style="height:320px;" align="left">
 			<h4>Option 1:</h4>
 			<p>This is the current method in OpenEyes, consisting of a single drop down containing common diagnoses.</p>
 						
-			<!-- Right eye -->
 			<div style ="width: 540px; float:left;">
 				<p>Right eye:</p>
 			   				
@@ -229,42 +240,23 @@
 
 				</div>
 				<div style="float:right; width: 220px; height: 220px;">
-<!--
-					<p>Secondary</p>
-					<select id='secondary' onchange=secondarySelect(this)>
-						<option value="">-- Please select --</option>
-						<option value="0">Primary</option>
-						<option value="46168003">Pigment dispersion syndrome</option>
-						<option value="111514006">Pseudoexfoliation</option>
-						<option value="15374009">Aphakia</option>
-						<option value="37155002">Uveitis</option>
-						<option value="232086000">Neovascularisation</option>
-						<option value="68241007">Trauma</option>
-						<option value="1654001">Steroid use</option>
-						<option value="232090003">Post surgery</option>
-						<option value="95717004">Secondary</option>
-					</select>
--->
+
+
 
 				</div>
 			</div>
  
-			<!-- Left eye -->
 			<div style ="width:540px; float:left;">
 				<p>Left eye:</p>
 			</div>
-
 			
-		<!-- End of Edit mode section -->
 		</div>
-		
-		<!-- Edit mode section -->
+
 		<div class="section" style="height:400px;" align="left">
 			<h4>Option 2:</h4>
 			<p>The idea here is to require the user to first enter a primary diagnosis, and then any factor that the diagnosis is secondary too. If there is no factor, then 'Primary' is selected. The code stored is a single code derived from the factor (ie Open angle glaucoma in combination with Pseudoexfoliation results in a code of 'Pseudoexfoliation glaucoma' being stored.</p>
 			<p>NB Most of the codes in the second menu are children of 'Open-Angle glaucoma', so we may have to consider storing both diagnoses if there are other combinations which are legitimate (eg Normal tension glaucoma secondary to xxx?)</p>
 						
-			<!-- Right eye -->
 			<div style ="width: 540px; float:left;">
 				<p>Right eye:</p>
 			   				
@@ -306,22 +298,18 @@
 
 				</div>
 			</div>
- 
-			<!-- Left eye -->
+
 			<div style ="width:540px; float:left;">
 				<p>Left eye:</p>
 			</div>
 
-			
-		<!-- End of Edit mode section -->
 		</div>					
 
-		<!-- Edit mode section -->
+
 		<div class="section" style="height:400px;" align="left">
 			<h4>Option 3:</h4>
 			<p>In this option there are TWO diagnoses collected against the episode, a primary one (which would replace the current 'principal' diagnosis), and a secondary one. This approach may also be useful for Medical retina (for example, Choroidal neovascularisation secondary to ARMD).</p>
 						
-			<!-- Right eye -->
 			<div style ="width: 540px; float:left;">
 				<p>Right eye:</p>
 			   				
@@ -361,20 +349,18 @@
 				</div>
 			</div>
  
-			<!-- Left eye -->
 			<div style ="width:540px; float:left;">
 				<p>Left eye:</p>
 			</div>
 
+		</div>	
 			
-		<!-- End of Edit mode section -->
-		</div>					
 
 		<!-- Edit mode section -->
 		<div class="section" style="height:400px;" align="left">
 			<h4>Option 4:</h4>
 			<p>This is a modification of option 2 and 3 , so that the the user first enters a primary diagnosis, and if there are any varieties of that diagnosis available, a second drop down appears with options that are specific for the selection. The code stored is a single code derived from the combination of the primary diagnosis and the secondary factor</p>
-			<p>NB The list and sublists may not be complete, but at this stage we are focussing on the way it works rather than the detailed content</p>
+			<p>NB Concepts without a SNOMED code are indicated by an asterisk</p>
 						
 			<!-- Right eye -->
 			<div style ="width: 540px; float:left;">
@@ -382,15 +368,18 @@
 			   				
 				<div style="float:left; width: 220px; height: 220px;">
 				
-					<p>Primary diagnosis:</p>
+					<p>Drop down one:</p>
 					<select id="primary4" onchange="primarySelect(this, 'result4');">
 						<option value="">-- Please select --</option>
+						<option value="0">No evidence of glaucoma *</option>
 						<option value="193531003">Glaucoma suspect</option>
 						<option value="4210003">Ocular hypertension</option>
 						<option value="84494001">Open-angle glaucoma</option>
 						<option value="50485007">Normal tension glaucoma</option>
+						<option value="0">Angle-closure suspect *</option>
+						<option value="0">Angle-closure *</option>
 						<option value="392291006">Angle-closure glaucoma</option>
-						<option value="30041005">Acute angle-closure glaucoma</option>
+						<option value="0">Acute angle-closure *</option>
 						<option value="71111008">Glaucoma of childhood</option>
 					</select>
 									
@@ -401,7 +390,7 @@
 
 				</div>
 				<div style="float:right; width: 220px; height: 220px;">
-					<p>Secondary to:</p>
+					<p>Drop down two:</p>
 					<select id='secondary4' style="display:none;" onchange="secondarySelect(this, 'result4');">
 					</select>
 
