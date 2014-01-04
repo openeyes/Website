@@ -82,39 +82,40 @@
 		        
 		        // Populate according to primary diagnosis
 		        switch (_sel.options[_sel.selectedIndex].innerHTML) {
-		        	case "No evidence of glaucoma *":
-		        		break;
-		        		
+        		
 			        case "Glaucoma suspect":
-			        	secSel.options[secSel.options.length] = new Option('Pigment Dispersion Syndrome *', 0);
-			        	secSel.options[secSel.options.length] = new Option('Pseudoexfoliation of lens capsule *', 0);
-			        	secSel.options[secSel.options.length] = new Option('Aphakia *', 0);
-			        	secSel.options[secSel.options.length] = new Option('Uveitis *', 0);
-			        	secSel.options[secSel.options.length] = new Option('Neovascularisation *', 0);
-			        	secSel.options[secSel.options.length] = new Option('Steroid use *', 0);
-			        	secSel.options[secSel.options.length] = new Option('Post eye surgery *', 0);
+			        	secSel.options[secSel.options.length] = new Option('Pigment Dispersion Syndrome', 392133001);
+			        	secSel.options[secSel.options.length] = new Option('Pseudoexfoliation of lens capsule', 44219007);
+			        	secSel.options[secSel.options.length] = new Option('Aphakia', 24010005);
+			        	secSel.options[secSel.options.length] = new Option('Uveitis', 128473001);
+			        	secSel.options[secSel.options.length] = new Option('Rubeosis iridis', 51995000);
+			        	secSel.options[secSel.options.length] = new Option('Steroid use', 0);
+			        	secSel.options[secSel.options.length] = new Option('Post eye surgery', 0);
 			        	secSel.style.display = "";
 			        	usePrim = false;
 			        	break;
 			        	
 			        case "Ocular hypertension":
-			        	secSel.options[secSel.options.length] = new Option('Steroid use', 1654001);
-			        	secSel.options[secSel.options.length] = new Option('Uveitis', 37155002);
+			        	secSel.options[secSel.options.length] = new Option('Pigment Dispersion Syndrome', 392133001);
+			        	secSel.options[secSel.options.length] = new Option('Pseudoexfoliation of lens capsule', 44219007);
+			        	secSel.options[secSel.options.length] = new Option('Aphakia', 24010005);
+			        	secSel.options[secSel.options.length] = new Option('Uveitis', 128473001);
+			        	secSel.options[secSel.options.length] = new Option('Rubeosis iridis', 51995000);
+			        	secSel.options[secSel.options.length] = new Option('Steroid use', 0);
+			        	secSel.options[secSel.options.length] = new Option('Post eye surgery', 0);
 			        	secSel.style.display = "";
 			        	usePrim = false;
 			        	break;
 			        	
 			        case "Open-angle glaucoma":
-						secSel.options[secSel.options.length] = new Option('Primary', 77075001);
-			        	secSel.options[secSel.options.length] = new Option('Aphakia', 15374009);
-			        	secSel.options[secSel.options.length] = new Option('Neovascularisation', 232086000);
-			        	secSel.options[secSel.options.length] = new Option('Pigment dispersion syndrome', 46168003);
-			        	secSel.options[secSel.options.length] = new Option('Post surgery', 232090003);
-			        	secSel.options[secSel.options.length] = new Option('Pseudoexfoliation', 111514006);
-			        	secSel.options[secSel.options.length] = new Option('Secondary', 21928008);
-			        	secSel.options[secSel.options.length] = new Option('Steroid use', 1654001);
-			        	secSel.options[secSel.options.length] = new Option('Trauma', 68241007);
-			        	secSel.options[secSel.options.length] = new Option('Uveitis', 37155002);
+						secSel.options[secSel.options.length] = new Option('Primary open angle glaucoma', 77075001);
+			        	secSel.options[secSel.options.length] = new Option('Pigment Dispersion Syndrome', 392133001);
+			        	secSel.options[secSel.options.length] = new Option('Pseudoexfoliation of lens capsule', 44219007);
+			        	secSel.options[secSel.options.length] = new Option('Aphakia', 24010005);
+			        	secSel.options[secSel.options.length] = new Option('Uveitis', 128473001);
+			        	secSel.options[secSel.options.length] = new Option('Rubeosis iridis', 51995000);
+			        	secSel.options[secSel.options.length] = new Option('Steroid use', 0);
+			        	secSel.options[secSel.options.length] = new Option('Post eye surgery', 0);
 			        	secSel.style.display = "";
 			        	usePrim = false;
 			        	break;
@@ -123,14 +124,14 @@
 			        	break;
 			        	
 			        case "Angle-closure glaucoma":
-			        	secSel.options[secSel.options.length] = new Option('Primary', 77075001);
-			        	secSel.options[secSel.options.length] = new Option('Acute', 30041005);
-			        	secSel.options[secSel.options.length] = new Option('Iatrogenic', 232082003);
-			        	secSel.options[secSel.options.length] = new Option('Intermittent', 65460003);
-			        	secSel.options[secSel.options.length] = new Option('Post surgery', 89215000);
-			        	secSel.options[secSel.options.length] = new Option('Uveitis', 37155002);
+			        	secSel.options[secSel.options.length] = new Option('Primary angle-closure glaucoma', 392288006);
+			        	secSel.options[secSel.options.length] = new Option('Acute angle-closure glaucoma', 30041005);
+			        	secSel.options[secSel.options.length] = new Option('Iatrogenic angle-closure glaucoma', 232082003);
+			        	secSel.options[secSel.options.length] = new Option('Intermittent angle-closure glaucoma', 65460003);
+			        	secSel.options[secSel.options.length] = new Option('Postoperative angle-closure glaucoma', 89215000);
+			        	secSel.options[secSel.options.length] = new Option('Uveitis', 128473001);
 			        	secSel.options[secSel.options.length] = new Option('Plateau iris', 232080006);
-			        	secSel.options[secSel.options.length] = new Option('Secondary', 21571006);
+			        	secSel.options[secSel.options.length] = new Option('Secondary angle-closure glaucoma', 21571006);
 			        	secSel.style.display = "";
 			        	usePrim = false;
 			        	break;
@@ -176,7 +177,15 @@
 	        }
 	        
 			if (_res == 'result4') {
-	        	document.getElementById(_res).innerHTML = secCode + ": " + codeSet[secCode];
+				var singleCodeArray = new Array("77075001", "392288006", "30041005", "232082003", "65460003", "89215000", "21571006");
+				
+				if (singleCodeArray.indexOf(secCode) >= 0) {
+					document.getElementById(_res).innerHTML = secCode + ": " + codeSet[secCode];	
+				}
+				else {
+					document.getElementById(_res).innerHTML = primCode + ": " + codeSet[primCode];
+		        	document.getElementById(_res).innerHTML += "\r" + secCode + ": " + codeSet[secCode];					
+				}
 	        }
         }
         
@@ -184,6 +193,7 @@
 	        document.getElementById('result' + _num).innerHTML = "None";
 	        document.getElementById('primary' + _num).selectedIndex = 0;
 	        document.getElementById('secondary' + _num).selectedIndex = 0;
+	        document.getElementById('secondary' + _num).style.display = "none";
         }
         	            
     </script>
@@ -359,8 +369,7 @@
 		<!-- Edit mode section -->
 		<div class="section" style="height:400px;" align="left">
 			<h4>Option 4:</h4>
-			<p>This is a modification of option 2 and 3 , so that the the user first enters a primary diagnosis, and if there are any varieties of that diagnosis available, a second drop down appears with options that are specific for the selection. The code stored is a single code derived from the combination of the primary diagnosis and the secondary factor</p>
-			<p>NB Concepts without a SNOMED code are indicated by an asterisk</p>
+			<p>This is a modification of option 2 and 3 , so that the the user first enters a diagnosis, and if there are any varieties of that diagnosis available, a second drop down appears with options that are specific for the selection. If appropriate, two codes are stored, with the first being the 'principal' diagnosis.</p>
 						
 			<!-- Right eye -->
 			<div style ="width: 540px; float:left;">
@@ -368,29 +377,24 @@
 			   				
 				<div style="float:left; width: 220px; height: 220px;">
 				
-					<p>Drop down one:</p>
+					<p>Diagnosis:</p>
 					<select id="primary4" onchange="primarySelect(this, 'result4');">
 						<option value="">-- Please select --</option>
-						<option value="0">No evidence of glaucoma *</option>
 						<option value="193531003">Glaucoma suspect</option>
 						<option value="4210003">Ocular hypertension</option>
 						<option value="84494001">Open-angle glaucoma</option>
 						<option value="50485007">Normal tension glaucoma</option>
-						<option value="0">Angle-closure suspect *</option>
-						<option value="0">Angle-closure *</option>
 						<option value="392291006">Angle-closure glaucoma</option>
-						<option value="0">Acute angle-closure *</option>
-						<option value="71111008">Glaucoma of childhood</option>
 					</select>
 									
-					<p style="margin-top:50px;">Saved code:</p>
+					<p style="margin-top:50px;">Displayed and saved code/s:</p>
 					<h4 id='result4'>None</h4>
 					
 					<button class="actbutton" style="margin-top:30px;" onclick="reset('4');">Reset</button>
 
 				</div>
 				<div style="float:right; width: 220px; height: 220px;">
-					<p>Drop down two:</p>
+					<p>Supplementary drop down:</p>
 					<select id='secondary4' style="display:none;" onchange="secondarySelect(this, 'result4');">
 					</select>
 
