@@ -246,7 +246,7 @@
 		</div>					
 
 		<!--Current Management Plan -->
-		<div class="section" style="height:460px;" align="left">
+		<div class="section" style="height:740px;" align="left">
 			<h4>Current Management Plan:</h4>
 						
 			<!-- Right eye -->
@@ -255,6 +255,7 @@
 				
 				<table width="520px;">
 					<tbody>
+<!--
 						<tr>
 							<td width="15%">
 								<p style="margin-top:-5px;">Impression:</p>
@@ -262,7 +263,6 @@
 							<td width="35%">
 								<select onchange="impChange(this);">
 									<option value=0>-- Please Select --</option>
-									<option value=0>Response to treatment</option>
 									<option value=0>Stable</option>
 									<option value=0>Uncontrolled IOP</option>
 									<option value=1>Possible progression</option>
@@ -288,6 +288,71 @@
 							<td width="25%">
 							</td>
 						</tr>
+-->
+						<tr>
+							<td width="15%">
+								<p style="margin-top:-5px;">IOP:</p>
+							</td>
+							<td width="35%">
+								<p style="color:red;">*** IOP above target ***</p>
+							</td>
+							<td width="25%">
+								(determined from difference between last IOP measurement and target)
+							</td>
+							<td width="25%">
+							</td>
+						</tr>
+						<tr>
+							<td width="15%">
+								<p style="margin-top:-5px;">Glaucoma status:</p>
+							</td>
+							<td width="35%">
+								<select onchange="impChange(this);">
+									<option value=0>-- Please Select --</option>
+									<option value=0>Insufficient data</option>
+									<option value=0>Stable</option>
+									<option value=1>Possible progression</option>
+									<option value=1>Likely progression</option>
+									<option value=1>Definite progression</option>
+								</select>
+							</td>
+							<td width="25%">
+								<span id="progCause" style="display:none;">
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Angle</p>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Disc</p>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Visual fields</p>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Imaging</p>
+								<input style="float:left; margin-top:8px; width:20px;" type="checkbox"/>
+								<p style="margin-top:-4px;">Subjective</p>
+								</span>
+							</td>
+							<td width="25%">
+							</td>
+
+						</tr>
+						<tr>
+							<td width="15%">
+								<p style="margin-top:-5px;">Drop-related problems:</p>
+							</td>
+							<td width="35%">
+								<select>
+									<option value=0>None</option>
+									<option value=0>Mild irritation</option>
+									<option value=0>Other 1</option>
+									<option value=0>Other 2</option>
+									<option value=0>....</option>
+								</select>
+							</td>
+							<td width="25%">
+							</td>
+							<td width="25%">
+							</td>
+						</tr>
+<!--
 						<tr>
 							<td width="15%">
 								<p style="margin-top:-5px;">Observe:</p>
@@ -303,10 +368,11 @@
 							<td width="25%">
 							</td>
 						</tr>
+-->
 					</tbody>
 				</table>
 				
-				<table id="actionTable" style="display:none;" width="500px;">
+				<table id="actionTable" style="display:'';" width="500px;">
 					<tbody>
 						<tr>
 							<td width="15%">
@@ -321,6 +387,7 @@
 								</select>
 							</td>
 							<td width="25%">
+								<p>(--Current drops displayed here--)</p>
 							</td>
 							<td width="25%">
 							</td>
@@ -413,38 +480,21 @@
 
 					</tbody>
 				</table>
- 				
+ 				<h3>Clinic outcome element</h3>
 				<table width="500px;">
 					<tbody>
 						<tr>
 							<td width="15%">
-								<p style="margin-top:-5px;">Review:</p>
+								<p style="margin-top:-5px;">Status:</p>
 							</td>
 							<td width="35%">
 								<select>
-									<option>1</option>
-									<option>2</option>
-									<option>3</option>
-									<option>4</option>
-									<option>5</option>
-									<option>6</option>
-									<option>7</option>
-									<option>8</option>
-									<option>9</option>
-									<option>10</option>
-									<option>11</option>
-									<option>12</option>
-									<option>18</option>
+									<option>Follow up</option>
+									<option>Discharge</option>
 								</select>
 							</td>
 							<td width="25%">
-								<select>
-									<option>hours</option>
-									<option>days</option>
-									<option>weeks</option>
-									<option selected=true>months</option>
-									<option>years</option>
-								</select>
+								<p>see current 'Clinic outcome' element</p>
 							</td>
 							<td width="25%">
 							</td>

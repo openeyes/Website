@@ -44,7 +44,7 @@ span.time {
 td > select {
 	width: auto;
 	height: auto;
-	margin-top: 0px;
+	margin-top: 5px;
 }
 
 /* Link in a table */
@@ -59,6 +59,11 @@ td > a {
 	display:block;
 	line-height: auto;
 	text-align:center;
+}
+
+/* paragraph in a table */
+td > p {
+	margin-top: -5px;
 }
 
 /* Table margin */
