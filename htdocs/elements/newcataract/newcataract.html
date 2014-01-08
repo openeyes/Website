@@ -94,6 +94,7 @@
 		<div class="section">
 			<h4>Description:</h4>
 			<p>This element explores a different method of entering morphological data on cataracts. Advantages over the current method are that a greater range of morphological forms can be entered, the whole lens can be moved (dislocated) and there is less clutter on the page, since controls only appear when the lens is selected. A further advantage is that aphakia can be signalled simply by deleting the lens. Disadvantages include less granularity over control and less ability to interact with the diagram itself.</p>
+			<p>In addition, freehand drawing and labelling have been added</p>
 			<p>Status: <b>Alpha</b></p>
 		</div>
 
@@ -117,6 +118,12 @@
                     
 				<!-- Doodle toolbar -->
 				<div class="toolbar">
+					<button class="imgbutton" title="Freehand drawing" onclick="drawingEdit.addDoodle('Freehand'); return false;" >
+						<img src="../../graphics/Freehand.gif" />
+					</button>
+					<button class="imgbutton" title="Label" onclick="drawingEdit.addDoodle('Label'); return false;" >
+						<img src="../../graphics/Label.gif" />
+					</button>
 					<button class="imgbutton" title="Lens" onclick="drawingEdit.addDoodle('Lens'); return false;" >
 						<img src="../../graphics/Lens.gif" />
 					</button>
