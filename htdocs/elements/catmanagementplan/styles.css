@@ -11,8 +11,20 @@
 
 .lable {
 	width: 110px;
-	margin-right: 4px;
+	margin-right: 12px;
 	text-align: right;
+}
+
+.comment {
+	margin-left: 4px;
+	text-align: left;
+	color: red;
+}
+
+.radio {
+	margin-left: 4px;
+	text-align: left;
+	float:left;
 }
 
 input.checkbox {
@@ -51,4 +63,8 @@ textarea {
 
 #mode {
 	display: none;
+}
+
+.radioButton {
+	float:left; margin-left: 5px; margin-top:10px;
 }
