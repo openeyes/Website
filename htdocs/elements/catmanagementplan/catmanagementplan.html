@@ -16,6 +16,16 @@
         {
         }
         
+        // Plan
+        function plan(_value) {
+	        if (_value == 'Surgery') {
+		        document.getElementById("surgery").style.display = "";
+	        }
+	        else {
+		        document.getElementById("surgery").style.display = "none";
+	        }
+        }
+        
         // Swap drop downs
         function eye(_value)
         {
@@ -39,7 +49,6 @@
         
         // Target refraction
         function target(_value) {
-	        console.log(_value);
 	        document.getElementById("targetValue").innerHTML = _value + " D";
         }
 	            
@@ -86,13 +95,33 @@
 		</div>
 		
 		<!-- Each eye section -->
-		<div class="section" style="height:580px;" align="left">
+		<div class="section" style="height:620px;" align="left">
 											
 			<!-- Right eye -->
 			<div style ="width: 540px; float:left;">
 				<p>Right eye:</p>
 				<div id="righteye" style="display:none;">
-					<table cellspacing="0" width="536" >
+				
+					<table cellspacing="0" width="530" >
+						<tbody>
+							<tr>
+								<td align="left" width="15%"><p class="lable" >Plan:</p></td>
+								<td align="left" width="40%">
+									<select style="width:auto;" onchange="plan(this.value);">
+										<option>-- Please select --</option>
+										<option>No indication for surgery</option>
+										<option>Refract and assess again</option>
+										<option>Surgery</option>
+									</select>
+								</td>
+								<td align="left" width="45%">
+						        	<p class="comment">You may also need this section for non-surgical managment</p>
+						        </td>
+							</tr>
+						</tbody>
+					</table>
+			
+					<table cellspacing="0" width="536" id="surgery" style="display:none;">
 						<tbody>		
 							<tr>
 								<td align="left" width="15%"><p class="lable" >Only eye:</p></td>
