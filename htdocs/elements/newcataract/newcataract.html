@@ -67,9 +67,26 @@
         }
         
         function addToReport(_id)
-        {
+        {		
+			// Make it visible
+			document.getElementById(_id).style.display = "";
+			
         	// Get text from the applet and force into string type
 			var text = drawingEdit.report();
+			
+			// Text of report varies according to doodles
+			if (!drawingEdit.hasDoodleOfClass('Lens')) {
+				if (!drawingEdit.hasDoodleOfClass('PCIOL')) {
+					text += text.length == 0?'Aphakic':', aphakic';
+				}
+/*
+				else {
+					text += text.length == 0?'Pseudophakic':', pseudophakic';
+				}
+*/
+			}
+			
+			if (text.length == 0) text += "No abormality";
 		
 			// Use a RegEx to remove final comma and space
 			text = text.replace(/, +$/, '');
@@ -79,6 +96,7 @@
 			
 			// Write text
 			repText.value = text;
+
 		}
 
 	            
@@ -155,7 +173,7 @@
 			        </tr>
 			        <tr>
 				        <td>		        
-					        <textarea name="cataract" id="cataract" rows=6 style="width:300px;"></textarea>
+					        <textarea name="cataract" id="cataract" rows=6 style="width:300px;display:none;"></textarea>
 				        </td>
 			        </tr>
 		        </table>   			

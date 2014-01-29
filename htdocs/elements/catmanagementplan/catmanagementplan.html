@@ -83,6 +83,7 @@
 								<option>-- Please select --</option>
 								<option>Right</option>
 								<option>Left</option>
+								<option>Both</option>
 								<option>Bilateral simultaneous</option>
 								<option>Bilateral sequential - Right first</option>
 								<option>Bilateral sequential - Left first</option>
@@ -115,7 +116,7 @@
 									</select>
 								</td>
 								<td align="left" width="45%">
-						        	<p class="comment">You may also need this section for non-surgical managment</p>
+						        	<p class="comment"></p>
 						        </td>
 							</tr>
 						</tbody>
@@ -131,81 +132,32 @@
 						        <td align="left" width="45%">
 						        	<p class="comment" ></p>
 						        </td>
-							</tr>
+							</tr>		
 							<tr>
-								<td align="left"><p class="lable" >City Road:</p></td>
+								<td align="left"><p class="lable" >Site:</p></td>
 								<td align="left">
-									<input class="checkbox" type="checkbox" id="chk_onlyeye"/>
+									<input type="radio" class="radioButton" name="dm2" value="y" ><p class="radio">City Road</p>
+									<input type="radio" class="radioButton" name="dm2" value="n" ><p class="radio">Satellite</p>
 						        </td>
 						        <td align="left">
 						        	<p class="comment" ></p>
-						        </td>
-							</tr>
-								<td align="left"><p class="lable" >At satellite:</p></td>
-								<td align="left">
-									<input class="checkbox" type="checkbox" id="chk_onlyeye"/>
-						        </td>
-						        <td align="left">
-						        	<p class="comment" >Is 'At Satellite' implied by not checking 'City Road'?</p>
-						        </td>
-							</tr>
-								<td align="left"><p class="lable" >Straightforward case:</p></td>
-								<td align="left">
-									<input class="checkbox" type="checkbox" id="chk_onlyeye"/>
-						        </td>
-						        <td align="left">
-						        	<p class="comment" >Does 'Straightforward case' overlap with 'Suitable for surgeon'?</p>
-						        </td>
-							</tr>		
-							<tr>
-								<td align="left"><p class="lable" >Target refraction discussed with patient:</p></td>
-								<td align="left">
-									<input type="radio" class="radioButton" name="dm2" value="y" ><p class="radio">Yes</p>
-									<input type="radio" class="radioButton" name="dm2" value="n" ><p class="radio">No</p>
-						        </td>
-						        <td align="left">
-						        	<p class="comment" ></p>
-						        </td>
-							</tr>		
-							<tr>
-								<td align="left"><p class="lable" >Target refraction:</p></td>
-								<td align="left">
-									<input type="range" name="points" min="-20" max="20" step="0.5" onchange="target(this.value);" style="float:left; margin-top:10px; margin-right:20px;"><p class="radio" id="targetValue">0 D</p>
-						        </td>
-						        <td align="left">
-						        	<p class="comment" ></p>
-						        </td>
-							</tr>		
-							<tr>
-								<td align="left"><p class="lable" >Suitable for surgeon:</p></td>
-								<td align="left">
-									<select style="width:auto;">
-										<option>Consultant</option>
-										<option>Senior Surgeon</option>
-										<option>Fellow</option>
-										<option>SpR</option>
-										<option selected=true>SHO</option>
-									</select>
-						        </td>
-						        <td align="left">
-						        	<p class="comment" >Defaults to SHO so that PCR risk calculation can be presented without additional user intervention</p>
-						        </td>
-							</tr>		
-							<tr>
-								<td align="left"><p class="lable" >PCR risk:</p></td>
-								<td align="left">
-									<p class="radio" id="targetValue">1.8%</p>
-						        </td>
-						        <td align="left">
-						        	<p class="comment" >(NB does not change in this demo)</p>
 						        </td>
 							</tr>	
 							<tr>
-								<td align="left"><p class="lable" >Supervised:</p></td>
+								<td align="left"><p class="lable" >Risk of IFIS:</p></td>
 								<td align="left">
 									<input class="checkbox" type="checkbox" id="chk_onlyeye"/>
 						        </td>
-						        <td align="left"> 
+						        <td align="left">
+						        	<p class="comment" ></p>
+						        </td>
+							</tr>		
+							<tr>
+								<td align="left"><p class="lable" >Unable to lie flat:</p></td>
+								<td align="left">
+									<input class="checkbox" type="checkbox" id="chk_onlyeye"/>
+						        </td>
+						        <td align="left">
 						        	<p class="comment" ></p>
 						        </td>
 							</tr>		
@@ -226,7 +178,59 @@
 									<input type="radio" class="radioButton" name="dm2" value="n" ><p class="radio">No</p>
 						        </td>
 						        <td align="left">
-						        	<p class="comment" >Currently defaults to no, suggest we make choice mandatory</p>
+						        	<p class="comment" ></p>
+						        </td>
+							</tr>		
+							<tr>
+								<td align="left"><p class="lable" >Target refraction discussed with patient:</p></td>
+								<td align="left">
+									<input type="radio" class="radioButton" name="dm2" value="y" ><p class="radio">Yes</p>
+									<input type="radio" class="radioButton" name="dm2" value="n" ><p class="radio">No</p>
+						        </td>
+						        <td align="left">
+						        	<p class="comment" ></p>
+						        </td>
+							</tr>		
+							<tr>
+								<td align="left"><p class="lable" >Target refraction:</p></td>
+								<td align="left">
+									<input type="range" name="points" min="-10" max="10" step="0.25" onchange="target(this.value);" style="float:left; margin-top:10px; margin-right:20px;"><p class="radio" id="targetValue">0 D</p>
+						        </td>
+						        <td align="left">
+						        	<p class="comment" ></p>
+						        </td>
+							</tr>		
+							<tr>
+								<td align="left"><p class="lable" >Suitable for surgeon:</p></td>
+								<td align="left">
+									<select style="width:auto;">
+										<option>Please select</option>
+										<option>Consultant</option>
+										<option>Senior Surgeon</option>
+										<option>Fellow</option>
+										<option>SpR</option>
+									</select>
+						        </td>
+						        <td align="left">
+						        	<p class="comment" ></p>
+						        </td>
+							</tr>		
+							<tr>
+								<td align="left"><p class="lable" >PCR risk:</p></td>
+								<td align="left">
+									<p class="radio" id="targetValue">1.8%</p>
+						        </td>
+						        <td align="left">
+						        	<p class="comment" >(NB does not change in this demo)</p>
+						        </td>
+							</tr>	
+							<tr>
+								<td align="left"><p class="lable" >Supervised:</p></td>
+								<td align="left">
+									<input class="checkbox" type="checkbox" id="chk_onlyeye"/>
+						        </td>
+						        <td align="left"> 
+						        	<p class="comment" ></p>
 						        </td>
 							</tr>
 						</tbody>
