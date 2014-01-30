@@ -61,8 +61,24 @@
                 }
             }
         }
-
-
+        
+        function addToReport(_id)
+        {		
+			// Make it visible
+			//document.getElementById(_id).style.display = "";
+			
+        	// Get text from the applet and force into string type
+			var text = drawingEdit.report();
+		
+			// Use a RegEx to remove final comma and space
+			text = text.replace(/, +$/, '');
+			
+			// Get reference to report textarea
+			var repText = document.getElementById(_id);
+			
+			// Write text
+			repText.value = text;
+		}
 	            
     </script>
 
@@ -75,7 +91,8 @@
 		
 		<div class="section">
 			<h4>Description:</h4>
-			<p>This element does this</p>
+			<p>This element does represents the uveitis version of the 'Fundus' element. This element covers the retina out to the ora serrata, and is offered in addition to the 'Posterior pole' element which gives a more magnified view of the macula.</p>
+			<p>The 'doodles' are a uveitis specific selection, most of which are prototypes</p>
 			<p>Status: <b>Alpha</b></p>
 		</div>
 
@@ -107,12 +124,30 @@
 					</button>
 				</div>
 				<div class="toolbar">
-					<button class="imgbutton" title="Choroidal Naevus" onclick="drawingEdit.addDoodle('ChoroidalNaevus'); return false;" >
-						<img src="../../graphics/ChoroidalNaevus.gif" />
+					<button class="imgbutton" title="Cystoid macular oedema" onclick="drawingEdit.addDoodle('CystoidMacularOedema'); return false;" >
+						<img src="../../graphics/CystoidMacularOedema.gif" />
 					</button>
-					<button class="imgbutton" title="Choroidal Naevus" onclick="drawingEdit.addDoodle('RRD'); return false;" >
-						<img src="../../graphics/ChoroidalNaevus.gif" />
-					</button>						
+					<button class="imgbutton" title="Epiretinal membrane" onclick="drawingEdit.addDoodle('EpiretinalMembrane'); return false;" >
+						<img src="../../graphics/EpiretinalMembrane.gif" />
+					</button>
+					<button class="imgbutton" title="Focal Choroiditis" onclick="drawingEdit.addDoodle('FocalChoroiditis'); return false;" >
+						<img src="../../graphics/FocalChoroiditis.gif" />
+					</button>
+					<button class="imgbutton" title="Retina detachment" onclick="drawingEdit.addDoodle('RRD'); return false;" >
+						<img src="../../graphics/RRD.gif" />
+					</button>
+					<button class="imgbutton" title="Retinal haemorrhage" onclick="drawingEdit.addDoodle('BlotHaemorrhage'); return false;" >
+						<img src="../../graphics/BlotHaemorrhage.gif" />
+					</button>
+					<button class="imgbutton" title="Retinal vein occlusion" onclick="drawingEdit.addDoodle('RetinalVeinOcclusionPostPole'); return false;" >
+						<img src="../../graphics/RetinalVeinOcclusionPostPole.gif" />
+					</button>
+					<button class="imgbutton" title="Retinal artery occlusion" onclick="drawingEdit.addDoodle('RetinalArteryOcclusionPostPole'); return false;" >
+						<img src="../../graphics/RetinalArteryOcclusionPostPole.gif" />
+					</button>
+					<button class="imgbutton" title="Chroidal neovascularisation" onclick="drawingEdit.addDoodle('CNV'); return false;" >
+						<img src="../../graphics/CNV.gif" />
+					</button>							
 				</div>
 							   				
 		        <!-- Canvas tooltip -->
@@ -129,7 +164,8 @@
 		        
 		        <div style='float:left;'>
 			        <p>Free text</p>
-					<textarea rows="4" cols="50"></textarea>
+			        <button class="actbutton" title="Creates a text description of the drawing" onclick="addToReport('freetext'); return false;" >Report</button></br>
+					<textarea id="freetext" rows="4" cols="50" style="margin-top:10px;"></textarea>
 		        </div>   				
    			
 			</div>
