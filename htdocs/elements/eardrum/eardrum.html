@@ -14,6 +14,14 @@
     
 		// Unique variable assigned to the drawing
 	    var drawingEdit;
+	    
+	    // SNOMED codes
+	    var codeSet = {
+    		0:"No SNOMED code",
+			39895008:"Marginal perforation of tympanic membrane",
+			40723007:"Central perforation of tympanic membrane",
+		}
+
                             
         // Runs on page load
         function init()
@@ -95,8 +103,12 @@
 			
 			snoText.value = "";
 			
-			snoText.value = drawingEdit.diagnosis();
+			var codeArray = drawingEdit.diagnosis();
+			for (var i = 0; i < codeArray.length; i++) {
+				snoText.value += codeArray[i] + ":" + codeSet[codeArray[i]] + "\r";
+			}
 		}
+
 	            
     </script>
 
@@ -110,7 +122,7 @@
 		<div class="section">
 			<h4>Description:</h4>
 			<p>This element allows the drawing of an eardrum.</p>
-			<p>This element also displays a new feature in the drawing package whereby certain aspects of a 'doodle' can be controlled by a pop up menu. Try adding a Corneal Graft for example. There is also a new freehand drawing doodle which allows any shape to be drawn.</p>
+			<p>This element also displays a new feature in the drawing package whereby properties of a 'doodle' can be controlled by a pop up menu. Try adding a Corneal Graft for example. There is also a new freehand drawing doodle which allows any shape to be drawn.</p>
 			
 			<p>Status: <b>Alpha</b></p>
 		</div>
