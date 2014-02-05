@@ -33,15 +33,15 @@
 			}
 		}
 		
-		function showScore(_id, _value)
+		function addTest(_value)
 		{
-			if (_value=='Isihara plates')
+			if (_value == 'Isihara plates')
 			{
-				document.getElementById(_id).style.display = 'inline';
+				document.getElementById('isi').style.display = '';
 			}
-			else
+			if (_value=='Red desaturation')
 			{
-				document.getElementById(_id).style.display = 'none';
+				document.getElementById('reddesat').style.display = '';
 			}
 		}
 		            
@@ -94,7 +94,8 @@
 				<div style ="width: 540px; float:left;">
 					<p>Right eye:</p>
 					
-					<select class="vaSelect" style="width:auto" onchange="showScore('isR', this.value);">
+					<select class="vaSelect" style="width:auto" onchange="addTest(this.value);">
+						<option>Add test</option>
 						<option>Isihara plates</option>
 						<option>Red desaturation</option>
 <!--
@@ -102,36 +103,23 @@
 						<option>Farnsworth‐Munsell 100‐hue test</option>
 -->
 					</select>
+					</br>
 					
-					<label>Score:&nbsp</label><input type='text'>
-										
-					<select class="vaSelect" style="width:auto">				
-						<option>Normal</option>
-						<option>Protans</option>
-						<option>Deutans</option>
-						<option>Tritons</option>
-					</select>
+					<div id='isi' style='display:none;'>
+						<label>Isihara Score:&nbsp</label><input type='text'>/15
+						</br>
+					</div>
 					
-<!--
-					<select class="vaSelect" id="isR" style="width:auto; display:inline;">
-						<option>15/15</option>
-						<option>14/15</option>
-						<option>13/15</option>
-						<option>12/15</option>
-						<option>11/15</option>
-						<option>10/15</option>
-						<option>9/15</option>
-						<option>8/15</option>							
-						<option>7/15</option>
-						<option>6/15</option>
-						<option>5/15</option>
-						<option>4/15</option>
-						<option>3/15</option>
-						<option>2/15</option>
-						<option>1/15</option>
-						<option>0/15</option>	
-					</select>
--->
+					<div id='reddesat' style='display:none;'>
+						<label>Red desaturation</label>				
+						<select class="vaSelect" style="width:auto">				
+							<option>--Please select--</option>
+							<option>Mild</option>
+							<option>Moderate</option>
+							<option>Marked</option>
+						</select>
+					</div>
+
 
 				</div>
 	
@@ -139,46 +127,7 @@
 				<div style ="width:540px; float:left;">
 					<p>Left eye:</p>
 
-					<select class="vaSelect" style="width:auto" onchange="showScore('isL', this.value);">
-						<option>Isihara plates</option>
-						<option>Red desaturation</option>
-<!--
-						<option>Farnsworth Panel D‐15</option>
-						<option>Farnsworth‐Munsell 100‐hue test</option>
--->
-					</select>
-					
-					<label>Score:&nbsp</label><input type='text'>
-										
-					<select class="vaSelect" style="width:auto">				
-						<option>Normal</option>
-						<option>Protans</option>
-						<option>Deutans</option>
-						<option>Tritons</option>
-					</select>
-
-<!--
-					
-					<select class="vaSelect" id="isL" style="width:auto; display:inline;">
-						<option>15/15</option>
-						<option>14/15</option>
-						<option>13/15</option>
-						<option>12/15</option>
-						<option>11/15</option>
-						<option>10/15</option>
-						<option>9/15</option>
-						<option>8/15</option>							
-						<option>7/15</option>
-						<option>6/15</option>
-						<option>5/15</option>
-						<option>4/15</option>
-						<option>3/15</option>
-						<option>2/15</option>
-						<option>1/15</option>
-						<option>0/15</option>	
-					</select>
--->
-					
+					<p>As for right eye</p>					
 				</div>
 			</div>
 			
@@ -193,7 +142,8 @@
 			<div style ="width:540px; float:left;">
 				<p>Right eye:</p>
 				
-				<p>Isihara plates 15/15 Normal</p>
+				<p>Isihara plates 15/15</p>
+				<p>Marked red desaturation</p>
 
 			</div>
 			
@@ -201,7 +151,7 @@
 			<div style ="width:540px; float:left;">
 				<p>Left eye:</p>
 
-				<p>Isihara plates 10/15 Protans defect</p>
+				<p>As for right eye</p>
 
 			</div>				
 
