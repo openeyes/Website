@@ -9,9 +9,7 @@
 	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
 
     <!--   Javascript  -->	
-	<script language="JavaScript" src="../../scripts/elements.js" type="text/javascript"></script>
 	<script language="JavaScript" src="../../scripts/eyedraw.js" type="text/javascript"></script>
-		
     <script type="text/javascript">
         
         // Variables assigned to each drawing on this page
@@ -46,18 +44,21 @@
                 
                 // Register for notifications with drawing object
                 this.drawing.registerForNotifications(this, 'callBack', []);
+                            
+				// Show doodle controls
+				this.drawing.showDoodleControls = true;
                 
                 // Arrays to handle sutures
                 var suturePointsArray = new Array();
                 var sutureArray = new Array();
                 
-				// 'Prototype position' of trabeculectomy Sutures (relative position, angle and type)
+				// 'Prototype position' of trabeculectomy Sutures (relative position, angle and shape)
 				var sutureSet = [
-					{xd: -1, yd: 0, a: 7 * Math.PI/4, t:'Releasable', ex: -25},
-					{xd: 0, yd: 0, a: 0, t:'Releasable', ex: 0},
- 					{xd: +1, yd: 0, a: 1 * Math.PI/4, t:'Releasable', ex: +25},
- 					{xd: -1, yd: 0.5, a: Math.PI/2, t:'Fixed', ex: 0},
- 					{xd: +1, yd: 0.5, a: 3 * Math.PI/2, t:'Fixed', ex: 0},
+					{xd: -1, yd: 0, a: 7 * Math.PI/4, s:'Releasable', ex: -25},
+					{xd: 0, yd: 0, a: 0, s:'Releasable', ex: 0},
+ 					{xd: +1, yd: 0, a: 1 * Math.PI/4, s:'Releasable', ex: +25},
+ 					{xd: -1, yd: 0.5, a: Math.PI/2, s:'Fixed', ex: 0},
+ 					{xd: +1, yd: 0.5, a: 3 * Math.PI/2, s:'Fixed', ex: 0},
 				];                
                 
                 // Method called for notification
@@ -89,7 +90,7 @@
 								// Create point from ideal with added attributes
 								var p = new ED.Point(sutureSet[i].xd * trab.right.x * this.gsf, (trab.height + sutureSet[i].yd * (trab.right.y - trab.height)) * this.gsf);
 								p.angle = sutureSet[i].a;
-								p.type = sutureSet[i].t;
+								p.shape = sutureSet[i].s;
 								p.ex = sutureSet[i].ex;
 							
 								// Add it to an array
@@ -98,7 +99,7 @@
 								// Create a suture and add that to an array, missing out the last two
 								if (i < 3)
 								{
-									var suture = this.drawing.addDoodle('TrabySuture', {originX:p.x, originY:p.y, rotation:p.angle, type:p.type});
+									var suture = this.drawing.addDoodle('TrabySuture', {originX:p.x, originY:p.y, rotation:p.angle, shape:p.shape});
 									suture.firstOriginX = p.ex;
 									sutureArray[sutureArray.length] = suture;
 								}
@@ -218,8 +219,8 @@
 												// Apply rotation
 												sutureArray[i].rotation = ED.Mod(p.angle + trab.rotation, 2 * Math.PI);
 												
-												// Apply type
-												sutureArray[i].setParameterFromString('type', p.type);
+												// Apply shape
+												sutureArray[i].setParameterFromString('shape', p.shape);
 												
 												// Apply firstOrginX
 												sutureArray[i].firstOriginX = p.ex;
@@ -272,8 +273,64 @@
 			
 			repText.value = text;
        }
-
-
+       
+		// Takes selection from a select dropdown and adds to a text area, with comma if appropriate
+		function addToTextarea(selectId, textareaId, fixed)
+		{
+			// Get references to select and textarea
+			var select = document.getElementById(selectId);
+			var textArea = document.getElementById(textareaId);
+			
+			// Get value and text from select box
+			var value = select.options[select.selectedIndex].value;
+			var text = select.options[select.selectedIndex].text;
+			
+			// If text there already, make it lower case (as long as it has no caret) and add a comma before
+			if (textArea.value.length > 0)
+			{
+				char = value.charAt(0);
+				if (char != "^")
+				{
+					text = lcfirst(text);
+				}		
+				var text = ", " + text;
+			}
+			
+			// Add to textarea
+			textArea.value = textArea.value + text;
+			
+			// Adjust height of target textarea
+			if (typeof(fixed) == 'undefined')
+			{
+				adjustHeight(textareaId, 40);
+			}
+			
+			// Reset select
+			select.selectedIndex = 0;
+		}
+		
+		// Makes automatically resizeable textarea. Style should be set with no scrollbars (overflow: hidden;)
+		function adjustHeight(id, defaultHeight)
+		{
+			// Get reference to text area
+			var textArea = document.getElementById(id);
+			
+			// Start by setting to default height
+			textArea.style.height = defaultHeight + "px";
+			
+			// Now set new height according to content
+			if (textArea.scrollHeight > textArea.clientHeight)
+			{
+				textArea.style.height = textArea.scrollHeight + "px";
+			}
+		}
+		
+		// Decapitalise first letter of a string
+		function lcfirst(str)
+		{
+		    var firstLetter = str.substr(0, 1);
+		    return firstLetter.toLowerCase() + str.substr(1);
+		}
     </script>
 
 </head>
@@ -292,7 +349,7 @@
 		</div>
 
 		<!-- Edit mode section -->
-		<div class="section" style="height:430px;" align="left">
+		<div class="section" style="height:530px;" align="left">
 			<h4>Edit mode:</h4>
 						
 			<!-- Drawing -->
@@ -318,6 +375,11 @@
 					<span class="canvasTooltip" id="canvasEditTooltip"></span>
 	                <canvas id="canvasEdit" class="canvasclass" width="300" height="300" tabindex="1"></canvas>
 				</div>
+					
+		        <!-- Doodle control panel -->
+		        <div id="canvasEdit_controls" style="background-color: #DAE6F1; float:left;">
+		        </div>
+		        
 			</div>
 			
 			<!-- Controls -->
@@ -352,7 +414,7 @@
 						<tr>
 							<td align="left"><p class="lable" >Conjunctival flap:</p></td>
 							<td align="left">
-								<select id="methodSelect">
+								<select id="methodSelect" style="width:auto;">
 									<option value="Fornix-based">Fornix-based</option>
 									<option value="Limbus-based">Limbus-based</option>
 								</select>
@@ -366,6 +428,7 @@
 	    					 </td>
 						</tr>
 						<tr>
+<!--
 							<td align="left"><p class="lable" >Material:</p></td>
 							<td align="left">
 						        <select id="staysutureSelect" style="width:auto;">
@@ -387,6 +450,25 @@
 						            <option>PROLENE Polypropylene</option>
 						        </select>
 	    					 </td>
+-->
+							<td align="left"><p class="lable" >Type:</p></td>
+							<td align="left">
+						        <select id="staysutureSelect" style="width:80px;">
+						            <option>Nylon</option>
+						            <option>Prolene</option>
+						        </select>
+							</td>
+							
+						</tr>
+						<tr>
+						<td align="left"><p class="lable" >Size:</p></td>
+							<td align="left">
+						        <select id="staysutureSelect" style="width:80px;">
+						            <option>7/0</option>
+						            <option>10/0</option>
+						        </select>
+							</td>
+							
 						</tr>
 						<tr>
 							<td align="left"><p class="lable" >Number:</p></td>
@@ -441,6 +523,7 @@
 						        </select>
 	    					 </td>
 						</tr>
+<!--
 						<tr>
 							<td align="left"><p class="lable" >Suture:</p></td>
 							<td align="left">
@@ -464,6 +547,26 @@
 						        </select>
 	    					 </td>
 						</tr>
+-->
+						<tr>
+							<td align="left"><p class="lable" >Type:</p></td>
+							<td align="left">
+						        <select id="staysutureSelect" style="width:80px;">
+						            <option>Nylon</option>
+						            <option>Prolene</option>
+						        </select>
+							</td>
+						</tr>
+						<tr>
+						<td align="left"><p class="lable" >Size:</p></td>
+							<td align="left">
+						        <select id="staysutureSelect" style="width:80px;">
+						            <option>7/0</option>
+						            <option>10/0</option>
+						        </select>
+							</td>
+						</tr>
+						
 					</tbody>	
 				</table>
 				
