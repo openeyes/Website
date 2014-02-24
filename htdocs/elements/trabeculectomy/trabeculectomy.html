@@ -367,6 +367,7 @@
 					<button class="imgbutton" id="piRPS" title="Peripheral iridectomy" onclick="drawingEdit.addDoodle('PI'); return false;" ><img src="../../graphics/PI.gif" /></button>
 					<button class="imgbutton" id="sidePortRPS" title="Side port" onclick="drawingEdit.addDoodle('SidePort'); return false;" ><img src="../../graphics/SidePort.gif" /></button>
 					<button class="imgbutton" id="sidePortRPS" title="Side port" onclick="drawingEdit.addDoodle('ScleralPatch'); return false;" ><img src="../../graphics/ScleralPatch.gif" /></button>
+					<button class="imgbutton" id="sidePortRPS" title="Side port" onclick="drawingEdit.addDoodle('ConjunctivalSuture'); return false;" ><img src="../../graphics/ConjunctivalSuture.gif" /></button>
 	                <br />	  	                    
                 </div>
 	                		
@@ -388,6 +389,7 @@
 				<table cellspacing="0" width="380" style="border:1px solid gray; margin-bottom:10px;">
 					<tbody>
 						<tr>
+<!--
 							<td align="left"><p class="lable" >Stay suture:</p></td>
 							<td align="left">
 						        <select id="staysutureSelect" style="width:auto;">
@@ -411,6 +413,7 @@
 						        </select>
 	    					 </td>
 						</tr>	
+-->
 						<tr>
 							<td align="left"><p class="lable" >Conjunctival flap:</p></td>
 							<td align="left">
@@ -421,14 +424,23 @@
 	    					 </td>
 						</tr>
 						<tr>
+							<td align="left"><p class="lable" >Stay suture:</p></td>
+							<td align="left">
+								<input class="checkbox" type="checkbox" id="chk_phd"/>
+	    					 </td>
+						</tr>
+<!--
+						<tr>
 							<td align="left"><p class="lable" >Suture method:</p></td>
 							<td align="left">
 								<input type="checkbox" name="method" value="Purse string" checked="true"><span class="radio">Purse string</span>
 								<input type="checkbox" name="method" value="Mattress"><span class="radio">Mattress</span>
 	    					 </td>
 						</tr>
-						<tr>
+-->
 <!--
+						<tr>
+
 							<td align="left"><p class="lable" >Material:</p></td>
 							<td align="left">
 						        <select id="staysutureSelect" style="width:auto;">
@@ -450,16 +462,30 @@
 						            <option>PROLENE Polypropylene</option>
 						        </select>
 	    					 </td>
--->
+
 							<td align="left"><p class="lable" >Type:</p></td>
 							<td align="left">
-						        <select id="staysutureSelect" style="width:80px;">
+						        <select id="staysutureSelect" style="width:80px; float:left;">
 						            <option>Nylon</option>
 						            <option>Prolene</option>
+						            <option>Vicryl</option>
+						            <option>Silk</option>
+						        </select>
+						        <p class="lable" style="float:left; width:auto; padding-left:15px; padding-right:10px;" >Size:</p>
+						        <select id="staysutureSelect" style="width:60px; float:left;">
+						            <option>11/0</option>
+						            <option>10/0</option>
+						            <option>9/0</option>
+						            <option>8/0</option>
+						            <option>7/0</option>
+						            <option>6/0</option>
 						        </select>
 							</td>
+
 							
 						</tr>
+-->
+<!--
 						<tr>
 						<td align="left"><p class="lable" >Size:</p></td>
 							<td align="left">
@@ -487,6 +513,7 @@
 						        </select>
 	    					 </td>
 						</tr>
+-->
 					</tbody>
 					
 				</table>
@@ -520,6 +547,7 @@
 						        <select id="sclerostomySelect">
 						            <option value="Punch">Punch</option>
 						            <option value="Block">Block</option>
+						            <option value="Ex-Press shunt">Ex-Press shunt</option>
 						        </select>
 	    					 </td>
 						</tr>
@@ -548,6 +576,7 @@
 	    					 </td>
 						</tr>
 -->
+<!--
 						<tr>
 							<td align="left"><p class="lable" >Type:</p></td>
 							<td align="left">
@@ -566,6 +595,7 @@
 						        </select>
 							</td>
 						</tr>
+-->
 						
 					</tbody>	
 				</table>
