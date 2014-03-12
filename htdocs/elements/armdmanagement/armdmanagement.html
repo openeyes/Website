@@ -40,6 +40,59 @@
 	        	document.getElementById('comments').style.display = "";
         	}
 	    }
+	    
+	    function mainDiagnosisChanged(_value) {
+		    switch (_value) {
+		    	// None
+		    	case "none":
+		    		document.getElementById("treatmentDiagnosis").innerHTML = "";
+			    	//updateSelect("treatmentDiagnosis", []);
+			    	updateSelect("treatmentDrug", []);
+			    	break;
+			    			    		
+		    	// ARMD
+			    case "267718000":
+			    	document.getElementById("treatmentDiagnosis").innerHTML = "Choroidal retinal neovascularisation";
+			    	//updateSelect("treatmentDiagnosis", [{val:"75971007", txt:"Choroidal retinal neovascularisation"}]);
+			    	updateSelect("treatmentDrug", [{val:1, txt:"Eylea"}, {val:2, txt:"Lucentis"}]);
+			    	break;
+			    	
+			    // Myopia
+			    case "57190000":
+			    	document.getElementById("treatmentDiagnosis").innerHTML = "Choroidal retinal neovascularisation";
+			    	//updateSelect("treatmentDiagnosis", [{val:"75971007", txt:"Choroidal retinal neovascularisation"}]);
+			    	updateSelect("treatmentDrug", [{val:2, txt:"Lucentis"}]);
+			    	break;
+			    	
+			    // Diabetic Retinopathy
+			    case "4855003":
+			    	document.getElementById("treatmentDiagnosis").innerHTML = "Diabetic Macular Oedema";
+			    	//updateSelect("treatmentDiagnosis", [{val:"312912001", txt:"Diabetic Macular Oedema"}]);
+			    	updateSelect("treatmentDrug", [{val:2, txt:"Lucentis"}]);
+			    	break;
+			    	
+			    default:
+			    	document.getElementById("treatmentDiagnosis").innerHTML = "Choroidal retinal neovascularisation";
+			    	//updateSelect("treatmentDiagnosis", [{val:"75971007", txt:"Choroidal retinal neovascularisation"}]);
+			    	updateSelect("treatmentDrug", [{val:1, txt:"Eylea"}, {val:2, txt:"Lucentis"}, {val:3, txt:"Avastin"}]);
+			    	break;
+		    }
+	    }
+	    
+		// Change the options in the _select according to filters
+		function updateSelect(_selectId, _array)
+		{
+			// Get reference to the select
+			var sel = document.getElementById(_selectId);
+			
+			// Remove all options
+			sel.options.length = 0;
+			
+			for (var i = 0; i < _array.length; i++) {
+		    	sel.options[sel.options.length] = new Option(_array[i].txt, _array[i].val);
+	    	}
+		}
+
 	            
     </script>
 
@@ -101,10 +154,11 @@
 								<p style="margin-top:-5px;">Main diagnosis:</p>
 							</td>
 							<td>
-								<select style="width:190px;">
-								<option value="">- Please Select -</option>
+								<select style="width:190px;" onchange="mainDiagnosisChanged(this.value);">
+								<option value="none">- Please Select -</option>
 								<option value="267718000">Age related macular degeneration</option>
 								<option value="57190000">Myopia</option>
+								<option value="4855003">Diabetic retinopathy</option>
 								<option value="312950007">Punctate inner choroidopathy</option>
 								<option value="240740001">Ocular histoplasmosis syndrome</option>
 								<option value="314269007">Idiopathic choroidal neovascular membrane</option>
@@ -122,7 +176,9 @@
 								<p style="margin-top:-5px;">Treatment diagnosis:</p>
 							</td>
 							<td>
-								<select style="width:190px;">
+								<p id="treatmentDiagnosis"></p>
+<!--
+								<select style="width:190px;" id="treatmentDiagnosis">
 									<option value="">- Please select -</option>
 									<option value="75971007">Choroidal retinal neovascularisation</option>
 									<option value="37231002" d>Macular retinal oedema</option>
@@ -132,9 +188,10 @@
 									<option value="128473001">Uveitis</option>
 									<option value="78370002">Scleritis</option>
 								</select>
+-->
 							</td>
 							<td>
-								<p class="comment" >This is the sub-diagnosis being treated. Content can change according to the previous selection</p>
+								<p class="comment" >If there are no main diagnoses, with more than one option, then this doesn't have to be a drop down</p>
 							</td>
 						</tr>
 						<tr id='treatment'>
@@ -142,7 +199,8 @@
 								<p style="margin-top:-5px;">Treatment:</p>
 							</td>
 							<td>
-								<select style="width:190px;">
+								<select style="width:190px;" id="treatmentDrug">
+<!--
 									<option value="">- Please select -</option>
 									<option value="1">Avastin</option>
 									<option value="2">Eylea</option>
@@ -152,6 +210,7 @@
 									<option value="6">Macugen</option>
 									<option value="7">Ozurdex</option>
 									<option value="8">PDT</option>
+-->
 								</select>
 							</td>
 							<td>
@@ -198,6 +257,7 @@
 								<p class="comment" >The idea of this is a presumed interval that will preset the clinic outcome</p>
 							</td>
 						</tr>
+<!--
 						<tr id='oct'>
 							<td >
 								<p style="margin-top:-5px;">OCT:</p>
@@ -218,6 +278,7 @@
 								<p class="comment" >If OCTs are done every visit, then this is redundant</p>
 							</td>
 						</tr>
+-->
 						<tr id='comments'>
 							<td >
 								<p style="margin-top:-5px;">Comments:</p>
