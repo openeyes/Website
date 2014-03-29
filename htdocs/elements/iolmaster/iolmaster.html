@@ -13,12 +13,12 @@
     <script type="text/javascript">
 
 	 	// Collection of Lenses
-		var lensSet = 
+		var lensData = 
 		[
-			{model: "MA60AC", description: "Acrysof® Multi-Piece Intraocular Lens", position: "Posterior chamber", comments: "Available from 5 to 35D", acon:119.1},
-			{model: "SN60WF", description: "Acrysof® IQ Intraocular lens", position: "Posterior chamber", comments: "Available from 5 to 35D", acon:119.0},
-			{model: "SA60AT", description: "Acrysof® Anterior Chamber Intraocular lens", position: "Anterior chamber", comments: "Default AC Lens", acon:118.7},
-			{model: "MTA3U0", description: "Acrysof® Anterior Chamber Intraocular lens", position: "Anterior chamber", comments: "Default AC Lens", acon:115.54}
+			{model:"SN60WF", description:"Acrysof® IQ Intraocular lens", position:"Posterior chamber", comments:"+6.0 to +30.0 in 0.5D steps", acon:119.0, pACD:5.64, a0:-0.782, a1:0.206, a2:0.221},
+			{model: "MA60AC", description: "Acrysof® Multi-Piece Intraocular Lens", position: "Posterior chamber", comments: "+6.0 to +30.0 in 0.5D steps", acon:119.1, pACD:5.59, a0:1.498, a1:0.011, a2:0.147},
+			{model: "SA60AT", description: "Acrysof® Intraocular lens", position: "Posterior chamber", comments: "+6.0 to +30.0 in 0.5D steps, +31.0 to +40.0 in 1D steps", acon:118.7, pACD:5.51, a0:-0.091, a1:0.231, a2:0.179},
+			{model: "MTA3UO", description: "Acrysof® Intraocular lens", position: "Anterior chamber", comments: "+6.0 to +30.0 in 0.5D steps, +31.0 to +40.0 in 1D steps", acon:115.54, pACD:3.53, a0:-0.705, a1:0.4, a2:0.1},
 		];
 	   
         /**
@@ -28,22 +28,34 @@
 		var BI = new Object();
 		
 		/**
+		 * Constants
+		 */
+		//BI.DtoR = 337.5;		// Conversion factor dioptres to radius of curvature (D = f/r) (1.3375)
+		BI.n = 1.3375;			// Refractive index of cornea with fudge factor for converting radius of curvature to dioptric power
+		BI.na = 1.336;			// Refractive index of aqueous and vitreous
+		BI.nc = 1.333;			// Refractive index of the cornea
+		BI.vd = 12.0;			// Vertex distance			
+		
+		/**
 		 * Lens power formulae
 		 */
 		BI.Formula = 
 		{
-			SRKI:0,
-			SRKT:1,
-			Haigis:2,
+			SRKT:0,
+			Haigis:1,
+			HaigisL:2,
+			HofferQ:3,
 		}
 		
-		var al;
+		// Global variables
+		var IOLModelIndex = -1;		// Index of currently selected IOL model in lensData
 		var drawingEdit;
 		        
         // Runs on page load
         function init()
         {
-        	iolType(0);
+        	setIOLModel('SN60WF');
+        	calculateKs();
         	refreshCalculation();
         	
         	// Get reference to the drawingEdit canvas
@@ -90,25 +102,50 @@
             }
         }
         
-        // Sets IOL type
-        function iolType(_index)
+        /**
+         * Sets the IOL model
+         *
+		 * @param String _IOLModel Model code for selected IOL
+		 */
+        function setIOLModel(_IOLModel)
         {
-        	var acon = document.getElementById('iolAcon');
-        	var type = document.getElementById('iolType');
-			var position = document.getElementById('iolPosition');
-			var comments = document.getElementById('iolComments');
-			
-        	acon.innerHTML = this.lensSet[_index].acon.toFixed(1);
-        	type.innerHTML = this.lensSet[_index].model + " " + this.lensSet[_index].description;
-        	position.innerHTML = this.lensSet[_index].position;
-        	comments.innerHTML = this.lensSet[_index].comments;
+        	// Reset current index
+        	IOLModelIndex = -1;
+        	
+        	// Get details for this IOL
+        	for (var i = 0; i < lensData.length; i++) {
+	        	var lens = lensData[i];
+	        	if (lens['model'] == _IOLModel) {
+		        	IOLModelIndex = i;
+	        	}
+        	}
+        	
+        	if (IOLModelIndex >= 0) {
+	        	var acon = document.getElementById('iolAcon');
+	        	var type = document.getElementById('setIOLModel');
+				var position = document.getElementById('iolPosition');
+				var comments = document.getElementById('iolComments');
+				var pACD = document.getElementById('iolpACD');
+				var pHaigis = document.getElementById('iolHaigis');
+				
+	        	acon.innerHTML = this.lensData[IOLModelIndex].acon.toFixed(1);
+	        	type.innerHTML = this.lensData[IOLModelIndex].model + " " + this.lensData[IOLModelIndex].description;
+	        	position.innerHTML = this.lensData[IOLModelIndex].position;
+	        	comments.innerHTML = this.lensData[IOLModelIndex].comments;
+	        	pACD.innerHTML = this.lensData[IOLModelIndex].pACD;
+	        	pHaigis.innerHTML = this.lensData[IOLModelIndex].a0 + ", " + this.lensData[IOLModelIndex].a1 + ", " + this.lensData[IOLModelIndex].a2;
+        	}
+        	else {
+	        	console.log('Unable to calculate power');
+        	}
         }
         
         // Selects IOL
         function iolSelected(_value)
         {
+        	// Get selected lens power
         	var power = parseFloat(_value);
-        	var powerString = power.toFixed(2);
+        	var powerString = power.toFixed(1);
         	var selection = document.getElementById('rsi');
         	selection.value = powerString;
         	
@@ -120,12 +157,12 @@
         	var tr = parseFloat(document.getElementById('rtr').value);
         	var acd = parseFloat(document.getElementById('acd').value);
         	
+        	// Get formula
         	var formula = document.getElementById('formulaSelect').value;
         	formula = parseInt(formula);
         	
-        	var refraction = calculate(al, r1, r2, acd, acon, power, null, formula);
-        	
-        	// Set value of display
+        	// Calculate predicted refraction for selected IOL and display
+        	var refraction = calculate(al, r1, r2, acd, IOLModelIndex, power, formula, 'REF');
         	var pred = document.getElementById('rpr');
         	pred.innerHTML = refraction > 0?"+" + refraction.toFixed(2):refraction.toFixed(2);
         }
@@ -133,57 +170,74 @@
         // Calculate lens powers
         function refreshCalculation()
         {
+        	// Get selected formula
         	var formula = document.getElementById('formulaSelect').value;
         	formula = parseInt(formula);
+        	
+        	// Get target refraction
+        	var targetRefraction = parseFloat(document.getElementById('rtr').value);
         	
         	// Clear existing values
         	clearTable();
         	
-        	// Get values
-        	al = parseFloat(document.getElementById('ral').value);
+        	// Get biometry values
+        	var al = parseFloat(document.getElementById('ral').value);
         	var r1 = parseFloat(document.getElementById('rr1').value);
         	var r2 = parseFloat(document.getElementById('rr2').value);
-        	var acon = parseFloat(document.getElementById('iolAcon').innerHTML);
         	var tr = parseFloat(document.getElementById('rtr').value);
         	var acd = parseFloat(document.getElementById('acd').value);
+        	
+        	// Check that there is a valid selected IOL
+        	if (IOLModelIndex >= 0) {
         	        	
-        	// Calculate lens power for target refraction
-        	var powerIOL = calculate(al, r1, r2, acd, acon, null, tr, formula);
-        	console.log("IOL for expected refraction: " + powerIOL);
-        	if(powerIOL)
-        	{
-        		// Round to nearest 0.5
-        		var roundIOL = Math.round(powerIOL * 2)/2;
-        		
-        		// Get power for that IOL
-        		var refraction = calculate(al, r1, r2, acd, acon, roundIOL, null, formula);
-      		         		
-         		// Iterate towards myopia until value is less than target  ** Need clinical input on this one!
-//          		debugger;
-//          		while (refraction > tr )
-//          		{
-//          			roundIOL = roundIOL + 0.5;
-// 					refraction = calculate(al, r1, r2, acd, acon, roundIOL, null, formula);
-//          		}
-
-         		// Produce results for range of refraction around this one
-         		var startPower = roundIOL + 1.0;
-
-         		for (var i = 0; i < 5; i++)
-         		{
-         			refraction = calculate(al, r1, r2, acd, acon, startPower, null, formula);
-         			
-         			// Enforce plus sign
-         			var refString = refraction > 0?"+" + refraction.toFixed(2):refraction.toFixed(2);
-         			
-         			addRow(startPower.toFixed(1), refString, i == 2?true:false);
-         			startPower = startPower - 0.5;
-         		}
-        	}
-        	else
-        	{
-        		console.log('Unable to calculate power');
-        	}
+        		// Calculate lens power for target refraction
+				var IOLPower = calculate(al, r1, r2, acd, IOLModelIndex, targetRefraction, formula, 'IOL');
+				
+				// Testing
+				console.log('Emme. IOL: ' + IOLPower.toFixed(2));
+/*
+				var predRef = calculateRefraction(al, r1, r2, acd, IOLModelIndex, IOLPower, formula);
+				console.log(IOLPower.toFixed(2) + " : " + predRef.toFixed(2));
+*/
+				
+	        	if(IOLPower)
+	        	{
+	        		// Select IOL that gives power nearest to target refraction
+	        		var closestIOLPower;
+					var roundDownIOLPower = Math.floor(IOLPower * 2)/2;
+					var nextUpIOLPower = roundDownIOLPower + 0.5;
+					var roundDownRefraction = calculate(al, r1, r2, acd, IOLModelIndex, roundDownIOLPower, formula, 'REF');
+	        		var nextUpRefraction = calculate(al, r1, r2, acd, IOLModelIndex, nextUpIOLPower, formula, 'REF');
+	        		if (Math.abs(targetRefraction - roundDownRefraction) < Math.abs(targetRefraction - nextUpRefraction)) {
+		        		closestIOLPower = roundDownIOLPower;
+	        		}
+	        		else {
+		        		closestIOLPower = nextUpIOLPower;
+	        		}
+	
+	         		// Produce results for a range of refraction around this one, starting two 0.5D more powerful
+	         		var startPower = closestIOLPower + 1.0;
+	
+	         		for (var i = 0; i < 5; i++)
+	         		{
+	         			refraction = calculate(al, r1, r2, acd, IOLModelIndex, startPower, formula, 'REF');
+	         			
+	         			// Enforce plus sign
+	         			//console.log(refraction + " : " + refraction.toFixed(2));
+	         			var refString = refraction > 0?"+" + refraction.toFixed(2):refraction.toFixed(2);
+	         			
+	         			addRow(startPower.toFixed(1), refString, i == 2?true:false);
+	         			startPower = startPower - 0.5;
+	         		}
+	        	}
+	        	else
+	        	{
+	        		console.log('Unable to calculate power');
+	        	}
+	        }
+	        else {
+		        console.log('Error: No valid IOL selection');
+	        }
         	
         	// Clear choice
         	var selection = document.getElementById('rsi');
@@ -197,234 +251,248 @@
         
 
 		/**
-		 * Constructor
+		 * Function to calculate IOL Power or predicted refraction
 		 * 
-		 * @param Float _axialLength Radius of curvature 2
+		 * @param Float _axialLength Axial length
 		 * @param Float _radius1 Radius of curvature 1
 		 * @param Float _radius2 Radius of curvature 2
-		 * @param Float _acd Anterior chamber depth
-		 * @param Float _aConstant 'A' constant for IOL type
-		 * @param Float _dioptresIOL Power of IOL
-		 * @param Float _dioptresRefraction Power of refraction
+		 * @param Float _acd Optical anterior chamber depth
+		 * @param String _IOLModelIndex Index of the selected IOL model in the Lens Data array
+		 * @param Float _dioptresRefraction Target refraction or power of IOL
 		 * @param String _formula Type of formula
-		 * @return Float Power of IOL or refraction
+		 * @param String _ResultType Result is either IOL power (IOL) or predicted refraction (REF)
+		 * @return Float Refractive power in Dioptres
 		 */
-        function calculate(_axialLength, _radius1, _radius2, _acd, _aConstant, _dioptresIOL, _dioptresRefraction, _formula)
+        function calculate(_axialLength, _radius1, _radius2, _acd, _IOLModelIndex, _dioptresRefraction, _formula, _ResultType)
         {        	
         	// Fixed parameters here (could come from parameter file)
-        	var cornealRI = 1.333;	//Refractive index of the cornea as set in IOL Master
+        	//var cornealRI = BI.n; //1.333;	// Refractive index of the cornea
         	
-        	// Calculate average radius of curvature
+        	// Calculate average radius of curvature and corneal power in dioptres
         	var averageRadius = (_radius1 + _radius2) / 2;
-        	//var R1 = 337.5 / 42.88;
-			//var R2 = 337.5 / 43.44;
-			//averageRadius = (R1 + R2) / 2;
-			var dioptresCornea = 337.5 / averageRadius;
+			var dioptresCornea = (BI.n - 1) * 1000 / averageRadius;
 
-        	// Difference in refrative indices
-        	var diffRI = cornealRI - 1;
+        	// Difference in refractive indices
+        	var diffRI = BI.nc - 1;
         	
-        	// Calculate average power of cornea in dioptres
-        	//var dioptresCornea = 1000 * diffRI / averageRadius;
-        	//var dioptresCornea = 337.5 / averageRadius;
-        	//var dioptresCornea = 43.15818350324374;
+        	// Get details for selected IOL
+	        var lens = lensData[_IOLModelIndex];
         	
         	// Define result
         	var returnPower = false;
-        	
-        	// Calculate IOL power for a given refraction
-        	if (_dioptresIOL == null)
-        	{
-        		switch (_formula)
-        		{
-        			case BI.Formula.SRKI:
-        				var powerEmmetropia = _aConstant - 0.9 * dioptresCornea - 2.5 * _axialLength;
-        				
-        				var cr = powerEmmetropia >14?1.25:1;
-        				
-        				returnPower = powerEmmetropia - cr * _dioptresRefraction;
-        				break;
-        			case BI.Formula.SRKT:
-        				var na = 1.336; // ***TODO***  What is this?
-        				//var na = 1.3375; // Value from sample IOL master printout
-        				var vertexDistance = 12;
-        				var retinalThickness = 0.65696 - 0.02029 * _axialLength;
-        				var opticalAxialLength = _axialLength + retinalThickness;
-        				
-        				// 'A' constant correction
-        				if (_aConstant > 100)
-        				{
-        					var aConstantSRK = _aConstant * 0.62467 - 68 - 0.74709;
-        				}
-        				else
-        				{
-        					var aConstantSRK = _aConstant
-        				}
 
-						// Difference between natural lens and IOL to cornea
-						var diff = aConstantSRK - 3.3357;
-						
-						// Axial length correction for high myopes
-						var axialLength;
-						if (_axialLength > 24.2)
-						{
-							axialLength = -3.446 + 1.716 * _axialLength - 0.0237 * _axialLength * _axialLength;
-						}
-						else
-						{
-							axialLength = _axialLength;
-						}
+    		switch (_formula)
+    		{
+    			case BI.Formula.SRKT:
+    				var retinalThickness = 0.65696 - 0.02029 * _axialLength;
+    				var opticalAxialLength = _axialLength + retinalThickness;
+    				
+    				// 'A' constant correction
+    				var aconstant;
+    				if (lens.acon > 100)
+    				{
+    					aconstant = lens.acon * 0.62467 - 68 - 0.74709;
+    				}
+    				else
+    				{
+    					aconstant = lens.acon;
+    				}
 
-						// Corneal width
-						var cornealWidth = -5.40948 + 0.58412 * axialLength + 0.098 * dioptresCornea;
-						
-						// Corneal dome height
-						var cornealDomeHeight = averageRadius - Math.sqrt(averageRadius * averageRadius - cornealWidth * cornealWidth / 4);
-						if (cornealDomeHeight > 5.5) cornealDomeHeight = 5.5;
-						
-						// Post-op anterior chamber depth
-						var postopACDepth = cornealDomeHeight + diff;
-						
-						var top = 1000 * na * (na * averageRadius - diffRI * opticalAxialLength - 0.001 * _dioptresRefraction * (vertexDistance * (na * averageRadius - diffRI * opticalAxialLength) + opticalAxialLength * averageRadius));
-						var bottom = (opticalAxialLength - postopACDepth) * (na * averageRadius - diffRI * postopACDepth - 0.001 * _dioptresRefraction * (vertexDistance * (na * averageRadius - diffRI * postopACDepth) + postopACDepth * averageRadius));
-        				
-        				returnPower = top/bottom;
-        				break;
-        			
-        			case BI.Formula.Haigis:
-        				console.log('Haigis IOL power:');
-        				
-        				// Formula taken from http://www.augenklinik.uni-wuerzburg.de/uslab/ioltxt/haie.htm
-        				var na = 1.336;					// RI of aqueous/vitreous
-        				var vertexDistance = 0.012;		// Vertex distance between cornea and glasses
-        				
-        				// Additional Haigis constants
-        				var a1 = 0.4;
-        				var a2 = 0.1;
-        				
-        				// Calculate ACDConstant from A constant
-        				var acdConstant = _aConstant * 0.62467 - 68.747;
-        				
-        				// Third constant
-        				var a0 = acdConstant - a1 * 3.37 - a2 * 23.39;
-        				
-        				// Optical ACD
-        				var opticalACD = (a0 + a1 * _acd + a2 * _axialLength);
-        				
-        				// Calculations
-        				dioptresCornea = 1000 * (cornealRI - 1)/averageRadius;
-        				
-        				var z = dioptresCornea + _dioptresRefraction/(1 - _dioptresRefraction * vertexDistance);
-        				
-        				returnPower = na/(_axialLength/1000 - opticalACD/1000) - na/(na/z - opticalACD/1000);
-        				console.log(returnPower);
-        				
-/*         				returnPower = (((1336.0 / (AL - (a0 + a1 * ACD + a2 * AL)) - LensPower.Value) * 1336.0 / (1336.0 + (a0 + a1 * ACD + a2 * AL) * (1336.0 / (AL - (a0 + a1 * ACD + a2 * AL)) - LensPower.Value))) - ((1331.5 - 1000.0) / (337.5 / ((K2 + K1) / 2.0)))) / (((1336.0 / (AL - (a0 + a1 * ACD + a2 * AL)) - LensPower.Value) * 1336.0 / (1336.0 + (a0 + a1 * ACD + a2 * AL) * (1336 / (AL - (a0 + a1 * ACD + a2 * AL)) - LensPower.Value))) * 0.012 - ((1331.5 - 1000.0) / (337.5 / ((K2 + K1) / 2.0))) * 0.012 + 1.0); */
+					// Difference between natural lens and IOL to cornea
+					var diff = aconstant - 3.3357;
+					
+					// Axial length correction for high myopes
+					var axialLength;
+					if (_axialLength > 24.2)
+					{
+						axialLength = -3.446 + 1.716 * _axialLength - 0.0237 * _axialLength * _axialLength;
+					}
+					else
+					{
+						axialLength = _axialLength;
+					}
 
-        				break;
-        				
-           			default:
-        				console.log('Unknown formula');
-        				break;
-        		}
+					// Corneal width
+					var cornealWidth = -5.40948 + 0.58412 * axialLength + 0.098 * dioptresCornea;
+					
+					// Corneal dome height
+					var cornealDomeHeight = averageRadius - Math.sqrt(averageRadius * averageRadius - cornealWidth * cornealWidth / 4);
+					if (cornealDomeHeight > 5.5) cornealDomeHeight = 5.5;
+					
+					// Post-op anterior chamber depth
+					var postopACDepth = cornealDomeHeight + diff;
+					
+					// IOL power
+					if (_ResultType == 'IOL') {
+						var numerator = 1000 * BI.na * (BI.na * averageRadius - diffRI * opticalAxialLength - 0.001 * _dioptresRefraction * (BI.vd * (BI.na * averageRadius - diffRI * opticalAxialLength) + opticalAxialLength * averageRadius));
+						var denominator = (opticalAxialLength - postopACDepth) * (BI.na * averageRadius - diffRI * postopACDepth - 0.001 * _dioptresRefraction * (BI.vd * (BI.na * averageRadius - diffRI * postopACDepth) + postopACDepth * averageRadius));
+	    				returnPower = numerator/denominator;
+    				}
+    				// Predicted refraction
+    				else {
+						var numerator = 1000 * BI.na * (BI.na * averageRadius - diffRI * opticalAxialLength) - _dioptresRefraction * (opticalAxialLength - postopACDepth) * (BI.na * averageRadius - diffRI * postopACDepth);
+						var denominator = (BI.na * (BI.vd * (BI.na * averageRadius - diffRI * opticalAxialLength) + opticalAxialLength * averageRadius) - 0.001 * _dioptresRefraction * (opticalAxialLength - postopACDepth) * (BI.vd * (BI.na * averageRadius - diffRI * postopACDepth) + postopACDepth * averageRadius));
+	    				returnPower = numerator/denominator;				
+    				}
+    				break;
+    			
+    			case BI.Formula.Haigis:    				
+    				// Formula taken from http://www.augenklinik.uni-wuerzburg.de/uslab/ioltxt/haie.htm
+    				
+    				// Additional Haigis constants
+    				var a0 = lens.a0;
+    				var a1 = lens.a1;
+    				var a2 = lens.a2;
+    				
+    				// Haigis uses a different value of nc, so recalculate corneal refractive power using value for nc from website
+    				dioptresCornea = (1.3315 - 1) * 1000 / averageRadius;
+    				
+    				// Third constant (Not calculated as on web site, but rather supplied by lens database), so leave commented out
+    				//var acdConstant = lens.acon * 0.62467 - 68.747;
+    				//a0 = acdConstant - a1 * 3.37 - a2 * 23.39;
+		
+    				// Optical ACD
+    				var opticalACD = (a0 + a1 * _acd + a2 * _axialLength);
+
+    				// IOL power
+ 					if (_ResultType == 'IOL') {	    				
+	    				var z = dioptresCornea + _dioptresRefraction/(1 - _dioptresRefraction * BI.vd/1000);
+	    				returnPower = BI.na/(_axialLength/1000 - opticalACD/1000) - BI.na/(BI.na/z - opticalACD/1000);
+    				}
+    				// Predicted refraction
+    				else {
+					    var z = 1000 * BI.na/((1/(1/(_axialLength - opticalACD) - _dioptresRefraction/(1000 * BI.na))) + opticalACD);
+					    returnPower = (z - dioptresCornea)/(1 + BI.vd * (z - dioptresCornea)/1000);	    				
+    				}
+
+    				break;
+ 
+     			case BI.Formula.HaigisL:    				
+    				// Formula taken from http://www.augenklinik.uni-wuerzburg.de/uslab/ioltxt/haie.htm
+    				
+    				// Additional Haigis constants
+    				var a0 = lens.a0;
+    				var a1 = lens.a1;
+    				var a2 = lens.a2;
+    				
+    				// Correction to corneal radius (Haigis W. Intraocular lens calculation after refractive surgery for myopia: HaigisL formula. JCRS 2008; 34(10):1658-1663.)
+    				console.log('before: ' + averageRadius);
+    				averageRadius = 331.5/(-5.1625 * averageRadius + 82.2603 - 0.35);
+    				console.log('after: ' + averageRadius);
+    				
+    				// Haigis uses a different value of nc, so recalculate corneal refractive power using value for nc from website
+    				dioptresCornea = (1.3315 - 1) * 1000 / averageRadius;
+    				
+    				// Third constant (Not calculated as on web site, but rather supplied by lens database), so leave commented out
+    				//var acdConstant = lens.acon * 0.62467 - 68.747;
+    				//a0 = acdConstant - a1 * 3.37 - a2 * 23.39;
+		
+    				// Optical ACD
+    				var opticalACD = (a0 + a1 * _acd + a2 * _axialLength);
+
+    				// IOL power
+ 					if (_ResultType == 'IOL') {	    				
+	    				var z = dioptresCornea + _dioptresRefraction/(1 - _dioptresRefraction * BI.vd/1000);
+	    				returnPower = BI.na/(_axialLength/1000 - opticalACD/1000) - BI.na/(BI.na/z - opticalACD/1000);
+    				}
+    				// Predicted refraction
+    				else {
+					    var z = 1000 * BI.na/((1/(1/(_axialLength - opticalACD) - _dioptresRefraction/(1000 * BI.na))) + opticalACD);
+					    returnPower = (z - dioptresCornea)/(1 + BI.vd * (z - dioptresCornea)/1000);	    				
+    				}
+
+    				break;
+   				
+    			case BI.Formula.HofferQ:
+    			
+					// Calculate refractive error at corneal plane
+    				var R = _dioptresRefraction / (1 - BI.vd * _dioptresRefraction/1000);
+    				
+    				// Hoffer's factors
+    				var M, G;
+					if (_axialLength <= 23 ) {
+						M = +1;
+						G = +28;
+					}
+					else {
+						M = -1;
+						G = +23.5;
+					}
+					
+					var A = _axialLength;
+					
+					// Predicted ACD
+					var ACD = lens.pACD
+						+ 0.3 * (_axialLength - 23.5)
+						+ Math.tan(dioptresCornea * Math.PI/180) * Math.tan(dioptresCornea * Math.PI/180)
+						+ 0.1 * M * (23.5 - _axialLength) * (23.5 - _axialLength) * Math.tan(Math.PI * (0.1 * (G - A) * (G - A))/180)
+						- 0.99166;
+						
+					// Constrain to limits
+					if (ACD > 6.5) ACD = 6.5;
+					if (ACD < 2.5) ACD = 2.5;
+					
+					// IOL power
+ 					if (_ResultType == 'IOL') {				
+	 					returnPower = 1336/(_axialLength - ACD - 0.05) - 1.336/((1.336/(dioptresCornea + R)) - (ACD + 0.05)/1000);
+	 					console.log(dioptresCornea, lens.pACD, ACD, returnPower);
+    				}
+    				// Predicted refraction
+    				else {
+						R = (1.336/(1.336/(1336/(_axialLength - ACD - 0.05) - _dioptresRefraction)+ (ACD + 0.05)/1000)) - dioptresCornea;
+						returnPower = R/(1 + BI.vd * R/1000);
+    				}
+
+		    		break;
+    				
+       			default:
+    				console.log('Unknown formula');
+    				break;
         	}
-        	// Calculate Refractive result for a given IOL
-        	else
-        	{
-        		switch (_formula)
-        		{
-        			case BI.Formula.SRKI:
-        				var powerEmmetropia = _aConstant - 0.9 * dioptresCornea - 2.5 * _axialLength;
-        				
-        				var cr = powerEmmetropia >14?1.25:1;
-        				
-        				returnPower = (powerEmmetropia - _dioptresIOL)/cr;
-        				break;
-        			case BI.Formula.SRKT:
-        				var na = 1.336; // ***TODO***  What is this?
-        				var vertexDistance = 12;
-        				var retinalThickness = 0.65696 - 0.02029 * _axialLength;
-        				var opticalAxialLength = _axialLength + retinalThickness;
-        				
-        				// 'A' constant correction
-        				if (_aConstant > 100)
-        				{
-        					var aConstantSRK = _aConstant * 0.62467 - 68 - 0.74709;
-        				}
-        				else
-        				{
-        					var aConstantSRK = _aConstant;
-        				}
-
-						// Difference between natural lens and IOL to cornea
-						var diff = aConstantSRK - 3.3357;
-						
-						// Axial length correction for high myopes
-						var axialLength;
-						if (_axialLength > 24.2)
-						{
-							axialLength = -3.446 + 1.716 * _axialLength - 0.0237 * _axialLength * _axialLength;
-						}
-						else
-						{
-							axialLength = _axialLength;
-						}
-
-						// Corneal width
-						var cornealWidth = -5.40948 + 0.58412 * axialLength + 0.098 * dioptresCornea;
-						
-						// Corneal dome height
-						var cornealDomeHeight = averageRadius - Math.sqrt(averageRadius * averageRadius - cornealWidth * cornealWidth / 4);
-						if (cornealDomeHeight > 5.5) cornealDomeHeight = 5.5;
-						
-						// Post-op anterior chamber depth
-						var postopACDepth = cornealDomeHeight + diff;
-						
-						var top = 1000 * na * (na * averageRadius - diffRI * opticalAxialLength) - _dioptresIOL * (opticalAxialLength - postopACDepth) * (na * averageRadius - diffRI * postopACDepth);
-						var bottom = (na * (vertexDistance * (na * averageRadius - diffRI * opticalAxialLength) + opticalAxialLength * averageRadius) - 0.001 * _dioptresIOL * (opticalAxialLength - postopACDepth) * (vertexDistance * (na * averageRadius - diffRI * postopACDepth) + postopACDepth * averageRadius));
-        				
-        				returnPower = top/bottom;
-        				break;
-        				
-					case BI.Formula.Haigis:
-        				console.log('Haigis Refraction:');
-        				break;
-        				
-           			default:
-        				console.log('Unknown formula');
-        				break;
-        		}
-
-        	}
-        	
+        		
         	return returnPower;
         }
         
-        function updateK()
+        function calculateKs()
         {
         	// Get references to items
 			var r1 = parseFloat(document.getElementById('rr1').value);
+			var ra1 = parseFloat(document.getElementById('ra1').value);
 			var k1 = document.getElementById('k1');
 
 			var r2 = parseFloat(document.getElementById('rr2').value);
+			var ra2 = parseFloat(document.getElementById('ra2').value);
 			var k2 = document.getElementById('k2');
 			
+			var rv = document.getElementById('rrv');
 			var se = document.getElementById('rse');
 			var cyl = document.getElementById('cyl');
 									
-			var k1Value = 337.5/r1;			
-			k1.innerHTML = k1Value.toFixed(2) + " D @ 54°";
+			var k1Value = (BI.n - 1) * 1000 / r1;			
+			k1.innerHTML = k1Value.toFixed(2) + " D @ " + ra1 + "°";
 			
-			var k2Value = 337.5/r2;			
-			k2.innerHTML = k2Value.toFixed(2) + " D @ 144°";
+			var k2Value = (BI.n - 1) * 1000 / r2;
+			k2.innerHTML = k2Value.toFixed(2) + " D @ " + ra2 + "°";
 			
-			var seValue = (r1 + r2) / 2;
-			se.innerHTML = seValue.toFixed(2) + " mm";
+			var rValue = (r1 + r2) / 2;
+			rv.innerHTML = rValue.toFixed(2) + " mm";
+			
+			var seValue = (BI.n - 1) * 1000/rValue;
+			se.innerHTML = seValue.toFixed(2) + " D";
 			
 			var cylValue = k1Value - k2Value;
-			cyl.innerHTML = cylValue.toFixed(2) + " @ 54°";
+			var axis;
+			if (cylValue > 0) {
+				axis = ra2;
+			}
+			else if (cylValue < 0) {
+				axis = ra1;
+			}
+			else {
+				axis = 0;
+			}
 			
-			refreshCalculation();
+			cyl.innerHTML = cylValue.toFixed(2) + " @" + axis +  "°";
         }
 	      
 	      
@@ -447,9 +515,10 @@
 			node.innerHTML = _dioptresIOL;
 			cell0.appendChild(node);
 						
-			// Refraction
+			// Refraction (display in monospaced font
 			var cell1 = newRow.insertCell(1);
 			node = document.createElement('p');
+			node.setAttribute('style', "font-family:Courier;")
 			if (!_bold) node.innerHTML = _dioptresRefraction;
 			else node.innerHTML = '<b>' + _dioptresRefraction + '</b>';
 			cell1.appendChild(node);						
@@ -540,54 +609,58 @@
 			<p>The 'Biometry data' section displays the averaged data, and allows manual editing of a subset of fields. The raw data can be displayed by clicking on the disclosure triangle.</p>
 			<p>The 'Lens selection' area allows choice of an IOL from a custom list, defaulting to a 'standard' lens. Changing the IOL type results in recalculation of the IOL power.</p>
 			<p>The 'Calculation' section allows user input of a target refraction, defaulting to emmetropia. There is also a choice of formulae (Currently only the SRK/T formula is active). An enhancement would be to change the default formula according to the axial length. A range of IOL powers bracketed around the target is displayed, and the user can then select the chosen lens by clicking on the chosen power.</p>
-			<p><b>NB: THIS PAGE IS FOR DEMONSTRATION ONLY AND NOT TO BE USED FOR REAL IOL CALCULATION.</b></p>
+			<p><b>NB: THIS PAGE IS FOR DEMONSTRATION ONLY AND NOT TO BE USED FOR REAL IOL CALCULATIONS.</b></p>
 			<p>Status: <b>Alpha</b></p>
 		</div>
 
 		<!-- Edit mode section -->
-		<div id="editModeSection" class="section" style="height:980px;" align="left">
+		<div id="editModeSection" class="section" style="height:1020px;" align="left">
 					
 			<h4>Edit mode:</h4>
 			
 			<h5>Biometry data:</h5>
 			
 			<!-- Average data -->
-			<table name="data" align="center" cellspacing="0" width="360">
+				<table name="data" align="center" cellspacing="0" width="460">
 				<tbody id="tableBody">
 					<tr>
-						<td align="Right" width="35%"><p>Axial Length:</p></td>
-						<td align="left" width="30%"><input id="ral" type="text" value="20.85" onchange="refreshCalculation();"/></td>
-						<td align="left" width="35%"><p>SNR = 193.0</p></td>
+						<td align="Right" width="25%"><p>Axial Length:</p></td>
+						<td align="left" width="25%"><input id="ral" type="text" value="24.61" onchange="refreshCalculation();"/></td>
+						<td align="left" width="25%"><p>SNR = (demo)</p></td>
+						<td align="left" width="25%"></td>
 					</tr>
 					<tr>
-						<td align="Right" width="35%"><p>R1:</p></td>
-						<td align="left" width="30%"><input id="rr1" type="text" value="7.18" onchange="updateK();"/></td>
-						<td align="left" width="35%"><p id="k1">42.88 D @ 54°</p></td>
+						<td align="Right"><p>R1:</p></td>
+						<td align="left"><input id="rr1" type="text" value="7.82" onchange="calculateKs();refreshCalculation();"/></td>
+						<td align="left">@&nbsp;<input id="ra1" type="text" value="134" onchange="calculateKs();refreshCalculation();"/></td>
+						<td align="left"><p id="k1"></p></td>
 					</tr>
 					<tr>
-						<td align="Right" width="35%"><p>R2:</p></td>
-						<td align="left" width="30%"><input id="rr2" type="text" value="7.18" onchange="updateK();"/></td>
-						<td align="left" width="35%"><p id="k2">43.44 D @ 144°</p></td>
+						<td align="Right"><p>R2:</p></td>
+						<td align="left"><input id="rr2" type="text" value="7.57" onchange="calculateKs();refreshCalculation();"/></td>
+						<td align="left">@&nbsp;<input id="ra2" type="text" value="44" onchange="calculateKs();refreshCalculation();"/></td>
+						<td align="left"><p id="k2"></p></td>
 					</tr>
 					<tr>
-						<td align="Right" width="35%"><p>R/SE:</p></td>
-						<td align="left" width="30%"><p id="rse">7.82 mm</p></td>
-						<td align="left" width="35%"><p>SD = 43.16 mm</p></td>
+						<td align="Right"><p>R/SE:</p></td>
+						<td align="left"><p id="rrv"></p></td>
+						<td align="left"><p id="rse"></p></td>
+						<td align="left"><p></p></td>
 					</tr>
 					<tr>
-						<td align="Right" width="35%"><p>Cyl:</p></td>
-						<td align="left" width="30%"><p id="cyl">-0.56 @ 54°</p></td>
-						<td align="left" width="35%"><p></p></td>
+						<td align="Right"><p>Cyl:</p></td>
+						<td align="left"><p id="cyl">-0.56 @ 54°</p></td>
+						<td align="left"><p></p></td>
 					</tr>
 					<tr>
-						<td align="Right" width="35%"><p>ACD:</p></td>
-						<td align="left" width="30%"><input id="acd" type="text" value="2.28" onchange="refreshCalculation();"/></td>
-						<td align="left" width="35%"><p></p></td>
+						<td align="Right"><p>ACD:</p></td>
+						<td align="left"><input id="acd" type="text" value="3.17" onchange="refreshCalculation();"/></td>
+						<td align="left"><p></p></td>
 					</tr>
 					<tr id="scleralThickness" style="visibility:hidden;">
-						<td align="Right" width="35%"><p>Scleral thickness:</p></td>
-						<td align="left" width="30%"><input id="rst" type="text" value="2.1"/></td>
-						<td align="left" width="35%"><p></p></td>
+						<td align="Right"><p>Scleral thickness:</p></td>
+						<td align="left"><input id="rst" type="text" value="2.1"/></td>
+						<td align="left"><p></p></td>
 					</tr>
 				</tbody>
 			</table>
@@ -597,78 +670,10 @@
                 <canvas id="canvasEdit" width="300" height="100" tabindex="1"></canvas>
 			</div>
 			
-			<!-- Optional display of raw data -->
-<!--
-			<div class="drawTriangle" title="Click on the triangle to show or hide the raw biometry data" onClick="disclose('rbi')">
-				<p>Raw data: <img id="rbiti" src="../../graphics/discloseClose16.gif" align="abstop"></p>
-			</div>
-
-			<span class="drawSpan" id="rbisp" style="display:none;">
-				<table align="center" cellspacing="0" width="520" style="background: #eee;">
-					<thead>
-						<tr>
-							<td align="left" width="16%">AL</td>
-							<td align="left" width="10%">SNR</td>
-							<td align="left" width="22%">R1</td>
-							<td align="left" width="22%">R2</td>
-							<td align="left" width="15%">ACD</td>
-							<td align="left" width="15%">WTW</td>
-						</tr>
-					</thead>
-					<tbody id="tableBody">
-						<tr>
-							<td>24.15</td>
-							<td>14.8</td>
-							<td>7.95 @ 54°</td>
-							<td>7.79 @ 144°</td>
-							<td>2.29</td>
-							<td>12.0</td>
-						</tr>
-						<tr>
-							<td>24.11</td>
-							<td>5.8</td>
-							<td>7.86 @ 53°</td>
-							<td>7.75 @ 143°</td>
-							<td>2.27</td>
-							<td>12.0</td>
-						</tr>
-						<tr>
-							<td>24.07</td>
-							<td>9.1</td>
-							<td>7.81 @ 57°</td>
-							<td>7.76 @ 147°</td>
-							<td>2.27</td>
-							<td>12.0</td>
-						</tr>
-						<tr>
-							<td>24.13</td>
-							<td>4.1</td>
-							<td>7.95 @ 54°</td>
-							<td>7.79 @ 144°</td>
-							<td>2.28</td>
-							<td>12.0</td>
-						</tr>
-						<tr>
-							<td>24.12</td>
-							<td>2.5</td>
-							<td>7.95 @ 54°</td>
-							<td>7.79 @ 144°</td>
-							<td>2.29</td>
-							<td>12.0</td>
-						</tr>
-						<tr>
-							<td>24.15</td>
-							<td>4.0</td>
-							<td>7.95 @ 54°</td>
-							<td>7.79 @ 144°</td>
-							<td>2.30</td>
-							<td>12.0</td>
-						</tr>
-					</tbody>
-				</table>
-			</span>
--->
-			
+	        <!-- Doodle control panel -->
+	        <div id="canvasEdit_controls" style="background-color: #DAE6F1; float:left;">
+	        </div>
+						
 			<!-- Lens -->
 			<h5>Lens selection:</h5>
 			<table align="center" cellspacing="0" width="500">
@@ -676,22 +681,30 @@
 					<tr>
 						<td align="left" width="20%"><p>IOL selection: </p></td>
 						<td align="left" width="80%" >
-							<select style="width:80px;" onchange="iolType(this.value);refreshCalculation();">
-								<option value="0">MA60AC</option>
-								<option value="1">SN60WF</option>
-								<option value="2">SA60AT</option>
-								<option value="3">MTA3U0</option>
+							<select id="IOLModelSelect" style="width:80px;" onchange="setIOLModel(this.value);refreshCalculation();">
+								<option value="SN60WF">SN60WF</option>
+								<option value="MA60AC">MA60AC</option>
+								<option value="SA60AT">SA60AT</option>
+								<option value="MTA3UO">MTA3UO</option>
 							</select>
 						</td>
 					</tr>	
 					<tr>
 						<td align="left" width="20%"><p>Description:</p></td>
-						<td align="left" width="80%" ><p id="iolType"></p></td>
+						<td align="left" width="80%" ><p id="setIOLModel"></p></td>
 					</tr>					
 					<tr>
 						<td align="left"><p>A constant:</p></td>
 						<td align="left"><p id="iolAcon"></p></td>
-					</tr>	
+					</tr>
+					<tr>
+						<td align="left"><p>Pers ACD:</p></td>
+						<td align="left"><p id="iolpACD"></p></td>
+					</tr>
+					<tr>
+						<td align="left"><p>Haigis:</p></td>
+						<td align="left"><p id="iolHaigis"></p></td>
+					</tr>						
 					<tr>
 						<td align="left"><p>Position:</p></td>
 						<td align="left"><p id="iolPosition"></p></td>
@@ -715,15 +728,10 @@
 						<td align="left" width="20%"><p>Formula:</p></td>
 						<td align="left" width="80%" >
 							<select style="width:80px;" id="formulaSelect" onchange="refreshCalculation(this.value);">
-								<option value=0>SRKI</option>
-								<option value=1 selected=true;>SRK/T</option>							
-<!--
-								<option value="1">Holladay I</option>
-								<option value="1">Holladay II</option>
-								<option value="1">Hoffer Q</option>
--->
-								<option value=2>Haigis</option>
-<!-- 								<option value="1">BESSt</option> -->
+								<option value=0 >SRK/T</option>							
+								<option value=1>Haigis</option>
+								<option value=2 selected=true>Haigis-L</option>
+								<option value=3>HofferQ</option>
 							</select>
 							<a href="javascript:ascrs()">ASCRS</a>
 						</td>
@@ -760,13 +768,13 @@
 
 		
 		<!-- Display mode section -->
+<!--
 		<div class="section" style="height:420px;" align="left">
 		
 			<h4>Display mode:</h4>
 			
 			<h5>Biometry data:</h5>
 			
-			<!-- Average data -->
 			<table name="data" align="center" cellspacing="0" width="360">
 				<tbody id="tableBody">
 					<tr>
@@ -804,7 +812,6 @@
 
 			<h5>Lens:</h5>
 			
-			<!-- Average data -->
 			<table name="data" align="center" cellspacing="0" width="500">
 				<tbody id="tableBody">
 					<tr>
@@ -826,8 +833,8 @@
 				</tbody>
 			</table>
 	
-		<!-- End of Display mode section -->
 		</div>	
+-->
 
 		<!-- Steering Group -->			
 		<div class="section" align="left">
