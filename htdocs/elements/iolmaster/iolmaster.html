@@ -34,8 +34,9 @@
 		{
 			SRKT:0,
 			Haigis:1,
-			HaigisL:2,
-			HofferQ:3,
+			HaigisLM:2,
+			HaigisLH:3,
+			HofferQ:4,
 		}
 		
 		// Global variables
@@ -244,7 +245,6 @@
         	// Glaucoma: add scleral thickness input if axial length low
         	scleralThickness(al);
         }
-        
 
 		/**
 		 * Function to calculate IOL Power or predicted refraction
@@ -290,6 +290,7 @@
     				if (_lens.acon > 100)
     				{
     					aconstant = _lens.acon * 0.62467 - 68 - 0.74709;
+    					calculationComments += "A-constant correction applied</br>";
     				}
     				else
     				{
@@ -303,9 +304,10 @@
 					var axialLength;
 					if (_axialLength > 24.2)
 					{
+						// Value of 1.716 (as in original SRK/T paper) gives identical results to IOLMaster. Using 1.715 as in erratum gives slightly different results
 						axialLength = -3.446 + 1.716 * _axialLength - 0.0237 * _axialLength * _axialLength;
 						//axialLength = -3.446 + 1.715 * _axialLength - 0.0237 * _axialLength * _axialLength;
-						calculationComments += "Axial length correction</br>";
+						calculationComments += "Axial length correction applied</br>";
 					}
 					else
 					{
@@ -384,7 +386,7 @@
 				 * Haigis W. Intraocular lens calculation after refractive surgery for myopia: HaigisL formula. JCRS 2008;34:1658-1663.
 				 * NB Value of n is different from other formulae
 				 */
-     			case BI.Formula.HaigisL:    				
+     			case BI.Formula.HaigisLM:    				
     				// Constants
     				var n = 1.3315;			// Refractive index of cornea with fudge factor for converting radius of curvature to dioptric power
 					var na =1.336;			// Refractive index of aqueous and vitreous
@@ -392,7 +394,45 @@
 	    				
 		        	// Calculate average radius of curvature (with correction for Haigis-L) and corneal power in dioptres
 		        	var averageRadius = (_radius1 + _radius2) / 2;
-    				averageRadius = 331.5/(-5.1625 * averageRadius + 82.2603 - 0.35);	
+    				averageRadius = 331.5/(-5.1625 * averageRadius + 82.2603 - 0.35);
+    				calculationComments += "Myopic corneal curvature correction applied</br>";	
+					var dioptresCornea = (n - 1) * 1000 / averageRadius;
+			    				
+    				// Additional Haigis constants
+    				var a0 = _lens.a0;
+    				var a1 = _lens.a1;
+    				var a2 = _lens.a2;
+ 		
+    				// Optical ACD
+    				var opticalACD = (a0 + a1 * _acd + a2 * _axialLength);
+
+    				// IOL power
+ 					if (_ResultType == 'IOL') {	    				
+	    				var z = dioptresCornea + _dioptresRefraction/(1 - _dioptresRefraction * vd/1000);
+	    				returnPower = na/(_axialLength/1000 - opticalACD/1000) - na/(na/z - opticalACD/1000);
+    				}
+    				// Predicted refraction
+    				else {
+					    var z = 1000 * na/((1/(1/(_axialLength - opticalACD) - _dioptresRefraction/(1000 * na))) + opticalACD);
+					    returnPower = (z - dioptresCornea)/(1 + vd * (z - dioptresCornea)/1000);	    				
+    				}
+
+    				break;
+ 
+				/*
+				 * Haigis W, Lege BAM, Neuhann TF: Bestimmung wirksamer Hornhautradien nach hyperoper LASIK. Fortschritte der Ophthalmochirurgie (A.Scharrer, A.Reuscher, Th.Neuhann (Hrsg), 18.Kongress der Deutschen Ophthalmochirurgen. Diomed-Verlag, Ebelsbach, p.95, 2005
+				 * NB Value of n is different from other formulae
+				 */
+     			case BI.Formula.HaigisLH:    				
+    				// Constants
+    				var n = 1.3315;			// Refractive index of cornea with fudge factor for converting radius of curvature to dioptric power
+					var na =1.336;			// Refractive index of aqueous and vitreous
+					var vd =12.0;			// Vertex distance
+	    				
+		        	// Calculate average radius of curvature (with correction for Haigis-L) and corneal power in dioptres
+		        	var averageRadius = (_radius1 + _radius2) / 2;
+    				//averageRadius = 331.5/(-5.1625 * averageRadius + 82.2603 - 0.35);
+    				calculationComments += "Hypermetropic corneal curvature correction applied (NOT YET IMPLEMENTED)</br>";	
 					var dioptresCornea = (n - 1) * 1000 / averageRadius;
 			    				
     				// Additional Haigis constants
@@ -438,16 +478,24 @@
 					if (_axialLength <= 23 ) {
 						M = +1;
 						G = +28;
+						calculationComments += "Hoffer factors for AL <= 23 applied</br>";
 					}
 					else {
 						M = -1;
 						G = +23.5;
+						//calculationComments += "Hoffer factors for AL > 23 applied</br>";
 					}
 					
 					// Constrain axial length (NB used ONLY for ACD calculation and replaces ACD constraint as described in erratum)
 					var AL = _axialLength;
-					if (AL > 31) AL = 31;
-					if (AL < 18.5) AL = 18.5;
+					if (AL > 31) {
+						AL = 31;
+						calculationComments += "Axial length constrained down to 31</br>";
+					}
+					if (AL < 18.5) {
+						AL = 18.5;
+						calculationComments += "Axial length constrained up to 18.5</br>";
+					}
 					
 					// Predicted ACD 
 					var ACD = _lens.pACD
@@ -754,8 +802,9 @@
 							<select style="width:80px;" id="formulaSelect" onchange="refreshCalculation(this.value);">
 								<option value=0 selected=true>SRK/T</option>							
 								<option value=1>Haigis</option>
-								<option value=2>Haigis-L</option>
-								<option value=3>HofferQ</option>
+								<option value=2>Haigis-L (Myopic)</option>
+								<option value=3>Haigis-L (Hypermetropic)</option>
+								<option value=4>HofferQ</option>
 							</select>
 							<a href="javascript:ascrs()">ASCRS</a>
 						</td>
@@ -765,7 +814,7 @@
 						<td align="left" width="70%" ><p id='exactIOL'></p></td>
 					</tr>
 					<tr>
-						<td align="left" width="30%"><p>Comments: </p></td>
+						<td align="left" width="30%"><p>Calculation notes: </p></td>
 						<td align="left" width="70%" ><p id='calculation'></p></td>
 					</tr>								
 				</tbody>
