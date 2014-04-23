@@ -180,7 +180,7 @@
 		</div>
 
 		<!-- Edit mode section -->
-		<div class="section" style="height:525px;" align="left">
+		<div class="section" style="height:560px;" align="left">
 			<h4>Edit mode:</h4>
 			
 			<!-- Drawing -->
@@ -190,20 +190,18 @@
 				<div class="toolbar">
 					<button class="imgbutton" class="imgbutton" disabled="true" id="moveToFrontRPS" title="Move to front" onclick="drawingEdit.moveToFront(); return false;" ><img src="../../graphics//moveToFront.gif"/></button>
 	                <button class="imgbutton" disabled="true" id="moveToBackRPS" title="Move to back" onclick="drawingEdit.moveToBack(); return false;" ><img src="../../graphics//moveToBack.gif" /></button>
-	                <button class="imgbutton" disabled="true" id="deleteDoodleRPS" title="Delete" onclick="drawingEdit.deleteDoodle(); return false;" ><img src="../../graphics/delete.gif" /></button>
+		            <button class="imgbutton" disabled="true" id="deleteSelectedDoodleRPS" title="Delete" onclick="drawingEdit.deleteSelectedDoodle(); return false;" ><img src="../../graphics/delete.gif" /></button>
                     <button class="imgbutton" disabled="true" id="flipVerRPS" title="Flip around vertical axis" onclick="drawingEdit.flipVer(); return false;" ><img src="../../graphics/flipVer.gif" /></button>
                     <button class="imgbutton" disabled="true" id="flipHorRPS" title="Flip around horizontal axis" onclick="drawingEdit.flipHor(); return false;" ><img src="../../graphics/flipHor.gif" /></button>
 	                <button class="imgbutton" disabled="true" id="lockRPS" title="Lock" onclick="drawingEdit.lock(); return false;" ><img src="../../graphics//lock.gif" /></button>
 	                <button class="imgbutton" disabled="true" id="unlockRPS" title="Unlock" onclick="drawingEdit.unlock(); return false;" ><img src="../../graphics//unlock.gif" /></button>
 	                <br />
-                    <button class="imgbutton" id="molteno" title="Molteno tube" onclick="drawingEdit.addDoodle('Molteno'); return false;" ><img src="../../graphics/Molteno.gif" /></button> 
-                    <button class="imgbutton" id="baerveldt" title="Baerveldt tube" onclick="drawingEdit.addDoodle('Baerveldt'); return false;" ><img src="../../graphics/Baerveldt.gif" /></button> 
-                    <button class="imgbutton" id="ahmed" title="Ahmed tube" onclick="drawingEdit.addDoodle('Ahmed'); return false;" ><img src="../../graphics/Ahmed.gif" /></button>                          
+                    <button class="imgbutton" id="molteno" title="Drainage tube" onclick="drawingEdit.addDoodle('Tube'); return false;" ><img src="../../graphics/Tube.gif" /></button>
+                    <button class="imgbutton" id="sidePortRPS" title="Supramid" onclick="drawingEdit.addDoodle('Supramid'); return false;" ><img src="../../graphics/Supramid.gif" /></button>                           
                     <button class="imgbutton" id="patch" title="Patch" onclick="drawingEdit.addDoodle('Patch'); return false;" ><img src="../../graphics/ScleralPatch.gif" /></button>
-                    <button class="imgbutton" id="BlebRPS" title="Trabeculectomy bleb" onclick="var dood = drawingEdit.addDoodle('Bleb'); dood.baseRadius = 280; drawingEdit.repaint(); return false;" ><img src="../../graphics/Bleb.gif" /></button>
                     <button class="imgbutton" id="PIRPS" title="Peripheral Iridectomy" onclick="var dood = drawingEdit.addDoodle('PI'); dood.outerRadius = 260; drawingEdit.repaint(); return false;" ><img src="../../graphics/PI.gif" /></button>
 					<button class="imgbutton" id="sidePortRPS" title="Vicryl suture" onclick="drawingEdit.addDoodle('Vicryl'); return false;" ><img src="../../graphics/Vicryl.gif" /></button>
-					<button class="imgbutton" id="sidePortRPS" title="Supramid" onclick="drawingEdit.addDoodle('Supramid'); return false;" ><img src="../../graphics/Supramid.gif" /></button>                                 	                    
+                             	                    
                 </div>		
 
 				<!-- Canvas -->
