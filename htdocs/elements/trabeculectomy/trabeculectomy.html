@@ -14,7 +14,7 @@
         
         // Variables assigned to each drawing on this page
         var drawingEdit;
-        var drawingDisplay;
+        var drawingEdit2;
 		                                    
         // Runs on page load
         function init()
@@ -48,18 +48,8 @@
 				// Show doodle controls
 				this.drawing.showDoodleControls = true;
                 
-                // Arrays to handle sutures
-                var suturePointsArray = new Array();
+                // Arrays to hold sutures (so that they can rotate along with flap)
                 var sutureArray = new Array();
-                
-				// 'Prototype position' of trabeculectomy Sutures (relative position, angle and shape)
-				var sutureSet = [
-					{xd: -1, yd: 0, a: 7 * Math.PI/4, s:'Releasable', ex: -25},
-					{xd: 0, yd: 0, a: 0, s:'Releasable', ex: 0},
- 					{xd: +1, yd: 0, a: 1 * Math.PI/4, s:'Releasable', ex: +25},
- 					{xd: -1, yd: 0.5, a: Math.PI/2, s:'Fixed', ex: 0},
- 					{xd: +1, yd: 0.5, a: 3 * Math.PI/2, s:'Fixed', ex: 0},
-				];                
                 
                 // Method called for notification
                 function callBack(_messageArray)
@@ -84,30 +74,24 @@
 								sclerostomy:{id:'sclerostomySelect', attribute:'value'}
 							});
 
-							// Iterate through sutures creating an array of objects representing 'ideal' sutures
-							for (var i in sutureSet)
-							{
-								// Create point from ideal with added attributes
-								var p = new ED.Point(sutureSet[i].xd * trab.right.x * this.gsf, (trab.height + sutureSet[i].yd * (trab.right.y - trab.height)) * this.gsf);
-								p.angle = sutureSet[i].a;
-								p.shape = sutureSet[i].s;
-								p.ex = sutureSet[i].ex;
+							// Top left suture
+							var p = new ED.Point(-1 * trab.right.x * this.gsf, (trab.height + 0 * (trab.right.y - trab.height)) * this.gsf);
+							p.angle = 0;
+							p.type = 'Releasable';
+							var suture = this.drawing.addDoodle('TrabySuture', {originX:p.x, originY:p.y, rotation:p.angle, type:p.type});
+							this.drawing.flipHor();
+
+							// Top right suture
+							var p = new ED.Point(1 * trab.right.x * this.gsf, (trab.height + 0 * (trab.right.y - trab.height)) * this.gsf);
+							p.angle = 0;
+							p.type = 'Releasable';
+							var suture = this.drawing.addDoodle('TrabySuture', {originX:p.x, originY:p.y, rotation:p.angle, type:p.type});
 							
-								// Add it to an array
-								suturePointsArray[suturePointsArray.length] = p;
-							
-								// Create a suture and add that to an array, missing out the last two
-								if (i < 3)
-								{
-									var suture = this.drawing.addDoodle('TrabySuture', {originX:p.x, originY:p.y, rotation:p.angle, shape:p.shape});
-									suture.firstOriginX = p.ex;
-									sutureArray[sutureArray.length] = suture;
-								}
-								else
-								{
-									sutureArray[sutureArray.length] = null;
-								}
-							} 
+							// Middle suture
+							var p = new ED.Point(0, (trab.height + 0 * (trab.right.y - trab.height)) * this.gsf);
+							p.angle = 0;
+							p.type = 'Fixed';
+							var suture = this.drawing.addDoodle('TrabySuture', {originX:p.x, originY:p.y, rotation:p.angle, type:p.type}); 
 							
                             this.drawing.deselectDoodles();
                             break;
@@ -119,48 +103,30 @@
                             if (doodle.className == 'TrabyFlap')
                             {
                             	var trab = doodle;
-                            	if (_messageArray['object']['parameter'] == 'size')
-                            	{
-                            		for (var i = 0; i < sutureArray.length; i++)
-									{
-										if (sutureArray[i] != null) {
-											sutureArray[i].originX = sutureSet[i].xd * trab.right.x * 0.72;
-											sutureArray[i].originY = (trab.height + sutureSet[i].yd * (trab.right.y - trab.height)) * 0.72;
-											
-											// Reset reference points (in doodle coordinates but before rotation applied)
-											suturePointsArray[i].x = sutureArray[i].originX;
-											suturePointsArray[i].y = sutureArray[i].originY;
-										}
-									}
-									
-									// Trigger notification to apply rotation to sutures
-									var object = {doodle:trab, parameter:'rotation', value:trab.rotation, oldValue:trab.rotation};
-									this.drawing.notify('parameterChanged', object);
-                            	}
-                            	
+
                             	if (_messageArray['object']['parameter'] == 'rotation')
                             	{
                             		// Rotate sutures with flap
 									for (var i = 0; i < sutureArray.length; i++)
-									{
-										// Get original position
-										var p = suturePointsArray[i];
-									
-										// Calculate radius to this point
-										var r = Math.sqrt(p.x * p.x + p.y * p.y);
-									
-										// Calculate new position
-										var np = p.pointAtRadiusAndClockwiseAngle(r, trab.rotation);
-									
-										// Apply it to suture
-										var sut = sutureArray[i];
-										if (sut != null)
-										{
-											sut.originX = np.x;
-											sut.originY = np.y;
+									{	
+										// Get suture
+										var suture = sutureArray[i];
+										
+										// Suture may be null if one has been deleted
+										if (suture != null) {	
+											// Get current position of suture into a point object
+											var np = new ED.Point(suture.originX, suture.originY);
+	
+											// Get change in rotation
+											var delta = _messageArray['object'].value - _messageArray['object'].oldValue;
+	
+											// Calculate new coordinates and apply them
+											np.setWithPolars(np.length(), np.direction() + delta);
+											suture.originX = np.x;
+											suture.originY = np.y;
 									
 											// Apply rotation
-											sut.rotation = ED.Mod(p.angle + trab.rotation, 2 * Math.PI);
+											suture.rotation += delta;
 										}
 									}
 									
@@ -171,79 +137,27 @@
 									}
                             	}
                             }
-                        
-                        	// Suture has moved (a refinement would be to feed back movement to suture plan so that movement of flap carries sutures with it)
-                        	if (doodle.className == 'TrabySuture')
-                        	{
-                        		if (_messageArray['object']['parameter'] == 'originX' || _messageArray['object']['parameter'] == 'originY')
-                        		{
-                        			//console.log('TrabySuture moved ', doodle.originX, doodle.originY);
-                        		}
-                        		
-                        		if (_messageArray['object']['parameter'] == 'rotation')
-                        		{
-                        			//console.log('TrabySuture rotated ', doodle.rotation);
-                        		}
-                        	}
                             break;
-                        
+                         
                         case 'doodleAdded':
-							var dood = _messageArray['object'];
-							if (typeof(dood) != 'undefined')
+							var className = _messageArray['object'].className;
+							if (typeof(className) != 'undefined')
 							{
-								if (dood.className == 'TrabySuture')
+								// Add a new suture to the suture array
+								if (className == 'TrabySuture') 
 								{
-									// Add it to first available slot in suture Array
-									for (var i = 0; i < sutureArray.length; i++)
-                            		{
-                            			if (sutureArray[i] == null)
-                            			{
-                            				sutureArray[i] = dood;
-                            				
-											var trab = this.drawing.lastDoodleOfClass("TrabyFlap");
-											if (trab)
-											{
-												// Get original position
-												var p = suturePointsArray[i];
-								
-												// Calculate radius to this point
-												var r = Math.sqrt(p.x * p.x + p.y * p.y);
-								
-												// Calculate new position
-												var np = p.pointAtRadiusAndClockwiseAngle(r, trab.rotation);
-								
-												// Apply it to suture
-												sutureArray[i].originX = np.x;
-												sutureArray[i].originY = np.y;
-								
-												// Apply rotation
-												sutureArray[i].rotation = ED.Mod(p.angle + trab.rotation, 2 * Math.PI);
-												
-												// Apply shape
-												sutureArray[i].setParameterFromString('shape', p.shape);
-												
-												// Apply firstOrginX
-												sutureArray[i].firstOriginX = p.ex;
-												
-												this.drawing.repaint();
-											}
-											                      				
-                            				break;
-                            			}
-                            		}									
+									sutureArray[sutureArray.length] = _messageArray['object'];
 								}
 							}
 							break;
-                        
+							                       
                         case 'doodleDeleted':
 							var className = _messageArray['object'];
 							if (typeof(className) != 'undefined')
 							{
 								if (className == 'TrabySuture') 
-								{
-									console.log('Traby suture deleted');
-									
-									// Go through array identifying which one has been removed
+								{	
+									// Mark removal of suture by nulling entry (***TODO*** - must be a better way!)
 									for (var i = 0; i < sutureArray.length; i++)
                             		{
                             			var id = sutureArray[i].id;
@@ -258,6 +172,58 @@
 					}
                 }
             }
+            
+            // Get reference to the canvas elements
+            var canvasEdit2 = document.getElementById('canvasEdit2');
+  
+            // Create drawing objects
+            drawingEdit2 = new ED.Drawing(canvasEdit2, ED.eye.Right, 'RPS2', true, {graphicsPath:'../../graphics/'});
+            
+            // Instantiate controller object
+            var controller2 = new eyeDrawController2(drawingEdit2);
+            
+            // Initialise drawings
+            drawingEdit2.init();
+
+            // Controller class
+            function eyeDrawController2(_drawing)
+            {
+                this.drawing = _drawing;
+                
+                // Global scale factor
+                this.gsf = 0.72;
+                
+                // Specify call back function
+                this.callBack = callBack;
+                
+                // Register for notifications with drawing object
+                this.drawing.registerForNotifications(this, 'callBack', []);
+                            
+				// Show doodle controls
+				this.drawing.showDoodleControls = true;
+                
+                // Method called for notification
+                function callBack(_messageArray)
+                {
+                    switch (_messageArray['eventName'])
+                    {
+                        // Eye draw image files all loaded
+                        case 'ready':
+                        	// Alter scale to get wider angle view
+                        	this.drawing.globalScaleFactor = this.gsf;
+                        	
+                        	// Initial doodles
+							this.drawing.addDoodle('AntSeg');
+							this.drawing.addDoodle('TrabyConjIncision');
+							
+							this.drawing.deselectDoodles();
+                            break;
+                            
+
+					}
+                }
+            }
+
  		}
  		
  		function addToReport()
@@ -338,18 +304,17 @@
 <body onload="init();">
 <div id="screen" align="center">
 	<div id="content">
-
-		
+	
 		<div class="section">
 			<h4>Description:</h4>
-			<p>This element allows recording of details of a Trabeculectomy operation. Many items on the drawing are synchronised with data entry elements on the form. The default suture locations are stored as a 'set', a type of 'Platonic ideal', so that if sutures are deleted, new ones fill the vacant slots up to the limit of the set. Thereafter, sutures have to be positioned manually. Sutures within the 'set' move with the trabeculectomy flap.</p>
+			<p>This element allows recording of details of a Trabeculectomy operation. Many items on the drawing are synchronised with data entry elements on the form. Sutures move with the trabeculectomy flap.</p>
 			<p>The data items are compatible with the Royal College of Ophthalmologist's draft glaucoma dataset.</p>
 			
 			<p>Status: <b>Alpha</b></p>
 		</div>
 
 		<!-- Edit mode section -->
-		<div class="section" style="height:530px;" align="left">
+		<div class="section" style="height:430px;" align="left">
 			<h4>Edit mode:</h4>
 						
 			<!-- Drawing -->
@@ -366,8 +331,9 @@
 					<button class="imgbutton" id="TrabySutureRPS" title="Trabeculectomy suture" onclick="drawingEdit.addDoodle('TrabySuture'); return false;" ><img src="../../graphics/TrabySuture.gif" /></button>
 					<button class="imgbutton" id="piRPS" title="Peripheral iridectomy" onclick="drawingEdit.addDoodle('PI'); return false;" ><img src="../../graphics/PI.gif" /></button>
 					<button class="imgbutton" id="sidePortRPS" title="Side port" onclick="drawingEdit.addDoodle('SidePort'); return false;" ><img src="../../graphics/SidePort.gif" /></button>
-					<button class="imgbutton" id="sidePortRPS" title="Side port" onclick="drawingEdit.addDoodle('ScleralPatch'); return false;" ><img src="../../graphics/ScleralPatch.gif" /></button>
-					<button class="imgbutton" id="sidePortRPS" title="Side port" onclick="drawingEdit.addDoodle('ConjunctivalSuture'); return false;" ><img src="../../graphics/ConjunctivalSuture.gif" /></button>
+					<button class="imgbutton" id="sidePortRPS" title="AC Maintainer" onclick="drawingEdit.addDoodle('ACMaintainer'); return false;" ><img src="../../graphics/ACMaintainer.gif" /></button>
+					<button class="imgbutton" id="sidePortRPS" title="Patch" onclick="drawingEdit.addDoodle('Patch'); return false;" ><img src="../../graphics/ScleralPatch.gif" /></button>
+					<button class="imgbutton" id="sidePortRPS" title="Conjunctival suture" onclick="drawingEdit.addDoodle('ConjunctivalSuture'); return false;" ><img src="../../graphics/ConjunctivalSuture.gif" /></button>
 	                <br />	  	                    
                 </div>
 	                		
@@ -382,6 +348,8 @@
 		        </div>
 		        
 			</div>
+
+
 			
 			<!-- Controls -->
 			<div style='float:left; width: 385px;height: 320px;'>
@@ -557,12 +525,14 @@
 								<input class="checkbox" type="checkbox" id="chk_phd"/>
 	    					 </td>
 						</tr>
+<!--
 						<tr>
 							<td align="left"><p class="lable" >AC maintainer:</p></td>
 							<td align="left">
 								<input class="checkbox" type="checkbox" id="chk_phd"/>
 	    					 </td>
 						</tr>
+-->
 						
 <!--
 						<tr>
@@ -660,6 +630,7 @@
 						<tr>
 							<td>
 								<select style="width:140px;" id="difficultiesSelect" onchange="addToTextarea('difficultiesSelect', 'difficulties', true)">
+									<option>Operative Difficulties</option>
 									<option>Big pupil</option>
 									<option>Ciliary Body bleeding</option>
 									<option>Conjunctival button hole</option>
@@ -714,6 +685,40 @@
 
 		<!-- End of Edit mode section -->
 		</div>
+
+		<!-- Edit mode section -->
+		<div class="section" style="height:420px;" align="left">
+					
+			<!-- Drawing 2-->
+			<div style ="width: 310px; float:left;">
+
+				<!-- Doodle toolbar -->
+				<div class="toolbar">
+					<button class="imgbutton" class="imgbutton" disabled="true" id="moveToFrontRPS" title="Move to front" onclick="drawingEdit2.moveToFront(); return false;" ><img src="../../graphics/moveToFront.gif"/></button>
+	                <button class="imgbutton" disabled="true" id="moveToBackRPS" title="Move to back" onclick="drawingEdit2.moveToBack(); return false;" ><img src="../../graphics/moveToBack.gif" /></button>
+		            <button class="imgbutton" disabled="true" id="deleteSelectedDoodleRPS" title="Delete" onclick="drawingEdit2.deleteSelectedDoodle(); return false;" ><img src="../../graphics/delete.gif" /></button>
+	                <button class="imgbutton" disabled="true" id="lockRPS" title="Lock" onclick="drawingEdit2.lock(); return false;" ><img src="../../graphics/lock.gif" /></button>
+	                <button class="imgbutton" disabled="true" id="unlockRPS" title="Unlock" onclick="drawingEdit2.unlock(); return false;" ><img src="../../graphics/unlock.gif" /></button>
+	                <br />
+					<button class="imgbutton" id="sidePortRPS" title="Corneal suture" onclick="drawingEdit2.addDoodle('CornealSuture'); return false;" ><img src="../../graphics/CornealSuture.gif" /></button>
+					<button class="imgbutton" id="sidePortRPS" title="Conjunctival suture" onclick="drawingEdit2.addDoodle('ConjunctivalSuture'); return false;" ><img src="../../graphics/ConjunctivalSuture.gif" /></button>
+	                <br />	  	                    
+                </div>
+	                		
+				<!-- Canvas -->
+				<div style='float:left; width: 320px; height: 320px;'>
+					<span class="canvasTooltip" id="canvasEditTooltip2"></span>
+	                <canvas id="canvasEdit2" class="canvasclass" width="300" height="300" tabindex="1"></canvas>
+				</div>
+					
+		        <!-- Doodle control panel -->
+		        <div id="canvasEdit2_controls" style="background-color: #DAE6F1; float:left;">
+		        </div>
+		        
+			</div>
+		</div>
+		
+
 
 		<!-- Steering Group -->			
 		<div class="section" align="left">
