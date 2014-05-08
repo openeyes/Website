@@ -60,7 +60,7 @@
                         	
                         	// Initial doodles
 							this.drawing.addDoodle('AntSeg');
-							this.drawing.addDoodle('Baerveldt');                       
+							this.drawing.addDoodle('Tube');                       
 							
                             this.drawing.deselectDoodles();
                             break;
@@ -197,6 +197,7 @@
 	                <button class="imgbutton" disabled="true" id="unlockRPS" title="Unlock" onclick="drawingEdit.unlock(); return false;" ><img src="../../graphics//unlock.gif" /></button>
 	                <br />
                     <button class="imgbutton" id="molteno" title="Drainage tube" onclick="drawingEdit.addDoodle('Tube'); return false;" ><img src="../../graphics/Tube.gif" /></button>
+                    <button class="imgbutton" id="molteno" title="Tube extender" onclick="drawingEdit.addDoodle('TubeExtender'); return false;" ><img src="../../graphics/TubeExtender.gif" /></button>
                     <button class="imgbutton" id="sidePortRPS" title="Supramid" onclick="drawingEdit.addDoodle('Supramid'); return false;" ><img src="../../graphics/Supramid.gif" /></button>                           
                     <button class="imgbutton" id="patch" title="Patch" onclick="drawingEdit.addDoodle('Patch'); return false;" ><img src="../../graphics/ScleralPatch.gif" /></button>
                     <button class="imgbutton" id="PIRPS" title="Peripheral Iridectomy" onclick="var dood = drawingEdit.addDoodle('PI'); dood.outerRadius = 260; drawingEdit.repaint(); return false;" ><img src="../../graphics/PI.gif" /></button>
@@ -248,6 +249,7 @@
 						        </select>
 					        </td>
 						</tr>
+<!--
 						<tr>
 							<td align="left"><p class="lable" >Antimetabolites:</p></td>
 							<td align="left">
@@ -258,6 +260,7 @@
 						        </select>
         					 </td>
 						</tr>
+-->
 						<tr>
 							<td align="left"><p class="lable" >Per-op drugs:</p></td>
 							<td align="left">
@@ -269,6 +272,7 @@
 						        </select>
         					 </td>
 						</tr>
+<!--
 						<tr>
 							<td align="left"><p class="lable" >Patch:</p></td>
 							<td align="left">
@@ -289,6 +293,7 @@
 								<input type="text" title="if not in the AC, how far from the limbus was it left?"style="display: none;" id="howFar"/><span id="mm" style="display: none;">&nbspmm</span>
 					        </td>
 						</tr>
+-->
 						<tr>
 							<td align="left"><p class="lable" >Stent:</p></td>
 							<td align="left">
