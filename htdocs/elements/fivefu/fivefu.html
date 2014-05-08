@@ -21,14 +21,14 @@
 	        switch (_value) {
 		        case 'Sponge':
 		        	document.getElementById("volume").style.display = "none";
-		        	document.getElementById("dose").style.display = "none";
+		        	document.getElementById("dose").style.display = "";
 		        	document.getElementById("duration").style.display = "";
 		        	document.getElementById("washout").style.display = "";
 		        	break;
 		        	
 		        case 'Injection':
 		        	document.getElementById("volume").style.display = "";
-		        	document.getElementById("dose").style.display = "";
+		        	document.getElementById("dose").style.display = "none";
 		        	document.getElementById("duration").style.display = "none";
 		        	document.getElementById("washout").style.display = "none";		  
 		        	break;
@@ -46,14 +46,14 @@
 		
 		<div class="section">
 			<h4>Description:</h4>
-			<p>This element collects additional data for the use of MMC, and is similar to elements for the other antimetabolites. It appears in the opnote event when 'Application of MMC' is chosen from the procedure list.</p>
+			<p>This element collects additional data for the use of 5-FU, and is similar to elements for the other antimetabolites. It appears in the opnote event when 'pplication of 5FU' is chosen from the procedure list.</p>
 			<p></p>
 			<p>Status: <b>Alpha</b></p>
 		</div>
 
 		<!--Management Plan -->
 		<div class="section" style="height:240px;" align="left">
-			<h4>Application of MMC:</h4>
+			<h4>Application of 5FU:</h4>
 		
 			<!-- Right eye -->
 			<div style ="width: 540px; float:left;">
@@ -67,22 +67,22 @@
 							</td>
 							<td width="40%">
 								<select style="width:auto;" onchange=appChanged(this.value);>
-									<option>Sponge</option>
 									<option>Injection</option>
+									<option>Sponge</option>
 								</select>
 							</td>
 							<td width="40%">
 								<p class="comment" ></p>
 							</td>
 						</tr>
-						<tr id='volume' style="display:none;">
+						<tr id='volume'>
 							<td width="20%">
 								<p style="margin-top:-5px;">Volume</p>
 							</td>
 							<td width="40%">
 								<select style="width:auto;">
-									<option>0.1 ml</option>
-									<option>0.2 ml</option>
+									<option>5 mg</option>
+									<option>10mg</option>
 								</select>
 							</td>
 							<td width="40%">
@@ -95,17 +95,15 @@
 							</td>
 							<td width="40%">
 								<select style="width:auto;">
-									<option>0.1 mg/ml</option>
-									<option>0.2 mg/ml</option>
-									<option>0.4 mg/ml</option>
-									<option>0.5 mg/ml</option>
+									<option>25 mg/ml</option>
+									<option>50 mg/ml</option>
 								</select>
 							</td>
 							<td width="40%">
 								<p class="comment" ></p>
 							</td>
 						</tr>
-						<tr id='duration'>
+						<tr id='duration' style="display:none;">
 							<td width="20%">
 								<p style="margin-top:-5px;">Duration (mins)</p>
 							</td>
@@ -122,7 +120,7 @@
 								<p class="comment" ></p>
 							</td>
 						</tr>
-						<tr id='washout'>
+						<tr id='washout' style="display:none;">
 							<td width="20%">
 								<p style="margin-top:-5px;">Washed with (20ml) BSS / saline </p>
 							</td>
