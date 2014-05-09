@@ -196,11 +196,14 @@
 	                <button class="imgbutton" disabled="true" id="lockRPS" title="Lock" onclick="drawingEdit.lock(); return false;" ><img src="../../graphics//lock.gif" /></button>
 	                <button class="imgbutton" disabled="true" id="unlockRPS" title="Unlock" onclick="drawingEdit.unlock(); return false;" ><img src="../../graphics//unlock.gif" /></button>
 	                <br />
-                    <button class="imgbutton" id="molteno" title="Drainage tube" onclick="drawingEdit.addDoodle('Tube'); return false;" ><img src="../../graphics/Tube.gif" /></button>
-                    <button class="imgbutton" id="molteno" title="Tube extender" onclick="drawingEdit.addDoodle('TubeExtender'); return false;" ><img src="../../graphics/TubeExtender.gif" /></button>
-                    <button class="imgbutton" id="sidePortRPS" title="Supramid" onclick="drawingEdit.addDoodle('Supramid'); return false;" ><img src="../../graphics/Supramid.gif" /></button>                           
+                    <button class="imgbutton" id="molteno" title="Baerveldt 103-250" onclick="drawingEdit.addDoodle('Tube', {type:'Baerveldt 103-250'}); return false;" ><img src="../../graphics/Baerveldt250.gif" /></button>
+                    <button class="imgbutton" id="molteno" title="Baerveldt 101-350" onclick="drawingEdit.addDoodle('Tube', {type:'Baerveldt 101-350'}); return false;" ><img src="../../graphics/Baerveldt350.gif" /></button>
+                    <button class="imgbutton" id="molteno" title="Ahmed FP7" onclick="drawingEdit.addDoodle('Tube', {type:'Ahmed FP7'}); return false;" ><img src="../../graphics/AhmedFP7.gif" /></button>
+                    <button class="imgbutton" id="molteno" title="Molteno Single" onclick="drawingEdit.addDoodle('Tube', {type:'Molteno Single'}); return false;" ><img src="../../graphics/Molteno.gif" /></button>
+                    <button class="imgbutton" id="molteno" title="Tube extender" onclick="drawingEdit.addDoodle('TubeExtender'); return false;" ><img src="../../graphics/TubeExtender.gif" /></button>                       
                     <button class="imgbutton" id="patch" title="Patch" onclick="drawingEdit.addDoodle('Patch'); return false;" ><img src="../../graphics/ScleralPatch.gif" /></button>
                     <button class="imgbutton" id="PIRPS" title="Peripheral Iridectomy" onclick="var dood = drawingEdit.addDoodle('PI'); dood.outerRadius = 260; drawingEdit.repaint(); return false;" ><img src="../../graphics/PI.gif" /></button>
+                    <button class="imgbutton" id="sidePortRPS" title="Supramid" onclick="drawingEdit.addDoodle('Supramid'); return false;" ><img src="../../graphics/Supramid.gif" /></button>    
 					<button class="imgbutton" id="sidePortRPS" title="Vicryl suture" onclick="drawingEdit.addDoodle('Vicryl'); return false;" ><img src="../../graphics/Vicryl.gif" /></button>
                              	                    
                 </div>		
@@ -261,6 +264,7 @@
         					 </td>
 						</tr>
 -->
+<!--
 						<tr>
 							<td align="left"><p class="lable" >Per-op drugs:</p></td>
 							<td align="left">
@@ -272,6 +276,7 @@
 						        </select>
         					 </td>
 						</tr>
+-->
 <!--
 						<tr>
 							<td align="left"><p class="lable" >Patch:</p></td>

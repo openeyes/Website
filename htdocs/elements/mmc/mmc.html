@@ -21,16 +21,16 @@
 	        switch (_value) {
 		        case 'Sponge':
 		        	document.getElementById("volume").style.display = "none";
-		        	document.getElementById("dose").style.display = "none";
 		        	document.getElementById("duration").style.display = "";
 		        	document.getElementById("washout").style.display = "";
+		        	document.getElementById("spongenumber").style.display = "";
 		        	break;
 		        	
 		        case 'Injection':
 		        	document.getElementById("volume").style.display = "";
-		        	document.getElementById("dose").style.display = "";
 		        	document.getElementById("duration").style.display = "none";
-		        	document.getElementById("washout").style.display = "none";		  
+		        	document.getElementById("washout").style.display = "none";
+		        	document.getElementById("spongenumber").style.display = "none";		  
 		        	break;
 	        }
         }
@@ -52,7 +52,7 @@
 		</div>
 
 		<!--Management Plan -->
-		<div class="section" style="height:240px;" align="left">
+		<div class="section" style="height:280px;" align="left">
 			<h4>Application of MMC:</h4>
 		
 			<!-- Right eye -->
@@ -75,6 +75,23 @@
 								<p class="comment" ></p>
 							</td>
 						</tr>
+						<tr id='dose'>
+							<td width="20%">
+								<p style="margin-top:-5px;">Dose</p>
+							</td>
+							<td width="40%">
+								<select style="width:auto;">
+									<option>0.1 mg/ml</option>
+									<option>0.2 mg/ml</option>
+									<option>0.4 mg/ml</option>
+									<option>0.3 mg/ml</option>
+									<option>0.5 mg/ml</option>
+								</select>
+							</td>
+							<td width="40%">
+								<p class="comment" ></p>
+							</td>
+						</tr>
 						<tr id='volume' style="display:none;">
 							<td width="20%">
 								<p style="margin-top:-5px;">Volume</p>
@@ -88,17 +105,16 @@
 							<td width="40%">
 								<p class="comment" ></p>
 							</td>
-						</tr>
-						<tr id='dose' style="display:none;">
+						</tr>						
+						<tr id='spongenumber'>
 							<td width="20%">
-								<p style="margin-top:-5px;">Dose</p>
+								<p style="margin-top:-5px;">Number</p>
 							</td>
 							<td width="40%">
 								<select style="width:auto;">
-									<option>0.1 mg/ml</option>
-									<option>0.2 mg/ml</option>
-									<option>0.4 mg/ml</option>
-									<option>0.5 mg/ml</option>
+									<option>1</option>								
+									<option>2</option>								
+									<option>3</option>
 								</select>
 							</td>
 							<td width="40%">

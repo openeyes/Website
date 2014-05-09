@@ -15,20 +15,25 @@
         // Runs on page load
         function init()
         {
+        	appChanged('Injection');
         }
         
         function appChanged(_value) {
 	        switch (_value) {
 		        case 'Sponge':
-		        	document.getElementById("volume").style.display = "none";
-		        	document.getElementById("dose").style.display = "";
+		        	document.getElementById("injdose").style.display = "none";
+		        	document.getElementById("injvolume").style.display = "none";
+		        	document.getElementById("spongedose").style.display = "";
+		        	document.getElementById("spongenumber").style.display = "";
 		        	document.getElementById("duration").style.display = "";
 		        	document.getElementById("washout").style.display = "";
 		        	break;
 		        	
 		        case 'Injection':
-		        	document.getElementById("volume").style.display = "";
-		        	document.getElementById("dose").style.display = "none";
+		        	document.getElementById("injdose").style.display = "";
+		        	document.getElementById("injvolume").style.display = "";
+		        	document.getElementById("spongedose").style.display = "none";
+		        	document.getElementById("spongenumber").style.display = "none";
 		        	document.getElementById("duration").style.display = "none";
 		        	document.getElementById("washout").style.display = "none";		  
 		        	break;
@@ -52,7 +57,7 @@
 		</div>
 
 		<!--Management Plan -->
-		<div class="section" style="height:240px;" align="left">
+		<div class="section" style="height:280px;" align="left">
 			<h4>Application of 5FU:</h4>
 		
 			<!-- Right eye -->
@@ -75,35 +80,66 @@
 								<p class="comment" ></p>
 							</td>
 						</tr>
-						<tr id='volume'>
-							<td width="20%">
-								<p style="margin-top:-5px;">Volume</p>
-							</td>
-							<td width="40%">
-								<select style="width:auto;">
-									<option>5 mg</option>
-									<option>10mg</option>
-								</select>
-							</td>
-							<td width="40%">
-								<p class="comment" ></p>
-							</td>
-						</tr>
-						<tr id='dose' style="display:none;">
+						<tr id='injdose'>
 							<td width="20%">
 								<p style="margin-top:-5px;">Dose</p>
 							</td>
 							<td width="40%">
 								<select style="width:auto;">
-									<option>25 mg/ml</option>
-									<option>50 mg/ml</option>
+									<option>5 mg</option>
+									<option>10 mg</option>
+									<option>15 mg</option>
 								</select>
 							</td>
 							<td width="40%">
 								<p class="comment" ></p>
 							</td>
 						</tr>
-						<tr id='duration' style="display:none;">
+						<tr id='injvolume'>
+							<td width="20%">
+								<p style="margin-top:-5px;">Volume</p>
+							</td>
+							<td width="40%">
+								<select style="width:auto;">
+									<option>0.1 ml</option>
+									<option>0.2 ml</option>
+									<option>0.3 ml</option>
+								</select>
+							</td>
+							<td width="40%">
+								<p class="comment" ></p>
+							</td>
+						</tr>						
+						<tr id='spongedose'>
+							<td width="20%">
+								<p style="margin-top:-5px;">Dose</p>
+							</td>
+							<td width="40%">
+								<select style="width:auto;">
+									<option>50 mg/ml</option>								
+									<option>25 mg/ml</option>
+								</select>
+							</td>
+							<td width="40%">
+								<p class="comment" ></p>
+							</td>
+						</tr>						
+						<tr id='spongenumber'>
+							<td width="20%">
+								<p style="margin-top:-5px;">Number</p>
+							</td>
+							<td width="40%">
+								<select style="width:auto;">
+									<option>1</option>								
+									<option>2</option>								
+									<option>3</option>
+								</select>
+							</td>
+							<td width="40%">
+								<p class="comment" ></p>
+							</td>
+						</tr>							
+						<tr id='duration'>
 							<td width="20%">
 								<p style="margin-top:-5px;">Duration (mins)</p>
 							</td>
@@ -120,7 +156,7 @@
 								<p class="comment" ></p>
 							</td>
 						</tr>
-						<tr id='washout' style="display:none;">
+						<tr id='washout'>
 							<td width="20%">
 								<p style="margin-top:-5px;">Washed with (20ml) BSS / saline </p>
 							</td>
