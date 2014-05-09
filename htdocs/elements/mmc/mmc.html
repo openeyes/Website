@@ -15,12 +15,14 @@
         // Runs on page load
         function init()
         {
+        	calculateDose();
         }
         
         function appChanged(_value) {
 	        switch (_value) {
 		        case 'Sponge':
 		        	document.getElementById("volume").style.display = "none";
+		        	document.getElementById("dose").style.display = "none";
 		        	document.getElementById("duration").style.display = "";
 		        	document.getElementById("washout").style.display = "";
 		        	document.getElementById("spongenumber").style.display = "";
@@ -28,11 +30,19 @@
 		        	
 		        case 'Injection':
 		        	document.getElementById("volume").style.display = "";
+		        	document.getElementById("dose").style.display = "";
 		        	document.getElementById("duration").style.display = "none";
 		        	document.getElementById("washout").style.display = "none";
 		        	document.getElementById("spongenumber").style.display = "none";		  
 		        	break;
 	        }
+        }
+        
+        function calculateDose() {
+	        var concentration = document.getElementById("concentrationSelect").value;
+	        var volume = document.getElementById("volumeSelect").value;
+	        var dose = concentration * volume;
+	        document.getElementById("doseValue").innerHTML = dose.toFixed(2) + " mg";
         }
 	            
     </script>
@@ -75,17 +85,18 @@
 								<p class="comment" ></p>
 							</td>
 						</tr>
-						<tr id='dose'>
+						<tr id='concentration'>
 							<td width="20%">
-								<p style="margin-top:-5px;">Dose</p>
+								<p style="margin-top:-5px;">Concentration</p>
 							</td>
 							<td width="40%">
-								<select style="width:auto;">
-									<option>0.1 mg/ml</option>
-									<option>0.2 mg/ml</option>
-									<option>0.4 mg/ml</option>
-									<option>0.3 mg/ml</option>
-									<option>0.5 mg/ml</option>
+								<select id="concentrationSelect" style="width:auto;" onchange="calculateDose();">
+									<option value=0.1>0.1 mg/ml</option>
+									<option value=0.2>0.2 mg/ml</option>
+									<option value=0.3>0.3 mg/ml</option>
+									<option value=0.4>0.4 mg/ml</option>
+									<option value=0.5>0.5 mg/ml</option>
+									<option value=1.0>1.0 mg/ml</option>
 								</select>
 							</td>
 							<td width="40%">
@@ -97,9 +108,37 @@
 								<p style="margin-top:-5px;">Volume</p>
 							</td>
 							<td width="40%">
+								<select id="volumeSelect" style="width:auto;" onchange="calculateDose();">
+									<option value=0.1>0.1 ml</option>
+									<option value=0.2>0.2 ml</option>
+								</select>
+							</td>
+							<td width="40%">
+								<p></p>
+							</td>
+						</tr>
+						<tr id='dose' style="display:none;">
+							<td width="20%">
+								<p style="margin-top:-5px;">Dose</p>
+							</td>
+							<td width="40%">
+								<p id='doseValue'></p>
+							</td>
+							<td width="40%">
+								<p></p>
+							</td>
+						</tr>
+						<tr id='duration'>
+							<td width="20%">
+								<p style="margin-top:-5px;">Duration (mins)</p>
+							</td>
+							<td width="40%">
 								<select style="width:auto;">
-									<option>0.1 ml</option>
-									<option>0.2 ml</option>
+									<option>1</option>
+									<option>2</option>
+									<option>3</option>
+									<option>4</option>
+									<option>5</option>
 								</select>
 							</td>
 							<td width="40%">
@@ -114,21 +153,6 @@
 								<select style="width:auto;">
 									<option>1</option>								
 									<option>2</option>								
-									<option>3</option>
-								</select>
-							</td>
-							<td width="40%">
-								<p class="comment" ></p>
-							</td>
-						</tr>
-						<tr id='duration'>
-							<td width="20%">
-								<p style="margin-top:-5px;">Duration (mins)</p>
-							</td>
-							<td width="40%">
-								<select style="width:auto;">
-									<option>1</option>
-									<option>2</option>
 									<option>3</option>
 									<option>4</option>
 									<option>5</option>

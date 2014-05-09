@@ -15,15 +15,15 @@
         // Runs on page load
         function init()
         {
-        	appChanged('Injection');
+        	appChanged('Sponge');
         }
         
         function appChanged(_value) {
 	        switch (_value) {
 		        case 'Sponge':
 		        	document.getElementById("injdose").style.display = "none";
-		        	document.getElementById("injvolume").style.display = "none";
-		        	document.getElementById("spongedose").style.display = "";
+		        	//document.getElementById("injvolume").style.display = "none";
+		        	//document.getElementById("spongedose").style.display = "";
 		        	document.getElementById("spongenumber").style.display = "";
 		        	document.getElementById("duration").style.display = "";
 		        	document.getElementById("washout").style.display = "";
@@ -31,8 +31,8 @@
 		        	
 		        case 'Injection':
 		        	document.getElementById("injdose").style.display = "";
-		        	document.getElementById("injvolume").style.display = "";
-		        	document.getElementById("spongedose").style.display = "none";
+		        	//document.getElementById("injvolume").style.display = "";
+		        	//document.getElementById("spongedose").style.display = "none";
 		        	document.getElementById("spongenumber").style.display = "none";
 		        	document.getElementById("duration").style.display = "none";
 		        	document.getElementById("washout").style.display = "none";		  
@@ -51,7 +51,7 @@
 		
 		<div class="section">
 			<h4>Description:</h4>
-			<p>This element collects additional data for the use of 5-FU, and is similar to elements for the other antimetabolites. It appears in the opnote event when 'pplication of 5FU' is chosen from the procedure list.</p>
+			<p>This element collects additional data for the use of 5-FU, and is similar to elements for the other antimetabolites. It appears in the opnote event when 'Application of 5FU' is chosen from the procedure list.</p>
 			<p></p>
 			<p>Status: <b>Alpha</b></p>
 		</div>
@@ -72,8 +72,8 @@
 							</td>
 							<td width="40%">
 								<select style="width:auto;" onchange=appChanged(this.value);>
-									<option>Injection</option>
 									<option>Sponge</option>
+									<option>Injection</option>
 								</select>
 							</td>
 							<td width="40%">
@@ -92,9 +92,10 @@
 								</select>
 							</td>
 							<td width="40%">
-								<p class="comment" ></p>
+								<p>(50mg/ml)</p>
 							</td>
 						</tr>
+<!--
 						<tr id='injvolume'>
 							<td width="20%">
 								<p style="margin-top:-5px;">Volume</p>
@@ -109,10 +110,12 @@
 							<td width="40%">
 								<p class="comment" ></p>
 							</td>
-						</tr>						
+						</tr>	
+-->					
+<!--
 						<tr id='spongedose'>
 							<td width="20%">
-								<p style="margin-top:-5px;">Dose</p>
+								<p style="margin-top:-5px;">Concentration</p>
 							</td>
 							<td width="40%">
 								<select style="width:auto;">
@@ -123,22 +126,8 @@
 							<td width="40%">
 								<p class="comment" ></p>
 							</td>
-						</tr>						
-						<tr id='spongenumber'>
-							<td width="20%">
-								<p style="margin-top:-5px;">Number</p>
-							</td>
-							<td width="40%">
-								<select style="width:auto;">
-									<option>1</option>								
-									<option>2</option>								
-									<option>3</option>
-								</select>
-							</td>
-							<td width="40%">
-								<p class="comment" ></p>
-							</td>
-						</tr>							
+						</tr>
+-->
 						<tr id='duration'>
 							<td width="20%">
 								<p style="margin-top:-5px;">Duration (mins)</p>
@@ -155,7 +144,24 @@
 							<td width="40%">
 								<p class="comment" ></p>
 							</td>
-						</tr>
+						</tr>												
+						<tr id='spongenumber'>
+							<td width="20%">
+								<p style="margin-top:-5px;">Number</p>
+							</td>
+							<td width="40%">
+								<select style="width:auto;">
+									<option>1</option>								
+									<option>2</option>								
+									<option>3</option>								
+									<option>4</option>								
+									<option>5</option>
+								</select>
+							</td>
+							<td width="40%">
+								<p class="comment" ></p>
+							</td>
+						</tr>							
 						<tr id='washout'>
 							<td width="20%">
 								<p style="margin-top:-5px;">Washed with (20ml) BSS / saline </p>

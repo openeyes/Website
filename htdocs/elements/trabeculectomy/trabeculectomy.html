@@ -175,6 +175,56 @@
                 }
             }
             
+            // Get reference to the canvas elements
+            var canvasEdit2 = document.getElementById('canvasEdit2');
+  
+            // Create drawing objects
+            drawingEdit2 = new ED.Drawing(canvasEdit2, ED.eye.Right, 'RPS2', true, {graphicsPath:'../../graphics/'});
+            
+            // Instantiate controller object
+            var controller2 = new eyeDrawController2(drawingEdit2);
+            
+            // Initialise drawings
+            drawingEdit2.init();
+
+            // Controller class
+            function eyeDrawController2(_drawing)
+            {
+                this.drawing = _drawing;
+                
+                // Global scale factor
+                this.gsf = 0.72;
+                
+                // Specify call back function
+                this.callBack = callBack;
+                
+                // Register for notifications with drawing object
+                this.drawing.registerForNotifications(this, 'callBack', []);
+                            
+				// Show doodle controls
+				this.drawing.showDoodleControls = true;
+                
+                // Method called for notification
+                function callBack(_messageArray)
+                {
+                    switch (_messageArray['eventName'])
+                    {
+                        // Eye draw image files all loaded
+                        case 'ready':
+                        	// Alter scale to get wider angle view
+                        	this.drawing.globalScaleFactor = this.gsf;
+                        	
+                        	// Initial doodles
+							this.drawing.addDoodle('AntSeg');
+							this.drawing.addDoodle('TrabyConjIncision');
+							
+							this.drawing.deselectDoodles();
+                            break;
+                            
+
+					}
+                }
+            }
 
 
  		}
@@ -250,6 +300,17 @@
 		    var firstLetter = str.substr(0, 1);
 		    return firstLetter.toLowerCase() + str.substr(1);
 		}
+		
+		function toggleSecondDrawing() {
+			if (document.getElementById("secondDrawing").style.display == "none") {
+				document.getElementById("secondDrawing").style.display = "";
+				document.getElementById("secondDrawingButton").innerHTML = "Hide conjunctival closure";
+			}
+			else {
+				document.getElementById("secondDrawing").style.display = "none";
+				document.getElementById("secondDrawingButton").innerHTML = "Show conjunctival closure";
+			}
+		}
     </script>
 
 </head>
@@ -299,6 +360,8 @@
 		        <!-- Doodle control panel -->
 		        <div id="canvasEdit_controls" style="background-color: #DAE6F1; float:left;">
 		        </div>
+		        
+		        <button id="secondDrawingButton" style="width:200px; height:30px;" onclick="toggleSecondDrawing();">Show conjunctival closure</button>
 		        
 			</div>
 
@@ -641,6 +704,37 @@
 		<!-- End of Edit mode section -->
 		</div>
 
+		<!-- Second drawing section -->
+		<div class="section" id="secondDrawing" style="height:480px; display:none;" align="left">
+					
+			<!-- Drawing 2-->
+			<div style ="width: 310px; float:left;">
+
+				<!-- Doodle toolbar -->
+				<div class="toolbar">
+					<button class="imgbutton" class="imgbutton" disabled="true" id="moveToFrontRPS" title="Move to front" onclick="drawingEdit2.moveToFront(); return false;" ><img src="../../graphics/moveToFront.gif"/></button>
+	                <button class="imgbutton" disabled="true" id="moveToBackRPS" title="Move to back" onclick="drawingEdit2.moveToBack(); return false;" ><img src="../../graphics/moveToBack.gif" /></button>
+		            <button class="imgbutton" disabled="true" id="deleteSelectedDoodleRPS" title="Delete" onclick="drawingEdit2.deleteSelectedDoodle(); return false;" ><img src="../../graphics/delete.gif" /></button>
+	                <button class="imgbutton" disabled="true" id="lockRPS" title="Lock" onclick="drawingEdit2.lock(); return false;" ><img src="../../graphics/lock.gif" /></button>
+	                <button class="imgbutton" disabled="true" id="unlockRPS" title="Unlock" onclick="drawingEdit2.unlock(); return false;" ><img src="../../graphics/unlock.gif" /></button>
+	                <br />
+					<button class="imgbutton" id="sidePortRPS" title="Corneal suture" onclick="drawingEdit2.addDoodle('CornealSuture'); return false;" ><img src="../../graphics/CornealSuture.gif" /></button>
+					<button class="imgbutton" id="sidePortRPS" title="Conjunctival suture" onclick="drawingEdit2.addDoodle('ConjunctivalSuture'); return false;" ><img src="../../graphics/ConjunctivalSuture.gif" /></button>
+	                <br />	  	                    
+                </div>
+	                		
+				<!-- Canvas -->
+				<div style='float:left; width: 320px; height: 320px;'>
+					<span class="canvasTooltip" id="canvasEditTooltip2"></span>
+	                <canvas id="canvasEdit2" class="canvasclass" width="300" height="300" tabindex="1"></canvas>
+				</div>
+					
+		        <!-- Doodle control panel -->
+		        <div id="canvasEdit2_controls" style="background-color: #DAE6F1; float:left;">
+		        </div>
+		        
+			</div>
+		</div>
 
 		
 
