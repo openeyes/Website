@@ -60,7 +60,7 @@
                         	
                         	// Initial doodles
 							this.drawing.addDoodle('AntSeg');
-							this.drawing.addDoodle('Tube');                       
+							this.drawing.addDoodle('Tube', {}, {platePosition:{id:'platePosition', attribute:'value'}});                       
 							
                             this.drawing.deselectDoodles();
                             break;
@@ -122,6 +122,7 @@
 			}
 		}
 		
+/*
 		function setPlateQuadrant(_value)
 		{
 			var plateDoodle = drawingEdit.firstDoodleOfClass('Molteno');
@@ -131,6 +132,7 @@
 			plateDoodle = drawingEdit.firstDoodleOfClass('Ahmed');
 			if (plateDoodle) drawingEdit.setParameterForDoodleOfClass('Ahmed', 'platePosition', _value);
 		}
+*/
 		
 		// Called by select element to add or delete patch doodle
 		function togglePatch(_value)
@@ -196,10 +198,12 @@
 	                <button class="imgbutton" disabled="true" id="lockRPS" title="Lock" onclick="drawingEdit.lock(); return false;" ><img src="../../graphics//lock.gif" /></button>
 	                <button class="imgbutton" disabled="true" id="unlockRPS" title="Unlock" onclick="drawingEdit.unlock(); return false;" ><img src="../../graphics//unlock.gif" /></button>
 	                <br />
+<!--
                     <button class="imgbutton" id="molteno" title="Baerveldt 103-250" onclick="drawingEdit.addDoodle('Tube', {type:'Baerveldt 103-250'}); return false;" ><img src="../../graphics/Baerveldt250.gif" /></button>
                     <button class="imgbutton" id="molteno" title="Baerveldt 101-350" onclick="drawingEdit.addDoodle('Tube', {type:'Baerveldt 101-350'}); return false;" ><img src="../../graphics/Baerveldt350.gif" /></button>
                     <button class="imgbutton" id="molteno" title="Ahmed FP7" onclick="drawingEdit.addDoodle('Tube', {type:'Ahmed FP7'}); return false;" ><img src="../../graphics/AhmedFP7.gif" /></button>
                     <button class="imgbutton" id="molteno" title="Molteno Single" onclick="drawingEdit.addDoodle('Tube', {type:'Molteno Single'}); return false;" ><img src="../../graphics/Molteno.gif" /></button>
+-->
                     <button class="imgbutton" id="molteno" title="Tube extender" onclick="drawingEdit.addDoodle('TubeExtender'); return false;" ><img src="../../graphics/TubeExtender.gif" /></button>                       
                     <button class="imgbutton" id="patch" title="Patch" onclick="drawingEdit.addDoodle('Patch'); return false;" ><img src="../../graphics/ScleralPatch.gif" /></button>
                     <button class="imgbutton" id="PIRPS" title="Peripheral Iridectomy" onclick="var dood = drawingEdit.addDoodle('PI'); dood.outerRadius = 260; drawingEdit.repaint(); return false;" ><img src="../../graphics/PI.gif" /></button>
@@ -228,7 +232,7 @@
 						<tr>
 							<td align="left" width="20%"><p class="lable" >Plate position:</p></td>
 							<td align="left" width="60%">
-						        <select name="incision" id="platePosition" onclick="setPlateQuadrant(this.value);">
+						        <select id="platePosition">
 						            <option value="STQ">STQ</option>
 						            <option value="SNQ">SNQ</option>
 						            <option value="INQ">INQ</option>
@@ -305,12 +309,14 @@
 								<input class="checkbox" type="checkbox" id="chk_ste"/>
 					        </td>
 						</tr>
+<!--
 						<tr>
 							<td align="left"><p class="lable" >Ligature:</p></td>
 							<td align="left">
 								<input class="checkbox" type="checkbox" id="chk_lig"/>
 					        </td>
 						</tr>
+-->
 						<tr>
 							<td align="left"><p class="lable" >Ligated:</p></td>
 							<td align="left">
