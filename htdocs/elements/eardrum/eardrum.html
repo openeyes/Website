@@ -7,11 +7,14 @@
 	<!-- CSS -->
 	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
 	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+	
+	<!-- Jquery -->
+<!-- 	<script src="../../scripts/jquery-1.11.1.min.js"></script> -->
 
     <!--   Javascript  -->	
 	<script language="JavaScript" src="../../scripts/eyedraw.js" type="text/javascript"></script>
     <script type="text/javascript">
-    
+
 		// Unique variable assigned to the drawing
 	    var drawingEdit;
 	    
@@ -21,18 +24,15 @@
 			39895008:"Marginal perforation of tympanic membrane",
 			40723007:"Central perforation of tympanic membrane",
 		}
-
-                            
+		                            
         // Runs on page load
         function init()
         {
-            var d = new Date();
-        	
-            // Get reference to the drawingEdit canvas
+             // Get reference to the drawingEdit canvas
             var canvasEdit = document.getElementById('canvasEdit');
             
             // Create a drawingEdit , {scaleOn:'width'}
-            drawingEdit = new ED.Drawing(canvasEdit, ED.eye.Right, 'RPS', true, {graphicsPath:'../../graphics/'});
+            drawingEdit = new ED.Drawing(canvasEdit, ED.eye.Right, 'RPS', true, {graphicsPath:'../../img'});
             
             // Instantiate a controller object
             controller = new eyeDrawController(drawingEdit);
@@ -43,7 +43,7 @@
             // Set focus to canvasEdit element
             canvasEdit.focus();
         }
-        
+                
         // Controller class
         function eyeDrawController(_drawing)
         {
@@ -174,7 +174,7 @@
 			        <!-- Doodle control panel -->
 			        <div id="canvasEdit_controls" style="background-color: #DAE6F1; float:left;">
 			        </div>
-		        
+
 				</div>
 		        			
 				<div>
