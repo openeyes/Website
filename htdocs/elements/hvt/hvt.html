@@ -43,7 +43,7 @@
             this.callBack = callBack;
             
             // Register for notifications with drawing object
-            this.drawing.registerForNotifications(this, 'callBack', []);
+            this.drawing.registerForNotifications(this, 'callBack', ['ready', 'parameterChanged']);
             
 			// Show doodle controls
 			this.drawing.showDoodleControls = true;
@@ -57,28 +57,88 @@
                     case 'ready':
 
 				    	// Grid
-				    	//drawingEdit.addDoodle('HVTGrid');
-				    	drawingEdit.addDoodle('UTear');
+				    	drawingEdit.addDoodle('HVTGrid');
+
 				    	// Right eye
-/*
-				    	rightEye = drawingEdit.addDoodle(
+				    	var rightEye = drawingEdit.addDoodle(
 				        	'HVT',
 				        	{originX:-250, rotation:Math.PI/4},
-				        	{hor:{id:'horSelect', attribute:'value'}, ver:{id:'verSelect', attribute:'value'}, tor:{id:'torSelect', attribute:'value'}}
+				        	{
+				        		hor:{id:'horSelect', attribute:'value'}, 
+				        		ver:{id:'verSelect', attribute:'value'}, 
+				        		tor:{id:'torSelect', attribute:'value'},
+								horValue:{id:'horValueSelectTr', attribute:'value'}, 
+								verValue:{id:'verValueSelectTr', attribute:'value'}, 
+								torValue:{id:'torValueSelectTr', attribute:'value'}
+							}
 				        );
-*/
 				    
 				        // Constrain x movement
-				        //rightEye.parameterValidationArray['originX']['range'] = new ED.Range(-350, -150);
+				        rightEye.parameterValidationArray['originX']['range'] = new ED.Range(-350, -150);
 				        
 				        // Left eye
-/*
-				        leftEye = drawingEdit.addDoodle('HVT', {originX:+250, rotation:Math.PI/4});
+				        var leftEye = drawingEdit.addDoodle('HVT', {originX:+250, rotation:Math.PI/4});
 				        leftEye.parameterValidationArray['originX']['range'] = new ED.Range(+150, +350);
-*/
+				        leftEye.setSimpleParameter('originX', +250);
 				    
-				        //this.drawing.deselectDoodles();
+				        this.drawing.deselectDoodles();
+				        this.isReady = true;
 						break;
+					
+					case 'parameterChanged':
+						console.log('parameterChanged', this.isReady);
+				    
+				    	if (this.isReady) {
+				    		//debugger;
+					    	// Get selected doodle and drawing
+					        var dood = _messageArray['object'].doodle;
+					        var drawing = dood.drawing;
+					        
+					        // Get HVTs from drawing
+					        var hvtArray = drawing.allDoodlesOfClass('HVT');
+					        
+					        // Assign right and left eyes
+					        var rightEye;
+					        var leftEye;
+					        for (var i = 0; i < hvtArray.length; i++) {
+						        if (hvtArray[i].originX < 0) {
+							        rightEye = hvtArray[i];
+						        }
+						        else {
+							        leftEye = hvtArray[i];
+						        }
+					        }
+					        
+					        // Apply syncronisation of right and left eyes
+						    if (dood.className == "HVT")
+					        {
+					            // Right eye selected;
+					            if (dood.originX < 0)
+					            {
+					                // Set other eye properties directly, without triggering a notification
+					                leftEye.originX = -dood.originX;
+					                leftEye.originY = -dood.originY;
+					                leftEye.rotation = Math.PI/2 - dood.rotation;
+					            }
+					            // Left eye selected
+					            else
+					            {
+					                // Set other eye properties directly, without triggering a notification
+					                rightEye.originX = -dood.originX;
+					                rightEye.originY = -dood.originY;
+					                rightEye.rotation = Math.PI/2 - dood.rotation;
+					                
+					                // Update syncronised HTML elements
+					                rightEye.updateDependentParameters('originX');
+					                rightEye.updateDependentParameters('originY');
+					                rightEye.updateDependentParameters('rotation');
+					            }
+					
+					        }
+			
+						}
+				    
+				        break;
                 }
             }
         }
@@ -109,7 +169,7 @@
 				
 				<!-- Canvas -->
 				<span id="canvasTooltip"></span>
-                <canvas id="canvasEdit" class="ed_canvas_edit" width="300" height="300" tabindex="1"></canvas>
+                <canvas id="canvasEdit" class="ed-canvas-edit" width="300" height="300" tabindex="1"></canvas>
                 
                 <!-- Doodle control panel -->
 		        <div id="canvasEdit_controls" style="background-color: #DAE6F1; float:left;">
@@ -271,7 +331,7 @@
 					
 				</br>
 				
-		        <button class="actbutton" onclick="controller.reset();return false;" >Reset</button>
+<!-- 		        <button class="actbutton" onclick="controller.reset();return false;" >Reset</button> -->
 		
 			</div>
 
