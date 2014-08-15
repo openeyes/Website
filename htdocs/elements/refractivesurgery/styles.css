@@ -98,6 +98,16 @@ button.imgbutton {
 	overflow: visible;
 }
 
+button.ed-button {
+	width: 36px;
+	height: 36px;
+	border: solid 1px;
+	background-color: #eeeeee;
+	margin-right: 0px;
+	margin-bottom: 2px;
+	overflow: visible;
+}
+
 button:hover {
 	background-color: #bbbbbb;
 	border: solid 1px;
