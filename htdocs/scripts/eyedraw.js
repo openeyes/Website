@@ -495,6 +495,7 @@ ED.Drawing = function(_canvas, _eye, _idSuffix, _isEditable, _options) {
 				'ed-doodle-popup',
 				'ed-button',
 				'ed-canvas',
+				'ed_canvas',
 				'ed-selected-doodle-select'
 			].join(')|(') + ')';
 
@@ -6202,6 +6203,24 @@ ED.Point.prototype.tangentialControlPoint = function(_phi) {
 	// Create point and set length and direction
 	var point = new ED.Point(0, 0);
 	point.setWithPolars(h, angle + _phi);
+
+	return point;
+}
+
+/**
+ * Creates a new point on a straight line between two points at a proportional distance 
+ *
+ * @param {Float} _percent Percentage distance along line
+ * @param {Point} _ep End point
+ * @returns {Point} _point Point
+ */
+ED.Point.prototype.pointAtPercentageFromPointToPoint = function(_percent, _point) {
+	// Calculate distances (clockwise from north)
+	var xIncrement = (_point.x - this.x) * _percent/100;
+	var yIncrement = (_point.y - this.y) * _percent/100;
+
+	// Create point and set length and direction
+	var point = new ED.Point(this.x + xIncrement, this.y + yIncrement);
 
 	return point;
 }
@@ -25202,6 +25221,7 @@ ED.IrisHook.prototype.draw = function(_point) {
  */
 ED.IrisHook.prototype.groupDescription = function() {
 	return "Iris hooks used at ";
+	
 }
 
 /**
@@ -37235,9 +37255,15 @@ ED.SubretinalPFCL.prototype.groupDescription = function() {
 ED.Supramid = function(_drawing, _parameterJSON) {
 	// Set classname
 	this.className = "Supramid";
+	
+	// Other parameters
+	this.percent = '50';
 
 	// Saved parameters
-	this.savedParameterArray = ['apexX', 'apexY', 'rotation'];
+	this.savedParameterArray = ['apexX', 'apexY', 'rotation', 'percent'];
+
+	// Parameters in doodle control bar (parameter name: parameter label)
+	this.controlParameterArray = {'percent':'Percentage of tube'};
 
 	// Call superclass constructor
 	ED.Doodle.call(this, _drawing, _parameterJSON);
@@ -37267,6 +37293,14 @@ ED.Supramid.prototype.setPropertyDefaults = function() {
 	// Update component of validation array for simple parameters
 	this.parameterValidationArray['apexX']['range'].setMinAndMax(-800, +800);
 	this.parameterValidationArray['apexY']['range'].setMinAndMax(-800, +800);
+	
+	// Add complete validation arrays for derived parameters
+	this.parameterValidationArray['percent'] = {
+		kind: 'other',
+		type: 'string',
+		list: ['0', '10', '20', '30', '40', '50', '60', '70', '80', '90', '100'],
+		animate: false
+	};
 }
 
 /**
@@ -37275,6 +37309,8 @@ ED.Supramid.prototype.setPropertyDefaults = function() {
 ED.Supramid.prototype.setParameterDefaults = function() {
 	this.apexX = -660;
 	this.apexY = 30;
+	
+	this.setParameterFromString('percent', '50');
 
 	// Make rotation same as tube
 	var doodle = this.drawing.lastDoodleOfClass("Tube");
@@ -37330,9 +37366,70 @@ ED.Supramid.prototype.draw = function(_point) {
 			var xDev = startPoint.x/Math.abs(startPoint.x) * 100;
 			ctx.beginPath()
 			ctx.moveTo(startPoint.x, startPoint.y);
+			/*
 			ctx.bezierCurveTo(startPoint.x + xDev, startPoint.y - 100, tubePoint.x + xDev, tubePoint.y, doodle.bezierArray['sp'].x, doodle.bezierArray['sp'].y);
 			ctx.bezierCurveTo(doodle.bezierArray['cp1'].x, doodle.bezierArray['cp1'].y, doodle.bezierArray['cp2'].x, doodle.bezierArray['cp2'].y, doodle.bezierArray['ep'].x, doodle.bezierArray['ep'].y);
+			*/
+			ctx.bezierCurveTo(startPoint.x + xDev, startPoint.y - 100, tubePoint.x + xDev, tubePoint.y, doodle.bezierArray['sp'].x, doodle.bezierArray['sp'].y);
 
+			// Calculate total length of path
+			var totalLength = 0;
+			totalLength += doodle.bezierArray['sp'].distanceTo(doodle.bezierArray['cp1']);
+			totalLength += doodle.bezierArray['cp1'].distanceTo(doodle.bezierArray['cp2']);
+			totalLength += doodle.bezierArray['cp2'].distanceTo(doodle.bezierArray['ep']);
+			
+			// Calculate desired length
+			var desiredLength = totalLength * parseFloat(this.percent)/100;
+			
+			// Create line segments appropriately
+			var keepGoing = true;
+			var remainingLength = desiredLength;
+			
+			var segmentLength = doodle.bezierArray['sp'].distanceTo(doodle.bezierArray['cp1']);
+			if (segmentLength < remainingLength) {
+				remainingLength -= segmentLength;
+				ctx.lineTo(doodle.bezierArray['cp1'].x, doodle.bezierArray['cp1'].y);
+			}
+			else {
+				var prop = remainingLength * 100/segmentLength;
+				var p = doodle.bezierArray['sp'].pointAtPercentageFromPointToPoint(prop, doodle.bezierArray['cp1']);
+				ctx.lineTo(p.x, p.y);
+				keepGoing = false;
+			}
+
+			if (keepGoing) {
+				segmentLength = doodle.bezierArray['cp1'].distanceTo(doodle.bezierArray['cp2']);
+				if (segmentLength < remainingLength) {
+					remainingLength -= segmentLength;
+					ctx.lineTo(doodle.bezierArray['cp2'].x, doodle.bezierArray['cp2'].y);
+				}
+				else {
+					var prop = remainingLength * 100/segmentLength;
+					var p = doodle.bezierArray['cp1'].pointAtPercentageFromPointToPoint(prop, doodle.bezierArray['cp2']);
+					ctx.lineTo(p.x, p.y);
+					keepGoing = false;
+				}
+			}
+
+			if (keepGoing) {						
+				segmentLength = doodle.bezierArray['cp2'].distanceTo(doodle.bezierArray['ep']);
+				if (segmentLength < remainingLength) {
+					remainingLength -= segmentLength;
+					ctx.lineTo(doodle.bezierArray['ep'].x, doodle.bezierArray['ep'].y);
+				}
+				else {
+					var prop = remainingLength * 100/segmentLength;
+					var p = doodle.bezierArray['cp2'].pointAtPercentageFromPointToPoint(prop, doodle.bezierArray['ep']);
+					ctx.lineTo(p.x, p.y);
+					keepGoing = false;
+				}
+			}
+						
+// 			ctx.lineTo(doodle.bezierArray['cp1'].x, doodle.bezierArray['cp1'].y);
+// 			ctx.lineTo(doodle.bezierArray['cp2'].x, doodle.bezierArray['cp2'].y);
+// 			ctx.lineTo(doodle.bezierArray['ep'].x, doodle.bezierArray['ep'].y);
+			
+			
 			ctx.lineWidth = 4;
 			ctx.strokeStyle = "purple";
 			ctx.stroke();
@@ -38579,6 +38676,7 @@ ED.TrabySuture.prototype.setPropertyDefaults = function() {
 	// Update component of validation array for simple parameters
 	this.parameterValidationArray['apexX']['range'].setMinAndMax(-50, +50);
 	this.parameterValidationArray['apexY']['range'].setMinAndMax(+70, +70);
+	this.parameterValidationArray['originY']['range'].setMinAndMax(-625, +625);
 
 	// Add complete validation arrays for derived parameters
 	this.parameterValidationArray['type'] = {
@@ -38614,13 +38712,14 @@ ED.TrabySuture.prototype.setParameterDefaults = function() {
 	var trabyFlap = this.drawing.lastDoodleOfClass('TrabyFlap');
 	if (trabyFlap) {
 		var number = this.drawing.numberOfDoodlesOfClass("TrabySuture");
-		var p;
+		
+		// Get top of Traby suture
+		var p = new ED.Point(-1 * trabyFlap.right.x, (trabyFlap.height + 0 * (trabyFlap.right.y - trabyFlap.height)));
+		p.setWithPolars(p.length(), p.direction() + trabyFlap.rotation);
 
 		switch (number) {
 			// First suture is top left
 			case 0:
-				p = new ED.Point(-1 * trabyFlap.right.x, (trabyFlap.height + 0 * (trabyFlap.right.y - trabyFlap.height)));
-				p.setWithPolars(p.length(), p.direction() + trabyFlap.rotation);
 				this.originX = p.x;
 				this.originY = p.y;
 				this.rotation = trabyFlap.rotation;
@@ -38634,11 +38733,12 @@ ED.TrabySuture.prototype.setParameterDefaults = function() {
 				this.originY = p.y;
 				this.rotation = trabyFlap.rotation;
 				break;
+			// Third suture is between the first two
 			case 2:
 				var doodle1 = this.drawing.firstDoodleOfClass("TrabySuture");
 				var doodle2 = this.drawing.lastDoodleOfClass("TrabySuture");
 				this.originX = doodle1.originX + (doodle2.originX - doodle1.originX)/2;
-				this.originY = doodle1.originY + (doodle2.originY - doodle1.originY)/2;
+				this.originY = p.y;
 				this.rotation = doodle2.rotation;
 				break;
 			default:
@@ -39902,6 +40002,7 @@ ED.Tube.prototype.draw = function(_point) {
 				break;
 		}
 
+		/* Curvy tube abandoned, since Supramid needs adjusting along entire length and no function available to determine position on Bezier curve
 		// Bezier points for curve of tube in array to export to Supramid
 		this.bezierArray['sp'] = new ED.Point(0, 380 * s + d);
 		this.bezierArray['cp1'] = new ED.Point(0, 420 * s + d);
@@ -39912,6 +40013,23 @@ ED.Tube.prototype.draw = function(_point) {
 		ctx.moveTo(0, 290 * s + d);
 		ctx.lineTo(this.bezierArray['sp'].x, this.bezierArray['sp'].y);		
  		ctx.bezierCurveTo(this.bezierArray['cp1'].x, this.bezierArray['cp1'].y, this.bezierArray['cp2'].x, this.bezierArray['cp2'].y, this.bezierArray['ep'].x, this.bezierArray['ep'].y);
+ 		*/
+ 		
+ 		// Straight line points for curve of tube in array to export to Supramid
+ 		this.bezierArray['sp'] = new ED.Point(0, 380 * s + d);
+		this.bezierArray['cp1'] = new ED.Point(0, 420 * s + d);
+		var apexPoint = new ED.Point(this.apexX, this.apexY);
+		var entryPoint = new ED.Point(0,0);
+		entryPoint.setWithPolars(430, apexPoint.direction());
+		this.bezierArray['cp2'] = entryPoint;
+		this.bezierArray['ep'] = apexPoint;
+
+		ctx.beginPath();
+		ctx.moveTo(0, 290 * s + d);
+		ctx.lineTo(this.bezierArray['sp'].x, this.bezierArray['sp'].y);		
+ 		ctx.lineTo(this.bezierArray['cp1'].x, this.bezierArray['cp1'].y);
+ 		ctx.lineTo(this.bezierArray['cp2'].x, this.bezierArray['cp2'].y);
+ 		ctx.lineTo(this.bezierArray['ep'].x, this.bezierArray['ep'].y);
 		
 		// Simulate tube with gray line and white narrower line
 		ctx.strokeStyle = "rgba(150,150,150,0.5)";
@@ -40377,10 +40495,17 @@ ED.TubeLigation.prototype.setParameterDefaults = function() {
 		}
 	}
 	
-	// If existing doodle, put in same meridian, but higher up
-	var doodle = this.drawing.lastDoodleOfClass(this.className);
-	if (doodle) {
-		this.move(doodle.originX * 1.02, doodle.originY * 1.02);
+	// If existing doodles, put in same meridian, but higher up
+	var number = this.drawing.numberOfDoodlesOfClass(this.className);
+	var doodle = this.drawing.firstDoodleOfClass(this.className);
+	
+	switch (number) {
+		case 1:
+			this.move(doodle.originX * 1.02, doodle.originY * 1.02);
+			break;
+		case 2:
+			this.move(doodle.originX * 0.5, doodle.originY * 0.5);
+			break;
 	}
 }
 
@@ -40433,12 +40558,19 @@ ED.TubeLigation.prototype.draw = function(_point) {
 }
 
 /**
- * Returns a string containing a text description of the doodle
+ * Returns a String which, if not empty, determines the root descriptions of multiple instances of the doodle
  *
- * @returns {String} Description of doodle
+ * @returns {String} Group description
  */
-ED.TubeLigation.prototype.description = function() {
-	return "TubeLigation suture";
+ED.TubeLigation.prototype.groupDescription = function() {
+	var returnString = "";
+	
+	var number = this.drawing.numberOfDoodlesOfClass(this.className);
+	returnString = number + " ligation suture";
+	
+	if (number > 1) returnString += "s";
+	
+	return returnString;
 }
 
 /**
