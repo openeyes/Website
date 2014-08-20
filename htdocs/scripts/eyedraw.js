@@ -2509,7 +2509,6 @@ ED.Drawing.prototype.eventHandler = function(_type, _doodleId, _className, _elem
 								if (attribute) {
 									ED.errorHandler('ED.Drawing', 'eventHandler', 'Binding to a textfield with a non-standard attribute not yet supported');
 								} else {
-									console.log('setting textfield - needs testing with a suitable doodle');
 									element.value = validityArray.value;
 								}
 								break;
@@ -4313,6 +4312,20 @@ ED.Doodle.prototype.parameterElement = function(_parameter) {
 			}
     		break;
 
+		case 'float':
+			// Create a text input element
+			element = document.createElement('input');
+    		element.type = 'text';
+    		element.setAttribute('id', this.parameterControlElementId(_parameter));
+    		break;
+
+		case 'int':
+			// Create a text input element
+			element = document.createElement('input');
+    		element.type = 'text';
+    		element.setAttribute('id', this.parameterControlElementId(_parameter));
+    		break;
+    		    		
 		case 'freeText':
 			// Create a text input element
 			element = document.createElement('input');
@@ -6207,48 +6220,6 @@ ED.Point.prototype.tangentialControlPoint = function(_phi) {
 	return point;
 }
 
-/**
- * Creates a new point on a straight line between two points at a proportional distance 
- *
- * @param {Float} _percent Percentage distance along line
- * @param {Point} _ep End point
- * @returns {Point} _point Point
- */
-ED.Point.prototype.pointAtPercentageFromPointToPoint = function(_percent, _point) {
-	// Calculate distances (clockwise from north)
-	var xIncrement = (_point.x - this.x) * _percent/100;
-	var yIncrement = (_point.y - this.y) * _percent/100;
-
-	// Create point and set length and direction
-	var point = new ED.Point(this.x + xIncrement, this.y + yIncrement);
-
-	return point;
-}
-
-/**
- * Creates a new point on a cubic Bezier curve at parameter t along curve 
- *
- * @param {Float} _t Proportion along curve (0-1)
- * @param {Point} _cp1 Control point 1
- * @param {Point} _cp2 Control point 2
- * @param {Point} _ep End point
- * @returns {Point} _point Point
- */
-ED.Point.prototype.bezierPointAtParameter = function(_t, _cp1, _cp2, _ep) {
-	// Calculate scalars
-	var t2 = _t * _t;
-	var t3 = t2 * _t;
-	var mt = 1 - _t;
-	var mt2 = mt * mt;
-	var mt3 = mt2 * mt;
-	
-	// Calculate x and y values of point
-	var x = this.x * mt3 + 3 * _cp1.x * mt2 * _t + 3 * _cp2.x * mt * t2 + _ep.x * t3;
-	var y = this.y * mt3 + 3 * _cp1.y * mt2 * _t + 3 * _cp2.y * mt * t2 + _ep.y * t3;
-	
-	// Return point
-	return new ED.Point(x, y);
-} 
 /**
  * Returns a point in JSON encoding
  *
@@ -23339,8 +23310,10 @@ ED.Gonioscopy = function(_drawing, _parameterJSON) {
 	this.riri = 176;
 	this.rpu = 100;
 
+    this.mode = "Basic";
+
 	// Saved parameters
-	this.savedParameterArray = ['apexX', 'apexY'];
+	this.savedParameterArray = ['apexX', 'apexY', 'mode'];
 
 	// Call superclass constructor
 	ED.Doodle.call(this, _drawing, _parameterJSON);
@@ -23373,6 +23346,13 @@ ED.Gonioscopy.prototype.setPropertyDefaults = function() {
 	// Update component of validation array for simple parameters
 	this.parameterValidationArray['apexX']['range'].setMinAndMax(-460, -420);
 	this.parameterValidationArray['apexY']['range'].setMinAndMax(-460, -400);
+
+    this.parameterValidationArray['mode'] = {
+	kind: 'derived',
+	type: 'string',
+	list: ['Basic', 'Expert'],
+	animate: false
+    };
 }
 
 /**
@@ -23381,6 +23361,7 @@ ED.Gonioscopy.prototype.setPropertyDefaults = function() {
 ED.Gonioscopy.prototype.setParameterDefaults = function() {
 	this.apexX = -460;
 	this.apexY = -460;
+    this.setParameterFromString('mode', 'Basic');
 }
 
 /**
@@ -25245,7 +25226,6 @@ ED.IrisHook.prototype.draw = function(_point) {
  */
 ED.IrisHook.prototype.groupDescription = function() {
 	return "Iris hooks used at ";
-	
 }
 
 /**
@@ -26334,14 +26314,44 @@ ED.LasikFlap = function(_drawing, _parameterJSON) {
 	// Set classname
 	this.className = "LasikFlap";
 
+	// Derived parameters
+	this.diameter = 6;
+	
 	// Other parameters
-	this.gradeDLK = 'None';
+	this.femtoLaser = "";
+	this.depth = 80;
+	this.angle = 30;
+	this.spotSeparation = "";
+	this.lineSeparation = "";
+	this.energyLevel = "";
+	this.OBLGrade = "";
 
 	// Saved parameters
-	this.savedParameterArray = ['scaleX', 'scaleY', 'rotation', 'gradeDLK'];
+	this.savedParameterArray = [
+		'scaleX', 
+		'scaleY', 
+		'rotation', 
+		'femtoLaser', 
+		'diameter', 
+		'depth', 
+		'angle', 
+		'spotSeparation', 
+		'lineSeparation',
+		'energyLevel',
+		'OBLGrade'
+	];
 
 	// Parameters in doodle control bar (parameter name: parameter label)
-	this.controlParameterArray = {'gradeDLK':'DLK Grade'};
+	this.controlParameterArray = {
+		'femtoLaser':'Femto laser', 
+		'diameter':'Diameter', 
+		'depth':'Depth', 
+		'angle':'Sidecut angle', 
+		'spotSeparation':'Spot separation',
+		'lineSeparation':'Line separation',
+		'energyLevel':'Energy level',
+		'OBLGrade':'OBL grade'
+	};
 
 	// Call superclass constructor
 	ED.Doodle.call(this, _drawing, _parameterJSON);
@@ -26366,16 +26376,63 @@ ED.LasikFlap.prototype.setHandles = function() {
  */
 ED.LasikFlap.prototype.setPropertyDefaults = function() {
 	this.isMoveable = false;
+	this.isRotatable = false;
 	this.isUnique = true;
 
 	// Update component of validation array for simple parameters
-	this.parameterValidationArray['scaleX']['range'].setMinAndMax(+0.75, +1.00);
-	this.parameterValidationArray['scaleY']['range'].setMinAndMax(+0.75, +1.00);
+	this.parameterValidationArray['scaleX']['range'].setMinAndMax(+0.60, +1.00);
+	this.parameterValidationArray['scaleY']['range'].setMinAndMax(+0.60, +1.00);
 
-	this.parameterValidationArray['gradeDLK'] = {
+	// Derived parameters
+	this.parameterValidationArray['diameter'] = {
+		kind: 'derived',
+		type: 'float',
+		range: new ED.Range(6, 10),
+		precision: 1,
+		animate: true
+	};
+	
+	// Other parameters
+	this.parameterValidationArray['femtoLaser'] = {
 		kind: 'other',
 		type: 'string',
-		list: ['None', 'Grade 1', 'Grade 2', 'Grade 3'],
+		list: ['DDL AMO iFS', 'Zeiss Visumax', 'Zeimer Z7'],
+		animate: true
+	};
+	this.parameterValidationArray['depth'] = {
+		kind: 'other',
+		type: 'int',
+		range: new ED.Range(80, 200),
+		animate: false
+	};
+	this.parameterValidationArray['angle'] = {
+		kind: 'other',
+		type: 'int',
+		range: new ED.Range(30, 150),
+		animate: false
+	};
+	this.parameterValidationArray['spotSeparation'] = {
+		kind: 'other',
+		type: 'string',
+		list: ['0.5um', '0.6um', '0.7um', '0.8um', '0.9um', '1.0um'],
+		animate: false
+	};
+	this.parameterValidationArray['lineSeparation'] = {
+		kind: 'other',
+		type: 'string',
+		list: ['0.5um', '0.6um', '0.7um', '0.8um', '0.9um', '1.0um'],
+		animate: false
+	};
+	this.parameterValidationArray['energyLevel'] = {
+		kind: 'other',
+		type: 'string',
+		list: ['0.5uJ', '0.6uJ', '0.7uJ', '0.8uJ', '0.9uJ', '1.0uJ'],
+		animate: false
+	};
+	this.parameterValidationArray['OBLGrade'] = {
+		kind: 'other',
+		type: 'string',
+		list: ['None', 'Trace outside pupillary axis', 'In pupillary axis'],
 		animate: false
 	};
 }
@@ -26384,7 +26441,38 @@ ED.LasikFlap.prototype.setPropertyDefaults = function() {
  * Sets default parameters
  */
 ED.LasikFlap.prototype.setParameterDefaults = function() {
-	this.apexY = -100;
+	this.setParameterFromString('femtoLaser', 'DDL AMO iFS');
+	this.setParameterFromString('diameter', '10.0');
+	this.setParameterFromString('depth', '100');
+	this.setParameterFromString('spotSeparation', '0.5um');
+	this.setParameterFromString('lineSeparation', '0.5um');
+	this.setParameterFromString('energyLevel', '0.5uJ');
+	this.setParameterFromString('OBLGrade', 'None');
+}
+
+/**
+ * Calculates values of dependent parameters. This function embodies the relationship between simple and derived parameters
+ * The returned parameters are animated if their 'animate' property is set to true
+ *
+ * @param {String} _parameter Name of parameter that has changed
+ * @value {Undefined} _value Value of parameter to calculate
+ * @returns {Array} Associative array of values of dependent parameters
+ */
+ED.LasikFlap.prototype.dependentParameterValues = function(_parameter, _value) {
+	var returnArray = new Array();
+
+	switch (_parameter) {
+		case 'scaleX':
+			returnArray['diameter'] = _value * 10;
+			break;
+
+		case 'diameter':
+			returnArray['scaleX'] = parseFloat(_value)/10;
+			returnArray['scaleY'] = parseFloat(_value)/10;
+			break;
+	}
+
+	return returnArray;
 }
 
 /**
@@ -29965,6 +30053,212 @@ ED.PRPPostPole.prototype.draw = function(_point) {
  */
 ED.PRPPostPole.prototype.description = function() {
 	return "Panretinal photocoagulation";
+}
+
+/**
+ * OpenEyes
+ *
+ * (C) Moorfields Eye Hospital NHS Foundation Trust, 2008-2011
+ * (C) OpenEyes Foundation, 2011-2013
+ * This file is part of OpenEyes.
+ * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @package OpenEyes
+ * @link http://www.openeyes.org.uk
+ * @author OpenEyes <info@openeyes.org.uk>
+ * @copyright Copyright (c) 2008-2011, Moorfields Eye Hospital NHS Foundation Trust
+ * @copyright Copyright (c) 2011-2013, OpenEyes Foundation
+ * @license http://www.gnu.org/licenses/gpl-3.0.html The GNU General Public License V3.0
+ */
+
+/**
+ * PTK (Photo Therapeutic Keratectomy
+ *
+ * @class PTK
+ * @property {String} className Name of doodle subclass
+ * @param {Drawing} _drawing
+ * @param {Object} _parameterJSON
+ */
+ED.PTK = function(_drawing, _parameterJSON) {
+	// Set classname
+	this.className = "PTK";
+
+	// Derived parameters
+	this.diameter = 6;
+	
+	// Other parameters
+	this.depth = 80;
+	this.transepithelialTreatment = false;
+	this.topographyGuidedTreatment = false;
+
+	// Saved parameters
+	this.savedParameterArray = [
+		'scaleX', 
+		'scaleY', 
+		'diameter', 
+		'depth',
+		'transepithelialTreatment',
+		'topographyGuidedTreatment' 
+	];
+
+	// Parameters in doodle control bar (parameter name: parameter label)
+	this.controlParameterArray = {
+		'diameter':'Diameter', 
+		'depth':'Depth',
+		'transepithelialTreatment':'Transepithelial',
+		'topographyGuidedTreatment':'Topography guided'
+	};
+
+	// Call superclass constructor
+	ED.Doodle.call(this, _drawing, _parameterJSON);
+}
+
+/**
+ * Sets superclass and constructor
+ */
+ED.PTK.prototype = new ED.Doodle;
+ED.PTK.prototype.constructor = ED.PTK;
+ED.PTK.superclass = ED.Doodle.prototype;
+
+/**
+ * Sets handle attributes
+ */
+ED.PTK.prototype.setHandles = function() {
+	this.handleArray[2] = new ED.Doodle.Handle(null, true, ED.Mode.Scale, false);
+}
+
+/**
+ * Sets default dragging attributes
+ */
+ED.PTK.prototype.setPropertyDefaults = function() {
+	this.isMoveable = false;
+	this.isRotatable = false;
+	this.isUnique = true;
+
+	// Update component of validation array for simple parameters
+	this.parameterValidationArray['scaleX']['range'].setMinAndMax(+0.10, +1.00);
+	this.parameterValidationArray['scaleY']['range'].setMinAndMax(+0.10, +1.00);
+
+	// Derived parameters
+	this.parameterValidationArray['diameter'] = {
+		kind: 'derived',
+		type: 'float',
+		range: new ED.Range(1, 10),
+		precision: 1,
+		animate: true
+	};
+	
+	// Other parameters
+	this.parameterValidationArray['depth'] = {
+		kind: 'other',
+		type: 'int',
+		range: new ED.Range(1, 400),
+		animate: false
+	};
+	this.parameterValidationArray['transepithelialTreatment'] = {
+		kind: 'derived',
+		type: 'bool',
+		display: true
+	};
+	this.parameterValidationArray['topographyGuidedTreatment'] = {
+		kind: 'derived',
+		type: 'bool',
+		display: true
+	};
+}
+
+/**
+ * Sets default parameters
+ */
+ED.PTK.prototype.setParameterDefaults = function() {
+	this.setParameterFromString('diameter', '10.0');
+	this.setParameterFromString('depth', '100');
+}
+
+/**
+ * Calculates values of dependent parameters. This function embodies the relationship between simple and derived parameters
+ * The returned parameters are animated if their 'animate' property is set to true
+ *
+ * @param {String} _parameter Name of parameter that has changed
+ * @value {Undefined} _value Value of parameter to calculate
+ * @returns {Array} Associative array of values of dependent parameters
+ */
+ED.PTK.prototype.dependentParameterValues = function(_parameter, _value) {
+	var returnArray = new Array();
+
+	switch (_parameter) {
+		case 'scaleX':
+			returnArray['diameter'] = _value * 10;
+			break;
+
+		case 'diameter':
+			returnArray['scaleX'] = parseFloat(_value)/10;
+			returnArray['scaleY'] = parseFloat(_value)/10;
+			break;
+	}
+
+	return returnArray;
+}
+
+/**
+ * Draws doodle or performs a hit test if a Point parameter is passed
+ *
+ * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+ */
+ED.PTK.prototype.draw = function(_point) {
+	// Get context
+	var ctx = this.drawing.context;
+
+	// Call draw method in superclass
+	ED.PTK.superclass.draw.call(this, _point);
+
+	// PTK
+	var r = 320;
+
+	// Boundary path
+	ctx.beginPath();
+
+	// Do an arc
+	ctx.arc(0, 0, r, 0, Math.PI * 2, true);
+
+	// Close path to produce straight line
+	ctx.closePath();
+
+	// Create transparent fill pattern
+	ctx.fillStyle = "rgba(155,255,255,0)";
+
+	// Transparent stroke
+	ctx.lineWidth = 2;
+	ctx.strokeStyle = "rgba(100,100,100,0.9)";
+
+	// Draw boundary path (also hit testing)
+	this.drawBoundary(_point);
+
+	// Coordinates of handles (in canvas plane)
+	var point = new ED.Point(0, 0)
+	point.setWithPolars(r, Math.PI/4);
+	this.handleArray[2].location = this.transform.transformPoint(point);
+
+	// Draw handles if selected
+	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
+
+	// Return value indicating successful hittest
+	return this.isClicked;
+}
+
+/**
+ * Returns a string containing a text description of the doodle
+ *
+ * @returns {String} Description of doodle
+ */
+ED.PTK.prototype.description = function() {
+	var returnString = "";
+
+	returnString = "PTK";
+
+	return returnString;
 }
 
 /**
@@ -35387,6 +35681,213 @@ ED.Rubeosis.prototype.description = function() {
  */
 
 /**
+ * SMILE (Photo Therapeutic Keratectomy
+ *
+ * @class SMILE
+ * @property {String} className Name of doodle subclass
+ * @param {Drawing} _drawing
+ * @param {Object} _parameterJSON
+ */
+ED.SMILE = function(_drawing, _parameterJSON) {
+	// Set classname
+	this.className = "SMILE";
+
+	// Derived parameters
+	this.diameter = 6;
+	
+	// Other parameters
+	this.thickness = 15;
+
+	// Saved parameters
+	this.savedParameterArray = [
+		'scaleX', 
+		'scaleY', 
+		'diameter', 
+		'thickness',
+	];
+
+	// Parameters in doodle control bar (parameter name: parameter label)
+	this.controlParameterArray = {
+		'diameter':'Diameter', 
+		'thickness':'Lenticule bed thickness'
+	};
+
+	// Call superclass constructor
+	ED.Doodle.call(this, _drawing, _parameterJSON);
+}
+
+/**
+ * Sets superclass and constructor
+ */
+ED.SMILE.prototype = new ED.Doodle;
+ED.SMILE.prototype.constructor = ED.SMILE;
+ED.SMILE.superclass = ED.Doodle.prototype;
+
+/**
+ * Sets handle attributes
+ */
+ED.SMILE.prototype.setHandles = function() {
+	this.handleArray[2] = new ED.Doodle.Handle(null, true, ED.Mode.Scale, false);
+}
+
+/**
+ * Sets default dragging attributes
+ */
+ED.SMILE.prototype.setPropertyDefaults = function() {
+	this.isMoveable = false;
+	this.isRotatable = false;
+	this.isUnique = true;
+
+	// Update component of validation array for simple parameters
+	this.parameterValidationArray['scaleX']['range'].setMinAndMax(+0.10, +1.00);
+	this.parameterValidationArray['scaleY']['range'].setMinAndMax(+0.10, +1.00);
+
+	// Derived parameters
+	this.parameterValidationArray['diameter'] = {
+		kind: 'derived',
+		type: 'float',
+		range: new ED.Range(1, 10),
+		precision: 1,
+		animate: true
+	};
+	
+	// Other parameters
+	this.parameterValidationArray['thickness'] = {
+		kind: 'other',
+		type: 'int',
+		range: new ED.Range(10, 30),
+		animate: false
+	};
+}
+
+/**
+ * Sets default parameters
+ */
+ED.SMILE.prototype.setParameterDefaults = function() {
+	this.setParameterFromString('diameter', '10.0');
+	this.setParameterFromString('thickness', '15');
+}
+
+/**
+ * Calculates values of dependent parameters. This function embodies the relationship between simple and derived parameters
+ * The returned parameters are animated if their 'animate' property is set to true
+ *
+ * @param {String} _parameter Name of parameter that has changed
+ * @value {Undefined} _value Value of parameter to calculate
+ * @returns {Array} Associative array of values of dependent parameters
+ */
+ED.SMILE.prototype.dependentParameterValues = function(_parameter, _value) {
+	var returnArray = new Array();
+
+	switch (_parameter) {
+		case 'scaleX':
+			returnArray['diameter'] = _value * 10;
+			break;
+
+		case 'diameter':
+			returnArray['scaleX'] = parseFloat(_value)/10;
+			returnArray['scaleY'] = parseFloat(_value)/10;
+			break;
+	}
+
+	return returnArray;
+}
+
+/**
+ * Draws doodle or performs a hit test if a Point parameter is passed
+ *
+ * @param {Point} _point Optional point in canvas plane, passed if performing hit test
+ */
+ED.SMILE.prototype.draw = function(_point) {
+	// Get context
+	var ctx = this.drawing.context;
+
+	// Call draw method in superclass
+	ED.SMILE.superclass.draw.call(this, _point);
+
+	// SMILE
+	var r = 320;
+
+	// Boundary path
+	ctx.beginPath();
+
+	// Do an arc
+	ctx.arc(0, 0, r, 0, Math.PI * 2, true);
+
+	// Close path to produce straight line
+	ctx.closePath();
+
+	// Create transparent fill pattern
+	ctx.fillStyle = "rgba(155,255,255,0)";
+
+	// Transparent stroke
+	ctx.lineWidth = 2;
+	ctx.strokeStyle = "rgba(100,100,100,0.9)";
+
+	// Draw boundary path (also hit testing)
+	this.drawBoundary(_point);
+
+	// Non boundary drawing
+	if (this.drawFunctionMode == ED.drawFunctionMode.Draw) {
+		ctx.beginPath();
+		ctx.arc(0, 0, r * 0.8, 0, Math.PI * 2, true);
+		ctx.setLineDash([8,12]);
+		ctx.stroke();
+		ctx.setLineDash([]);
+		
+		ctx.beginPath();
+		var theta = Math.PI/ 8;
+		ctx.arc(0, 0, r, -Math.PI / 2 + theta, -Math.PI / 2 - theta, true);
+		ctx.arc(0, 0, r - 30, -Math.PI / 2 - theta, -Math.PI / 2 + theta, false);
+		ctx.closePath();
+		ctx.fillStyle = "rgba(100,100,200,0.75)";
+		ctx.fill();
+	}
+	
+	// Coordinates of handles (in canvas plane)
+	var point = new ED.Point(0, 0)
+	point.setWithPolars(r, Math.PI/4);
+	this.handleArray[2].location = this.transform.transformPoint(point);
+
+	// Draw handles if selected
+	if (this.isSelected && !this.isForDrawing) this.drawHandles(_point);
+
+	// Return value indicating successful hittest
+	return this.isClicked;
+}
+
+/**
+ * Returns a string containing a text description of the doodle
+ *
+ * @returns {String} Description of doodle
+ */
+ED.SMILE.prototype.description = function() {
+	var returnString = "";
+
+	returnString = "SMILE";
+
+	return returnString;
+}
+
+/**
+ * OpenEyes
+ *
+ * (C) Moorfields Eye Hospital NHS Foundation Trust, 2008-2011
+ * (C) OpenEyes Foundation, 2011-2013
+ * This file is part of OpenEyes.
+ * OpenEyes is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * OpenEyes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License along with OpenEyes in a file titled COPYING. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @package OpenEyes
+ * @link http://www.openeyes.org.uk
+ * @author OpenEyes <info@openeyes.org.uk>
+ * @copyright Copyright (c) 2008-2011, Moorfields Eye Hospital NHS Foundation Trust
+ * @copyright Copyright (c) 2011-2013, OpenEyes Foundation
+ * @license http://www.gnu.org/licenses/gpl-3.0.html The GNU General Public License V3.0
+ */
+
+/**
  * Scleral incision
  *
  * @class ScleralIncision
@@ -37279,31 +37780,10 @@ ED.SubretinalPFCL.prototype.groupDescription = function() {
 ED.Supramid = function(_drawing, _parameterJSON) {
 	// Set classname
 	this.className = "Supramid";
-	
-	// Other parameters
-	this.percent = '80';
 
 	// Saved parameters
-	this.savedParameterArray = ['apexX', 'apexY', 'rotation', 'percent'];
+	this.savedParameterArray = ['apexX', 'apexY', 'rotation'];
 
-	// Parameters in doodle control bar (parameter name: parameter label)
-	this.controlParameterArray = {'percent':'Percentage of tube'};
-	
-	// Bezier segmentation is not linear, so can make fine adjustments here if required
-	this.adjustmentArray = {
-		'0':0, 
-		'10':10, 
-		'20':20, 
-		'30':30, 
-		'40':40, 
-		'50':50, 
-		'60':60, 
-		'70':70, 
-		'80':80, 
-		'90':90, 
-		'100':100
-	}
-	
 	// Call superclass constructor
 	ED.Doodle.call(this, _drawing, _parameterJSON);
 }
@@ -37332,14 +37812,6 @@ ED.Supramid.prototype.setPropertyDefaults = function() {
 	// Update component of validation array for simple parameters
 	this.parameterValidationArray['apexX']['range'].setMinAndMax(-800, +800);
 	this.parameterValidationArray['apexY']['range'].setMinAndMax(-800, +800);
-	
-	// Add complete validation arrays for derived parameters
-	this.parameterValidationArray['percent'] = {
-		kind: 'other',
-		type: 'string',
-		list: ['0', '10', '20', '30', '40', '50', '60', '70', '80', '90', '100'],
-		animate: false
-	};
 }
 
 /**
@@ -37348,9 +37820,6 @@ ED.Supramid.prototype.setPropertyDefaults = function() {
 ED.Supramid.prototype.setParameterDefaults = function() {
 	this.apexX = -660;
 	this.apexY = 30;
-	
-	// Default value of insertion percentage
-	this.setParameterFromString('percent', '80');
 
 	// Make rotation same as tube
 	var doodle = this.drawing.lastDoodleOfClass("Tube");
@@ -37407,17 +37876,8 @@ ED.Supramid.prototype.draw = function(_point) {
 			ctx.beginPath()
 			ctx.moveTo(startPoint.x, startPoint.y);
 			ctx.bezierCurveTo(startPoint.x + xDev, startPoint.y - 100, tubePoint.x + xDev, tubePoint.y, doodle.bezierArray['sp'].x, doodle.bezierArray['sp'].y);
+			ctx.bezierCurveTo(doodle.bezierArray['cp1'].x, doodle.bezierArray['cp1'].y, doodle.bezierArray['cp2'].x, doodle.bezierArray['cp2'].y, doodle.bezierArray['ep'].x, doodle.bezierArray['ep'].y);
 
-			// Number of bezier segments
-			var nb = 50;
-			
-			// Draw Bezier of appropriate length for corrected proportion along curve
-			var pc = this.adjustmentArray[this.percent];
-			for (var t = 0; t < 1/nb + pc/100; t = t + 1/nb) {
-				var nextPoint = doodle.bezierArray['sp'].bezierPointAtParameter(t, doodle.bezierArray['cp1'], doodle.bezierArray['cp2'], doodle.bezierArray['ep']);
-				ctx.lineTo(nextPoint.x, nextPoint.y);
-			}
-			
 			ctx.lineWidth = 4;
 			ctx.strokeStyle = "purple";
 			ctx.stroke();
@@ -37435,12 +37895,39 @@ ED.Supramid.prototype.draw = function(_point) {
 }
 
 /**
+ * Returns parameters
+ *
+ * @returns {String} value of parameter
+ */
+// ED.Supramid.prototype.getParameter = function(_parameter)
+// {
+//     var returnValue;
+//
+//     switch (_parameter)
+//     {
+//         // Position of end of suture
+//         case 'endPosition':
+//             var r = Math.sqrt(this.apexX * this.apexX + this.apexY * this.apexY);
+//
+//             if (r < 280 ) returnValue = 'in the AC';
+//             else returnValue = ((r - 280)/14).toFixed(0) + 'mm from limbus';
+//             break;
+//
+//         default:
+//             returnValue = "";
+//             break;
+//     }
+//
+//     return returnValue;
+// }
+
+/**
  * Returns a string containing a text description of the doodle
  *
  * @returns {String} Description of doodle
  */
 ED.Supramid.prototype.description = function() {
-	return "Supramid suture " + this.percent + "% along tube";
+	return "Supramid suture";
 }
 
 /**
@@ -38637,7 +39124,6 @@ ED.TrabySuture.prototype.setPropertyDefaults = function() {
 	// Update component of validation array for simple parameters
 	this.parameterValidationArray['apexX']['range'].setMinAndMax(-50, +50);
 	this.parameterValidationArray['apexY']['range'].setMinAndMax(+70, +70);
-	this.parameterValidationArray['originY']['range'].setMinAndMax(-625, +625);
 
 	// Add complete validation arrays for derived parameters
 	this.parameterValidationArray['type'] = {
@@ -38673,14 +39159,13 @@ ED.TrabySuture.prototype.setParameterDefaults = function() {
 	var trabyFlap = this.drawing.lastDoodleOfClass('TrabyFlap');
 	if (trabyFlap) {
 		var number = this.drawing.numberOfDoodlesOfClass("TrabySuture");
-		
-		// Get top of Traby suture
-		var p = new ED.Point(-1 * trabyFlap.right.x, (trabyFlap.height + 0 * (trabyFlap.right.y - trabyFlap.height)));
-		p.setWithPolars(p.length(), p.direction() + trabyFlap.rotation);
+		var p;
 
 		switch (number) {
 			// First suture is top left
 			case 0:
+				p = new ED.Point(-1 * trabyFlap.right.x, (trabyFlap.height + 0 * (trabyFlap.right.y - trabyFlap.height)));
+				p.setWithPolars(p.length(), p.direction() + trabyFlap.rotation);
 				this.originX = p.x;
 				this.originY = p.y;
 				this.rotation = trabyFlap.rotation;
@@ -38694,12 +39179,11 @@ ED.TrabySuture.prototype.setParameterDefaults = function() {
 				this.originY = p.y;
 				this.rotation = trabyFlap.rotation;
 				break;
-			// Third suture is between the first two
 			case 2:
 				var doodle1 = this.drawing.firstDoodleOfClass("TrabySuture");
 				var doodle2 = this.drawing.lastDoodleOfClass("TrabySuture");
 				this.originX = doodle1.originX + (doodle2.originX - doodle1.originX)/2;
-				this.originY = p.y;
+				this.originY = doodle1.originY + (doodle2.originY - doodle1.originY)/2;
 				this.rotation = doodle2.rotation;
 				break;
 			default:
@@ -39836,6 +40320,7 @@ ED.Tube.prototype.draw = function(_point) {
 				ctx.lineTo(-40 * s, 0 * s + d);
 				ctx.lineTo(-200 * s, 0 * s + d);
 				ctx.closePath();
+
 				ctx.fillStyle = "rgba(250,250,250,0.7)";
 				ctx.fill();
 
@@ -39964,15 +40449,10 @@ ED.Tube.prototype.draw = function(_point) {
 
 		// Bezier points for curve of tube in array to export to Supramid
 		this.bezierArray['sp'] = new ED.Point(0, 380 * s + d);
-		this.bezierArray['cp1'] = new ED.Point(0, 460 * s + d);
+		this.bezierArray['cp1'] = new ED.Point(0, 420 * s + d);
+		this.bezierArray['cp2'] = new ED.Point(this.apexX * 1.5, this.apexY + ((290 * s + d) - this.apexY) * 0.5);
 		this.bezierArray['ep'] = new ED.Point(this.apexX, this.apexY);
 		
-		// CP2 varies according to displacement from midline
-		var apexPoint = new ED.Point(this.apexX, this.apexY);
-		var angle = apexPoint.direction() < Math.PI?apexPoint.direction():(2 * Math.PI - apexPoint.direction());
-		this.bezierArray['cp2'] = apexPoint.pointAtRadiusAndClockwiseAngle(300 * (1 + 1.5 * angle), angle * 0.2);
-		
-		// Path of tube
 		ctx.beginPath();
 		ctx.moveTo(0, 290 * s + d);
 		ctx.lineTo(this.bezierArray['sp'].x, this.bezierArray['sp'].y);		
@@ -40224,6 +40704,7 @@ ED.TubeExtender.prototype.draw = function(_point) {
    		ctx.lineTo(-50 * s, 400 * s + d);
    		ctx.quadraticCurveTo(-50 * s, 420 * s + d, -30 * s, 420 * s + d);
    		ctx.lineTo(0 * s, 420 * s + d);
+
    		ctx.lineTo(30 * s, 420 * s + d);
   		ctx.quadraticCurveTo(50 * s, 420 * s + d, 50 * s, 400 * s + d);
   		ctx.lineTo(50 * s, 340 * s + d);
@@ -40231,26 +40712,23 @@ ED.TubeExtender.prototype.draw = function(_point) {
   		ctx.lineTo(50 * s, 200 * s + d);
   		ctx.quadraticCurveTo(50 * s, 180 * s + d, 30 * s, 180 * s + d);
   		ctx.closePath();
+
 		ctx.stroke();
+
 
 		// Spots
 		this.drawCircle(ctx, -120 * s, 300 * s + d, 20 * s, ctx.fillStyle, 4, ctx.strokeStyle);
 		this.drawCircle(ctx, 120 * s, 300 * s + d, 20 * s, ctx.fillStyle, 4, ctx.strokeStyle);
 
-		// Bezier points for curve of tube in array to export to Supramid
+		// Bezier points for curve of TubeExtender in array to export to Supramid
 		this.bezierArray['sp'] = new ED.Point(0, 380 * s + d);
-		this.bezierArray['cp1'] = new ED.Point(0, 460 * s + d);
+		this.bezierArray['cp1'] = new ED.Point(0, 420 * s + d);
+		this.bezierArray['cp2'] = new ED.Point(this.apexX * 1.5, this.apexY + ((290 * s + d) - this.apexY) * 0.5);
 		this.bezierArray['ep'] = new ED.Point(this.apexX, this.apexY);
-		
-		// CP2 varies according to displacement from midline
-		var apexPoint = new ED.Point(this.apexX, this.apexY);
-		var angle = apexPoint.direction() < Math.PI?apexPoint.direction():(2 * Math.PI - apexPoint.direction());
-		this.bezierArray['cp2'] = apexPoint.pointAtRadiusAndClockwiseAngle(300 * (1 + 1.5 * angle), angle * 0.2);
-		
-		// Path of tube
+
 		ctx.beginPath();
 		ctx.moveTo(0, 290 * s + d);
-		ctx.lineTo(this.bezierArray['sp'].x, this.bezierArray['sp'].y);		
+		ctx.lineTo(this.bezierArray['sp'].x, this.bezierArray['sp'].y);
  		ctx.bezierCurveTo(this.bezierArray['cp1'].x, this.bezierArray['cp1'].y, this.bezierArray['cp2'].x, this.bezierArray['cp2'].y, this.bezierArray['ep'].x, this.bezierArray['ep'].y);
 
 		// Simulate tube with gray line and white narrower line
@@ -40260,6 +40738,8 @@ ED.TubeExtender.prototype.draw = function(_point) {
 		ctx.strokeStyle = "white";
 		ctx.lineWidth = 8;
 		ctx.stroke();
+
+
 	}
 
 	// Coordinates of handles (in canvas plane)
@@ -40442,17 +40922,10 @@ ED.TubeLigation.prototype.setParameterDefaults = function() {
 		}
 	}
 	
-	// If existing doodles, put in same meridian, but higher up
-	var number = this.drawing.numberOfDoodlesOfClass(this.className);
-	var doodle = this.drawing.firstDoodleOfClass(this.className);
-	
-	switch (number) {
-		case 1:
-			this.move(doodle.originX * 1.02, doodle.originY * 1.02);
-			break;
-		case 2:
-			this.move(doodle.originX * 0.5, doodle.originY * 0.5);
-			break;
+	// If existing doodle, put in same meridian, but higher up
+	var doodle = this.drawing.lastDoodleOfClass(this.className);
+	if (doodle) {
+		this.move(doodle.originX * 1.02, doodle.originY * 1.02);
 	}
 }
 
@@ -40505,19 +40978,12 @@ ED.TubeLigation.prototype.draw = function(_point) {
 }
 
 /**
- * Returns a String which, if not empty, determines the root descriptions of multiple instances of the doodle
+ * Returns a string containing a text description of the doodle
  *
- * @returns {String} Group description
+ * @returns {String} Description of doodle
  */
-ED.TubeLigation.prototype.groupDescription = function() {
-	var returnString = "";
-	
-	var number = this.drawing.numberOfDoodlesOfClass(this.className);
-	returnString = number + " ligation suture";
-	
-	if (number > 1) returnString += "s";
-	
-	return returnString;
+ED.TubeLigation.prototype.description = function() {
+	return "TubeLigation suture";
 }
 
 /**
