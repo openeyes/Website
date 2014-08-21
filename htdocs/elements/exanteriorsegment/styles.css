@@ -75,6 +75,16 @@ a.email {
 	width: 100px;
 }
 
+button.ed-button {
+	width: 36px;
+	height: 36px;
+	border: solid 1px;
+	background-color: #eeeeee;
+	margin-right: 0px;
+	margin-bottom: 2px;
+	overflow: visible;
+}
+
 button.imgbutton {
 	width: 36px;
 	height: 36px;
