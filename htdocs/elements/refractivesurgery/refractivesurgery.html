@@ -200,9 +200,31 @@
 							<td><p class="lable" >Nomogram adjustment used:</p></button>
 							</td>
 							<td>
-								<textarea name="opnote" id="opnote"></textarea>
+								<select id="targetMRSE">
+						            <option>+10%</option>
+						            <option>+9%</option>
+						            <option>+8%</option>
+						            <option>+7%</option>
+						            <option>+6%</option>
+						            <option>+5%</option>
+						            <option>+4%</option>
+						            <option>+3%</option>
+						            <option>+2%</option>
+						            <option>+1%</option>
+						            <option selected="selected">&nbsp0%</option>
+						            <option>-1%</option>
+						            <option>-2%</option>
+						            <option>-3%</option>
+						            <option>-4%</option>
+						            <option>-5%</option>
+						            <option>-6%</option>
+						            <option>-7%</option>
+						            <option>-8%</option>
+						            <option>-9%</option>
+						            <option>-10%</option>
+						        </select>
 							</td>
-							<td><p style="color:red;">Selectable options for these?</p></td>
+							<td><p style="color:red;">Defaults to 0%?</p></td>
 						</tr>
 						
 						<tr>
@@ -214,12 +236,11 @@
 							<td>
 								<input class="checkbox" type="checkbox" checked="checked"/>
 					        </td>
-					        <td><p style="color:red;">Defaults for these? All checked?</p></td>
 						</tr>
 						<tr>
 							<td><p class="lable" >Tetracaine:</p></td>
 							<td>
-								<input class="checkbox" type="checkbox" checked="checked"/>
+								<input class="checkbox" type="checkbox"/>
 					        </td>
 						</tr>
 						<tr>
@@ -272,16 +293,15 @@
 						<tr>
 							<td><p class="lable" >Treatment software version:</p></td>
 							<td>
- 								<input type="text"/>
+								<p>2.1</p>
+ 								<!-- <input type="text"/> -->
 					        </td>
-					        <td><p style="color:red;">Is this ever user selectable, or do we simple need to record it? How often does it change?</p></td>
 						</tr>
 						<tr>
 							<td><p class="lable" >Wavefront scan version:</p></td>
 							<td>
- 								<input type="text"/>
+ 								<p>2.6</p>
 					        </td>
-					        <td><p style="color:red;">As above?</p></td>
 						</tr>
 						
 						<tr>
@@ -323,15 +343,6 @@
 								<br />
 								<textarea id="auditLabel"></textarea>
 							</td>
-							<td><p style="color:red;">Please provide more options for the dropdown</p></td>
-						</tr>
-						<tr>
-							<td><p class="lable" >Comments:</p></button>
-							</td>
-							<td>
-								<textarea name="opnote" id="opnote"></textarea>
-							</td>
-							<td><p style="color:red;">Do you need a procedure specific free text box, or is the operation note comments box in the current version sufficient?</p></td>
 						</tr>
 							
 						</tbody>	
