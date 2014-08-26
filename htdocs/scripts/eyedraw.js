@@ -24841,6 +24841,10 @@ ED.ICL = function(_drawing, _parameterJSON) {
 	
 	// Other parameters
 	this.model = "";
+	this.lengthICL = "";
+	this.sphere;
+	this.cylinder;
+	this.opticalAxis;
 	
 	// Saved parameters
 	this.savedParameterArray = [
@@ -24850,12 +24854,20 @@ ED.ICL = function(_drawing, _parameterJSON) {
 		'scaleY', 
 		'rotation',
 		'axis',
-		'model'
+		'model',
+		'lengthICL',
+		'sphere',
+		'cylinder',
+		'opticalAxis'
 		];
 	
 	// Parameters in doodle control bar (parameter name: parameter label)
 	this.controlParameterArray = {
 		'model':'Model',
+		'lengthICL':'Length (mm)',
+		'sphere':'Sphere (D)',
+		'cylinder':'Cylinder (D)',
+		'opticalAxis':'Axis (deg)'
 	};
 
 	// Call superclass constructor
@@ -24880,19 +24892,22 @@ ED.ICL.prototype.setHandles = function() {
  * Sets default properties
  */
 ED.ICL.prototype.setPropertyDefaults = function() {
-	this.addAtBack = true;
+	//this.addAtBack = true;
 	this.isUnique = true;
 
 	// Adjust ranges for simple parameters
-	this.parameterValidationArray['rotation']['range'] = new ED.Range( 2 * Math.PI / 200, 2 * Math.PI/160);
+	this.parameterValidationArray['rotation']['range'] = new ED.Range(340 * Math.PI / 180, 20 * Math.PI/180);
 	
-	// Derived parameters	
+	// Derived parameters (NB cannot use numerical approach to this axis since 'double' range not currently handled in core)
 	this.parameterValidationArray['axis'] = {
 		kind: 'derived',
-		type: 'mod',
-		range: new ED.Range(160, 20),
-		clock: 'bottom',
-		animate: true
+		type: 'string',
+		list: [
+			'160', '161', '162', '163', '164', '165', '166', '167', '168', '169',
+			'170', '171', '172', '173', '174', '175', '176', '177', '178', '179', 
+			'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 
+			'10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20'],
+		animate: false
 	};
 	
 	// Other parameters
@@ -24900,7 +24915,34 @@ ED.ICL.prototype.setPropertyDefaults = function() {
 		kind: 'other',
 		type: 'string',
 		list: ['v4C', 'v4B'],
-		animate: true
+		animate: false
+	};
+	this.parameterValidationArray['lengthICL'] = {
+		kind: 'other',
+		type: 'float',
+		range: new ED.Range(11, 14),
+		precision: 1,
+		animate: false
+	};
+	this.parameterValidationArray['sphere'] = {
+		kind: 'other',
+		type: 'float',
+		range: new ED.Range(-23, +10),
+		precision: 2,
+		animate: false
+	};
+	this.parameterValidationArray['cylinder'] = {
+		kind: 'other',
+		type: 'float',
+		range: new ED.Range(+0, +6),
+		precision: 2,
+		animate: false
+	};
+	this.parameterValidationArray['opticalAxis'] = {
+		kind: 'other',
+		type: 'int',
+		range: new ED.Range(+0, +180),
+		animate: false
 	};
 }
 
@@ -24908,8 +24950,12 @@ ED.ICL.prototype.setPropertyDefaults = function() {
  * Sets default parameters
  */
 ED.ICL.prototype.setParameterDefaults = function() {
-	this.rotation = Math.PI;
+	this.setParameterFromString('axis', '180');
 	this.setParameterFromString('model', 'v4C');
+	this.setParameterFromString('lengthICL', '12');
+	this.setParameterFromString('sphere', '0.00');
+	this.setParameterFromString('cylinder', '0.00');
+	this.setParameterFromString('opticalAxis', '0');
 }
 
 /**
@@ -24925,11 +24971,11 @@ ED.ICL.prototype.dependentParameterValues = function(_parameter, _value) {
 
 	switch (_parameter) {
 		case 'rotation':
-			console.log('rotation: ' + _value * 180/Math.PI);
+			returnArray['axis'] = ((360 - 180 * _value / Math.PI) % 180).toFixed(0);
 			break;
 
 		case 'axis':
-			console.log('axis: ' + _value);
+			returnArray['rotation'] = (180 - parseFloat(_value)) * Math.PI / 180;
 			break;
 	}
 
@@ -24952,7 +24998,8 @@ ED.ICL.prototype.draw = function(_point) {
 	ctx.beginPath();
 
 	// Radius (used here to set handle location)
-	var r = 280;
+	//var r = 280;
+	var r = 170;
 	
 	// Optic
 	ctx.moveTo(0, -218);

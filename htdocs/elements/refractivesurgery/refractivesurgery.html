@@ -108,7 +108,8 @@
                     <button class="ed-button" id="molteno" title="Lasik Flap" onclick="drawingEdit.addDoodle('LasikFlap'); return false;" ><img src="../../graphics/LasikFlap.gif" /></button>
                     <button class="ed-button" id="molteno" title="PTK" onclick="drawingEdit.addDoodle('PTK'); return false;" ><img src="../../graphics/PTK.gif" /></button>
                     <button class="ed-button" id="molteno" title="SMILE" onclick="drawingEdit.addDoodle('SMILE'); return false;" ><img src="../../graphics/SMILE.gif" /></button>
-                    <button class="ed-button" id="molteno" title="ArcuateKeratotomy" onclick="drawingEdit.addDoodle('ArcuateKeratotomy'); return false;" ><img src="../../graphics/ArcuateKeratotomy.gif" /></button>                       
+                    <button class="ed-button" id="molteno" title="ArcuateKeratotomy" onclick="drawingEdit.addDoodle('ArcuateKeratotomy'); return false;" ><img src="../../graphics/ArcuateKeratotomy.gif" /></button>
+                    <button class="ed-button" id="molteno" title="ICL" onclick="drawingEdit.addDoodle('ICL', {}, {axis:{id:'axisInput'}}); return false;" ><img src="../../graphics/ICL.gif" /></button>                    
 <!--
                     <button class="ed-button" id="patch" title="Corneal Inlay" onclick="drawingEdit.addDoodle('CornealInlay'); return false;" ><img src="../../graphics/CornealInlay.gif" /></button>
                     <button class="ed-button" id="PIRPS" title="Peripheral Iridectomy" onclick="var dood = drawingEdit.addDoodle('PI'); dood.outerRadius = 260; drawingEdit.repaint(); return false;" ><img src="../../graphics/PI.gif" /></button>
@@ -226,7 +227,7 @@
 						            <option>-10%</option>
 						        </select>
 							</td>
-							<td><p style="color:red;">Defaults to 0%?</p></td>
+							<td><p style="color:red;"></p></td>
 						</tr>
 						
 						<tr>
@@ -345,6 +346,16 @@
 								<br />
 								<textarea id="auditLabel"></textarea>
 							</td>
+						</tr>
+						<tr>
+							<td><p><b>ICL</b></p></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td><p class="lable" >Axis of implantation:</p></td>
+							<td>
+								<input type="text" id="axisInput" value="0" />
+					        </td>
 						</tr>
 							
 						</tbody>	
