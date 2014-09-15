@@ -59,12 +59,26 @@
                     // Eye draw image files all loaded
                     case 'ready':
 				    	// Doodles 
-				    	drawingEdit.addDoodle('AntSeg', {'pupilSize':'Small'});
-				    	//drawingEdit.addDoodle('LasikFlap');
+				    	drawingEdit.addDoodle('AntSeg', {'pupilSize':'Large'});
+				    	drawingEdit.addDoodle('PhakoIncision', {'incisionLength':'2.7', 'incisionMeridian':'180'});
+				    	drawingEdit.addDoodle('SidePort', {'rotation':'0'});
+				    	drawingEdit.addDoodle('SidePort', {'rotation':'3.1415926'});
+				    	drawingEdit.addDoodle('ICL');
 				        this.drawing.deselectDoodles();
+				        
+				        // Populate opnote text
+				        document.getElementById('opnotetext').value = "Injection with viscoelastic\rViscoelastic removed";
 						break;
                 }
             }
+        }
+        
+        function changeTarget() {
+        	var error = document.getElementById('otherMRSE');
+	        var target = document.getElementById('targetMRSE');
+	        
+	        var adjustment = document.getElementById('adjustment');
+	        adjustment.innerHTML = (target.value - error.value/2);
         }
 	            
     </script>
@@ -74,9 +88,11 @@
 <div id="screen" align="center">
 	<div id="content">
 
+		
+
 		<div class="section">
 			<h4>Description:</h4>
-			<p>This element demonstrates the generic data input for a refractive surgery operation note, as well as doodles for specific procedures</p>
+			<p>TThis element demonstrates the data input for a the opnote subelement for the procedure of Implantable Collamer Lens</p>
 			<p>Status: <b>Alpha</b></p>
 		</div>
 
@@ -103,9 +119,9 @@
                     <button class="imgbutton" id="molteno" title="Ahmed FP7" onclick="drawingEdit.addDoodle('Tube', {type:'Ahmed FP7'}); return false;" ><img src="../../graphics/AhmedFP7.gif" /></button>
                     <button class="imgbutton" id="molteno" title="Molteno Single" onclick="drawingEdit.addDoodle('Tube', {type:'Molteno Single'}); return false;" ><img src="../../graphics/Molteno.gif" /></button>
 -->
-                    <button class="ed-button" id="molteno" title="Lasik Flap" onclick="drawingEdit.addDoodle('LasikFlap'); return false;" ><img src="../../graphics/LasikFlap.gif" /></button>
-                    <button class="ed-button" id="molteno" title="PTK" onclick="drawingEdit.addDoodle('PTK'); return false;" ><img src="../../graphics/PTK.gif" /></button>
-                    <button class="ed-button" id="molteno" title="SMILE" onclick="drawingEdit.addDoodle('SMILE'); return false;" ><img src="../../graphics/SMILE.gif" /></button>                
+
+                    <button class="ed-button" id="molteno" title="ICL" onclick="drawingEdit.addDoodle('ICL', {}, {axis:{id:'axisInput'}}); return false;" ><img src="../../graphics/ICL.gif" /></button>
+                    <button class="ed-button" id="molteno" title="ICL" onclick="drawingEdit.addDoodle('PI', {'rotation':'5.49778705'}); return false;" ><img src="../../graphics/PI.gif" /></button>                   
 <!--
                     <button class="ed-button" id="patch" title="Corneal Inlay" onclick="drawingEdit.addDoodle('CornealInlay'); return false;" ><img src="../../graphics/CornealInlay.gif" /></button>
                     <button class="ed-button" id="PIRPS" title="Peripheral Iridectomy" onclick="var dood = drawingEdit.addDoodle('PI'); dood.outerRadius = 260; drawingEdit.repaint(); return false;" ><img src="../../graphics/PI.gif" /></button>
@@ -133,199 +149,36 @@
 					<tbody>	
 					
 						<tr>
-							<td align="left" width="25%"><p><b>Refractive targeting fields</b></p></td>
-							<td align="left" width="40%"></td>
-							<td align="left" width="35%"><p style="color:red;"></p></td>
-						</tr>
-						
-						<tr>
-							<td><p class="lable" >Target MRSE:</p></td>
-							<td>
-						        <select id="targetMRSE">
-						            <option>-3.00</option>
-						            <option>-2.50</option>
-						            <option>-2.00</option>
-						            <option>-1.50</option>
-						            <option>-1.00</option>
-						            <option>-0.50</option>
-						            <option selected="selected">&nbsp0.00</option>
-						            <option>+0.50</option>
-						            <option>+1.00</option>
-						        </select>
-					        </td>
-						</tr>
-						<tr>
-							<td><p class="lable" >Physician adjustment to sphere:</p></td>
-							<td>
-						        <select id="targetMRSE">
-						            <option>-3.00</option>
-						            <option>-2.50</option>
-						            <option>-2.00</option>
-						            <option>-1.50</option>
-						            <option>-1.00</option>
-						            <option>-0.50</option>
-						            <option selected="selected">&nbsp0.00</option>
-						            <option>+0.50</option>
-						            <option>+1.00</option>
-						            <option>+1.50</option>
-						            <option>+2.00</option>
-						            <option>+2.50</option>
-						            <option>+3.00</option>
-						        </select>
-					        </td>
-						</tr>
-						<tr>
-							<td><p class="lable" >Physician adjustment to cylinder:</p></td>
-							<td>
-						        <select id="targetMRSE">
-						            <option>-3.00</option>
-						            <option>-2.50</option>
-						            <option>-2.00</option>
-						            <option>-1.50</option>
-						            <option>-1.00</option>
-						            <option>-0.50</option>
-						            <option selected="selected">&nbsp0.00</option>
-						            <option>+0.50</option>
-						            <option>+1.00</option>
-						            <option>+1.50</option>
-						            <option>+2.00</option>
-						            <option>+2.50</option>
-						            <option>+3.00</option>
-						        </select>
-					        </td>
-						</tr>
-													
-						<tr>
-							<td><p class="lable" >Nomogram adjustment used:</p></button>
-							</td>
-							<td>
-								<select id="targetMRSE">
-						            <option>+10%</option>
-						            <option>+9%</option>
-						            <option>+8%</option>
-						            <option>+7%</option>
-						            <option>+6%</option>
-						            <option>+5%</option>
-						            <option>+4%</option>
-						            <option>+3%</option>
-						            <option>+2%</option>
-						            <option>+1%</option>
-						            <option selected="selected">&nbsp0%</option>
-						            <option>-1%</option>
-						            <option>-2%</option>
-						            <option>-3%</option>
-						            <option>-4%</option>
-						            <option>-5%</option>
-						            <option>-6%</option>
-						            <option>-7%</option>
-						            <option>-8%</option>
-						            <option>-9%</option>
-						            <option>-10%</option>
-						        </select>
-							</td>
+							<td><p><b>Opnote</b></p></td>
+							<td><textarea id="opnotetext" rows=3></textarea></td>
 							<td><p style="color:red;"></p></td>
 						</tr>
 						
 						<tr>
-							<td><p><b>Pre-op drops</b></p></td>
+							<td><p><b>Per-op drops</b></p></td>
 							<td></td>
+							<td><p style="color:red;">How should these default?</p></td>
 						</tr>
 						<tr>
-							<td><p class="lable" >Proxymethocaine:</p></td>
+							<td><p class="lable" >Intracameral phenylephrine:</p></td>
 							<td>
 								<input class="checkbox" type="checkbox" checked="checked"/>
 					        </td>
 						</tr>
 						<tr>
-							<td><p class="lable" >Tetracaine:</p></td>
+							<td><p class="lable" >Intracameral lignocaine:</p></td>
 							<td>
 								<input class="checkbox" type="checkbox"/>
 					        </td>
 						</tr>
 						<tr>
-							<td><p class="lable" >Povidone Iondine 5%:</p></td>
+							<td><p class="lable" >Intracameral cefuroxime:</p></td>
 							<td>
 								<input class="checkbox" type="checkbox" checked="checked"/>
 					        </td>
 						</tr>
-						
-						<tr>
-							<td><p><b>Treatment</b></p></td>
-							<td></td>
-						</tr>
-						
-						<tr>
-							<td><p class="lable" >Excimer laser:</p></td>
-							<td>
-						        <select id="targetMRSE">
-						            <option>DDL Schwind Amaris</option>
-						            <option>AMO S4 IR</option>
-						        </select>
-					        </td>
-						</tr>
-						<tr>
-							<td><p class="lable" >Treatment type:</p></td>
-							<td>
-						        <select id="targetMRSE">
-						            <option>Wavefront guided</option>
-						            <option>Wavefront compensated</option>
-						            <option>Topography guided</option>
-						        </select>
-					        </td>
-						</tr>
-						<tr>
-							<td><p class="lable" >Treatment number:</p></td>
-							<td>
-						        <select id="treatmentNumber">
-						            <option>DDL Primary treatment</option>
-						            <option>Retreatment 1</option>
-						            <option>Retreatment 2</option>
-						            <option>Revision 1</option>
-						            <option>Revision 2</option>
-						            <option>Post IOL</option>
-						            <option>Post ICL</option>
-						            <option>Post AK</option>
-						            <option>Bioptics</option>
-						        </select>
-					        </td>
-						</tr>
-						<tr>
-							<td><p class="lable" >Treatment software version:</p></td>
-							<td>
-								<p>2.1</p>
- 								<!-- <input type="text"/> -->
-					        </td>
-						</tr>
-						<tr>
-							<td><p class="lable" >Wavefront scan version:</p></td>
-							<td>
- 								<p>2.6</p>
-					        </td>
-						</tr>
-						
-						<tr>
-							<td><p><b>Post-op drops</b></p></td>
-							<td></td>
-						</tr>
-						<tr>
-							<td><p class="lable" >Chloramphenicol 0.5% (unpreserved):</p></td>
-							<td>
-								<input class="checkbox" type="checkbox" checked='checked'/>
-					        </td>
-						</tr>
-						<tr>
-							<td><p class="lable" >Dexamethasone 0.1% (unpreserved):</p></td>
-							<td>
-								<input class="checkbox" type="checkbox" checked="checked"/>
-					        </td>
-						</tr>
-						<tr>
-							<td><p class="lable" >BCL:</p></td>
-							<td>
-								<input class="checkbox" type="checkbox" checked="checked"/>
-					        </td>
-						</tr>
-						
+												
+																							
 						<tr>
 							<td><p><b>Other</b></p></td>
 							<td></td>
@@ -342,6 +195,16 @@
 								<br />
 								<textarea id="auditLabel"></textarea>
 							</td>
+						</tr>
+						<tr>
+							<td><p><b>ICL</b></p></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td><p class="lable" >Axis of implantation:</p></td>
+							<td>
+								<input type="text" id="axisInput" value="0" />
+					        </td>
 						</tr>
 							
 						</tbody>	
