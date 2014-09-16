@@ -147,19 +147,16 @@
 						</tr>
 						
 						<tr>
-							<td><p class="lable" >Target MRSE:</p></td>
+							<td><p class="lable" >Postop cylinder:</p></td>
 							<td>
-						        <select id="targetMRSE" onchange="changeTarget();">
-						            <option value=-3>-3.00</option>
-						            <option value=-2.5>-2.50</option>
-						            <option value=-2>-2.00</option>
-						            <option value=-1.5>-1.50</option>
-						            <option value=-1>-1.00</option>
-						            <option value=-0.5>-0.50</option>
-						            <option value=0 selected="selected">&nbsp0.00</option>
-						            <option value=0.5>+0.50</option>
-						            <option value=1>+1.00</option>
-						        </select>
+						        <input type=text value="0">
+					        </td>
+						</tr>
+						
+						<tr>
+							<td><p class="lable" >Postop axis:</p></td>
+							<td>
+						        <input type=text value="0">
 					        </td>
 						</tr>
 													
@@ -180,19 +177,6 @@
 							</td>
 							<td><p style="color:red;"></p></td>
 						</tr>
-						
-						<tr>
-							<td><p class="lable" >Postoperative MRSE error contralateral eye</p></button>
-							</td>
-							<td>
-						        <select id="otherMRSE" onchange="changeTarget();">
-						            <option selected="selected">&nbsp0.00</option>
-						            <option value=0.5>+0.50</option>
-						            <option value=1>+1.00</option>
-						        </select>
-							</td>
-							<td><p style="color:red;"></p></td>
-						</tr>
 
 <!--
 						<tr>
@@ -206,26 +190,20 @@
 -->
 						
 						<tr>
-							<td><p><b>Per-op drops</b></p></td>
+							<td><p><b>Peroperative drops</b></p></td>
 							<td></td>
-							<td><p style="color:red;">How should these default?</p></td>
+							<td><p style="color:red;"></p></td>
 						</tr>
 						<tr>
-							<td><p class="lable" >Intracameral phenylephrine:</p></td>
+							<td><p class="lable" >Chloramphenicol:</p></td>
 							<td>
 								<input class="checkbox" type="checkbox" checked="checked"/>
 					        </td>
 						</tr>
 						<tr>
-							<td><p class="lable" >Intracameral lignocaine:</p></td>
+							<td><p class="lable" >Dexamethasone:</p></td>
 							<td>
 								<input class="checkbox" type="checkbox"/>
-					        </td>
-						</tr>
-						<tr>
-							<td><p class="lable" >Intracameral cefuroxime:</p></td>
-							<td>
-								<input class="checkbox" type="checkbox" checked="checked"/>
 					        </td>
 						</tr>
 																							

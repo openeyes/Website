@@ -97,7 +97,7 @@
 		</div>
 
 		<!-- Edit mode section -->
-		<div class="section" style="height:940px;" align="left">
+		<div class="section" style="height:440px;" align="left">
 			<h4>Edit mode:</h4>
 			
 			<!-- Drawing -->
@@ -147,6 +147,28 @@
 			<div style ="width:740px; float:left;">
 					<table cellspacing="0" width="740">
 					<tbody>	
+						<tr>
+							<td align="left" width="25%"><p><b>Refractive targeting fields</b></p></td>
+							<td align="left" width="40%"></td>
+							<td align="left" width="35%"><p style="color:red;"></p></td>
+						</tr>
+						
+						<tr>
+							<td><p class="lable" >Target MRSE:</p></td>
+							<td>
+						        <select id="targetMRSE">
+						            <option>-3.00</option>
+						            <option>-2.50</option>
+						            <option>-2.00</option>
+						            <option>-1.50</option>
+						            <option>-1.00</option>
+						            <option>-0.50</option>
+						            <option selected="selected">&nbsp0.00</option>
+						            <option>+0.50</option>
+						            <option>+1.00</option>
+						        </select>
+					        </td>
+						</tr>
 					
 						<tr>
 							<td><p><b>Opnote</b></p></td>
@@ -155,20 +177,20 @@
 						</tr>
 						
 						<tr>
-							<td><p><b>Per-op drops</b></p></td>
+							<td><p><b>Intracameral drugs</b></p></td>
 							<td></td>
-							<td><p style="color:red;">How should these default?</p></td>
+							<td><p style="color:red;"></p></td>
 						</tr>
 						<tr>
 							<td><p class="lable" >Intracameral phenylephrine:</p></td>
 							<td>
-								<input class="checkbox" type="checkbox" checked="checked"/>
+								<input class="checkbox" type="checkbox"/>
 					        </td>
 						</tr>
 						<tr>
 							<td><p class="lable" >Intracameral lignocaine:</p></td>
 							<td>
-								<input class="checkbox" type="checkbox"/>
+								<input class="checkbox" type="checkbox" checked="checked"/>
 					        </td>
 						</tr>
 						<tr>
