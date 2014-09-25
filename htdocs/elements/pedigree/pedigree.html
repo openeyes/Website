@@ -7,6 +7,9 @@
 	<!-- CSS -->
 	<link rel="stylesheet" href="../../css/openeyes.css" type="text/css" media="screen" />
 	<link rel="stylesheet" href="styles.css" type="text/css" media="screen" />
+	
+	<!-- Jquery -->
+	<script src="../../scripts/jquery-1.11.1.min.js"></script>
 
     <!--   Javascript  -->	
 	<script language="JavaScript" src="../../scripts/eyedraw.js" type="text/javascript"></script>
@@ -22,7 +25,7 @@
 			{"name": "Proband", "father": "Father", "mother": "Mother", "gender": "M", "age":42, "affected":true, "deceased":false,"isProband":true, "condition":"POAG"},
 
         ];
-        var canvas;
+        var canvasEdit;
         var family;
         var drawingEdit;
         var canAddNewRoot = true;
@@ -35,10 +38,10 @@
         function init()
         {
             // Get reference to the drawing canvas
-            canvas = document.getElementById('canvas');
+            canvasEdit = document.getElementById('canvasEdit');
             
             // Create a drawingEdit
-            drawingEdit = new ED.Drawing(canvas, ED.eye.Right, 'RPS', true, {graphicsPath:'../../graphics/'});
+            drawingEdit = new ED.Drawing(canvasEdit, ED.eye.Right, 'RPS', true, {graphicsPath:'../../img'});
             
             // Instantiate a controller object
             controller = new eyeDrawController(drawingEdit);
@@ -97,7 +100,7 @@
         
         function createFamily() {
             // Create a family object from member data
-            family = new PD.Family(memberSet, canvas, drawingEdit);
+            family = new PD.Family(memberSet, canvasEdit, drawingEdit);
 
             var height = 0;
             var maximumWidth = 0;
@@ -341,23 +344,22 @@
 			
             	<!-- Doodle toolbar -->
 				<div class="toolbar">
-			        <button class="actbutton" onclick="addChild('F');return false;" >Add daughter</button>
-					<button class="actbutton"onclick="addChild('M');return false;" >Add son</button></br>
-					<button class="actbutton"onclick="addSibling('F', '>');return false;" >Add sister &#8592;</button>
-					<button class="actbutton"onclick="addSibling('F', '<');return false;" >Add sister &#8594;</button>
-					<button class="actbutton"onclick="addSibling('M', '>');return false;" >Add brother &#8592;</button>
-					<button class="actbutton"onclick="addSibling('M', '<');return false;" >Add brother&#8594;</button></br></br>
+			        <button class="ed-button" onclick="addChild('F');return false;" >Add daughter</button>
+					<button class="ed-button" onclick="addChild('M');return false;" >Add son</button></br>
+					<button class="ed-button" onclick="addSibling('F', '>');return false;" >Add sister &#8592;</button>
+					<button class="ed-button" onclick="addSibling('F', '<');return false;" >Add sister &#8594;</button>
+					<button class="ed-button" onclick="addSibling('M', '>');return false;" >Add brother &#8592;</button>
+					<button class="ed-button" onclick="addSibling('M', '<');return false;" >Add brother&#8594;</button></br></br>
                 </div>
-	        			   				
+                   				
 				<!-- Canvas -->
 				<div style='float: left; width: 600px; height: 500px;'>
-	                 <canvas id="canvas" style="border: 1px solid gray;" width="600" height="450"></canvas>
+	                 <canvas id="canvasEdit" class="ed-canvas" style="border: 1px solid gray;" width="600" height="450"></canvas>
 				</div>
 				
 		        <!-- Doodle control panel -->
-		        <div id="canvas_controls" style="background-color: #DAE6F1; float:left;">
+		        <div id="canvasEdit_controls" class="ed-doodle-popup" style="background-color: #DAE6F1; float:left;">
 		        </div>
-			
    			
 			</div>
 			
