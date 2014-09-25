@@ -17,21 +17,26 @@
     <script type="text/javascript">
     
     	var drawingEdit;
+    	var drawingEdit2;
                             
         // Runs on page load
         function init()
         {
              // Get reference to the drawingEdit canvas
             var canvasEdit = document.getElementById('canvasEdit');
+            var canvasEdit2 = document.getElementById('canvasEdit2');
             
             // Create a drawingEdit , {scaleOn:'width'}
             drawingEdit = new ED.Drawing(canvasEdit, ED.eye.Right, 'RPS', true, {graphicsPath:'../../img'});
+            drawingEdit2 = new ED.Drawing(canvasEdit2, ED.eye.Right, 'RPS', true, {graphicsPath:'../../img'});
             
             // Instantiate a controller object
             controller = new eyeDrawController(drawingEdit);
+            controller2 = new eyeDrawController2(drawingEdit2);
             
             // Initialise drawing
             drawingEdit.init();
+            drawingEdit2.init();
             
             // Set focus to canvasEdit element
             canvasEdit.focus();
@@ -60,14 +65,36 @@
                     case 'ready':
 				    	// Doodles 
 				    	drawingEdit.addDoodle('AntSeg', {'pupilSize':'Large'});
-				    	drawingEdit.addDoodle('PhakoIncision', {'incisionLength':'2.7', 'incisionMeridian':'180'});
-				    	drawingEdit.addDoodle('SidePort', {'rotation':'0'});
-				    	drawingEdit.addDoodle('SidePort', {'rotation':'3.1415926'});
-				    	drawingEdit.addDoodle('ICL');
 				        this.drawing.deselectDoodles();
-				        
-				        // Populate opnote text
-				        document.getElementById('opnotetext').value = "Injection with viscoelastic\rViscoelastic removed";
+						break;
+                }
+            }
+        }
+        
+		// Controller class
+        function eyeDrawController2(_drawing)
+        {
+            this.drawing = _drawing;
+            
+            // Specify call back function
+            this.callBack = callBack;
+            
+            // Register for notifications with drawing object
+            this.drawing.registerForNotifications(this, 'callBack', ['ready', 'parameterChanged']);
+            
+			// Show doodle controls
+			this.drawing.showDoodleControls = true;
+            
+            // Method called for notification
+            function callBack(_messageArray)
+            {
+                switch (_messageArray['eventName'])
+                {
+                    // Eye draw image files all loaded
+                    case 'ready':
+				    	// Doodles 
+				    	drawingEdit2.addDoodle('CorneaCrossSection');
+				        this.drawing.deselectDoodles();
 						break;
                 }
             }
@@ -92,7 +119,7 @@
 
 		<div class="section">
 			<h4>Description:</h4>
-			<p>This element demonstrates the data input for a the opnote subelement for the procedure of Implantable Collamer Lens</p>
+			<p>This element explore the addition of a cross section doodle for cornea</p>
 			<p>Status: <b>Alpha</b></p>
 		</div>
 
@@ -101,7 +128,7 @@
 			<h4>Edit mode:</h4>
 			
 			<!-- Drawing -->
-			<div style ="width:340px; float:left;">	
+			<div style ="width:500px; float:left;">	
 			
             	<!-- Doodle toolbar -->
 				<div class="toolbar">
@@ -120,8 +147,10 @@
                     <button class="imgbutton" id="molteno" title="Molteno Single" onclick="drawingEdit.addDoodle('Tube', {type:'Molteno Single'}); return false;" ><img src="../../graphics/Molteno.gif" /></button>
 -->
 
+<!--
                     <button class="ed-button" id="molteno" title="ICL" onclick="drawingEdit.addDoodle('ICL', {}, {axis:{id:'axisInput'}}); return false;" ><img src="../../graphics/ICL.gif" /></button>
-                    <button class="ed-button" id="molteno" title="ICL" onclick="drawingEdit.addDoodle('PI', {'rotation':'5.49778705'}); return false;" ><img src="../../graphics/PI.gif" /></button>                   
+                    <button class="ed-button" id="molteno" title="ICL" onclick="drawingEdit.addDoodle('PI', {'rotation':'5.49778705'}); return false;" ><img src="../../graphics/PI.gif" /></button>  
+-->                 
 <!--
                     <button class="ed-button" id="patch" title="Corneal Inlay" onclick="drawingEdit.addDoodle('CornealInlay'); return false;" ><img src="../../graphics/CornealInlay.gif" /></button>
                     <button class="ed-button" id="PIRPS" title="Peripheral Iridectomy" onclick="var dood = drawingEdit.addDoodle('PI'); dood.outerRadius = 260; drawingEdit.repaint(); return false;" ><img src="../../graphics/PI.gif" /></button>
@@ -130,109 +159,26 @@
                 </div>		
 
 				<!-- Canvas -->
-				<div>
+				<div style="background-color: #EEEEEE;">
 				<span id="canvasTooltip"></span>
+				<span id="canvasTooltip2"></span>
+
                 <canvas id="canvasEdit" class="ed-canvas" width="300" height="300" tabindex="1"></canvas>
+                <canvas id="canvasEdit2" class="ed-canvas" width="180" height="300" tabindex="1"></canvas>
 				</div>
 				
                 <!-- Doodle control panel -->
 		        <div id="canvasEdit_controls" class="ed-doodle-popup" style="background-color: #DAE6F1; float:left;">
+		        </div>
+				
+                <!-- Doodle control panel -->
+		        <div id="canvasEdit2_controls" class="ed-doodle-popup" style="background-color: #DAE6F1; float:left;">
 		        </div>
 			
 				</br>
 				
 			</div>
 			
-			<!-- Controls -->
-			<div style ="width:740px; float:left;">
-					<table cellspacing="0" width="740">
-					<tbody>	
-						<tr>
-							<td align="left" width="25%"><p><b>Refractive targeting fields</b></p></td>
-							<td align="left" width="40%"></td>
-							<td align="left" width="35%"><p style="color:red;"></p></td>
-						</tr>
-						
-						<tr>
-							<td><p class="lable" >Target MRSE:</p></td>
-							<td>
-						        <select id="targetMRSE">
-						            <option>-3.00</option>
-						            <option>-2.50</option>
-						            <option>-2.00</option>
-						            <option>-1.50</option>
-						            <option>-1.00</option>
-						            <option>-0.50</option>
-						            <option selected="selected">&nbsp0.00</option>
-						            <option>+0.50</option>
-						            <option>+1.00</option>
-						        </select>
-					        </td>
-						</tr>
-					
-						<tr>
-							<td><p><b>Opnote</b></p></td>
-							<td><textarea id="opnotetext" rows=3></textarea></td>
-							<td><p style="color:red;"></p></td>
-						</tr>
-						
-						<tr>
-							<td><p><b>Intracameral drugs</b></p></td>
-							<td></td>
-							<td><p style="color:red;"></p></td>
-						</tr>
-						<tr>
-							<td><p class="lable" >Intracameral phenylephrine:</p></td>
-							<td>
-								<input class="checkbox" type="checkbox"/>
-					        </td>
-						</tr>
-						<tr>
-							<td><p class="lable" >Intracameral lignocaine:</p></td>
-							<td>
-								<input class="checkbox" type="checkbox" checked="checked"/>
-					        </td>
-						</tr>
-						<tr>
-							<td><p class="lable" >Intracameral cefuroxime:</p></td>
-							<td>
-								<input class="checkbox" type="checkbox" checked="checked"/>
-					        </td>
-						</tr>
-												
-																							
-						<tr>
-							<td><p><b>Other</b></p></td>
-							<td></td>
-						</tr>
-						<tr>
-							<td><p class="lable" >Audit label:</p></button>
-							</td>
-							<td>
-								<select style="width:140px;" id="auditSelect" onchange="addToTextarea('auditSelect', 'auditLabel')">
-									<option>-- Please select --</option>
-									<option>TransPRK/CXL</option>
-									<option>other</option>
-								</select>
-								<br />
-								<textarea id="auditLabel"></textarea>
-							</td>
-						</tr>
-						<tr>
-							<td><p><b>ICL</b></p></td>
-							<td></td>
-						</tr>
-						<tr>
-							<td><p class="lable" >Axis of implantation:</p></td>
-							<td>
-								<input type="text" id="axisInput" value="0" />
-					        </td>
-						</tr>
-							
-						</tbody>	
-					</table>
-
-			</div>
 		
 		<!-- End of edit mode div -->
 		</div>						
