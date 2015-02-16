@@ -4,6 +4,28 @@
 	width: 1080px;
 }
 
+/* Select */
+select {
+	width: auto;
+	height: 20px;
+	margin-top: 10px;
+	margin-left: 10px;
+}
+
+input {
+	margin-top: 10px;
+	margin-left: 10px;
+}
+
+span {
+	margin-left: 10px;
+}
+
+span.time {
+	display: inline-block;
+	width: 106px;
+}
+
 /* Used for displaying adjacent columns */
 .column {
 	float: left;
@@ -11,6 +33,65 @@
 
 .lable {
 	width: 110px;
+	margin-right: 4px;
+	text-align: right;
+}
+
+.checkbox {
+	margin-left: 10px;
+}
+
+/* text in a table */
+.tableText {
+	padding: 0px;
+}
+
+/* Select in a table */
+td > select {
+	width: auto;
+	height: auto;
+	margin-top: 0px;
+}
+
+/* Link in a table */
+td > a {
+	font-weight: normal;
+	font-size: 11pt;
+	font-family: Helvetica, Verdana, Arial, sans-serif;
+	background-repeat: no-repeat;
+	color:#666666;
+	text-decoration:underline;
+	height: auto;
+	display:block;
+	line-height: auto;
+	text-align:center;
+}
+
+/* Table margin */
+table {
+	margin-top: 10px;
+}
+
+/* Table borders */
+table, th, td {
+	border: 1px solid gray;
+	border-collapse:collapse;
+}
+
+/* Padding between borders and text */
+th, td {
+	padding-top: 2px;
+	padding-left: 5px;
+}
+
+/* Header row */
+th {
+	height: 22px;
+	background: #eee;
+}
+
+/* Settings section lables */
+.complable {
 	margin-right: 4px;
 	text-align: right;
 }
@@ -29,25 +110,12 @@ p#RSS {
 	margin-top: 6px;
 }
 
-input.checkbox {
-	margin-top: 5px;
-	margin-right: 10px;
-}
-
-
-input {
-	height: 16px;
-	width: 50px;
-	margin: 0px;
-	margin-top: 6px;
-	padding: 0px;
-}
 
 /* Canvas element */
 canvas {
-	border: 1px solid #7f7f7f;
+	border: none; /*1px solid gray;*/
     cursor: pointer;
-	margin-top: 10px;
+	margin: 0px;
 }
 
 canvas:focus {
@@ -63,26 +131,18 @@ canvas.display {
 	margin-top: 10px;
 }
 
-.section select {
-	width: 100px;
-	height: 20px;
-	margin-top: 10px;
-}
-
 /* email */
 a.email {
 	display: block;
 	width: 100px;
 }
 
-button.ed-button {
-	width: 36px;
-	height: 36px;
+button.actbutton {
+	width: 100px;
+	height: 20px;
+	margin-top: 6px;
 	border: solid 1px;
 	background-color: #eeeeee;
-	margin-right: 0px;
-	margin-bottom: 2px;
-	overflow: visible;
 }
 
 button.imgbutton {
@@ -113,19 +173,9 @@ button:disabled {
 button.actbutton {
 	width: 100px;
 	height: 20px;
-	margin-top: 10px;
+	margin-top: 6px;
 	border: solid 1px;
 	background-color: #eeeeee;
-}
-
-button.actbutton:hover {
-	background-color: #bbbbbb;
-	border: solid 1px;
-}
-
-button.actbutton:active {
-	background-color: #888888;
-	border: solid 1px;
 }
 
 button img {
@@ -168,22 +218,20 @@ span.squiggle {
 /*       display: list-item; */
 }
 
-
-/* Description text area */
-#posteriorsegment {
-	width: 250px;
-	height: 50px;
-	margin-top: 2px;
+/* Text box to enter search string */
+input.entrytext {
+	margin-left: 0px;
+	margin-top: 10px;
+	height: 14px;
+	width: 120px;
+	font-family: Courier;
+	font-size: 0.9em;
+	padding: 0.2em;
 }
 
-#diagnosisSelect {
-	margin-top: 2px;
-	width: auto;
-}
-
-p.lable{
-	color: #666666;
-	padding-top: 4px;
-	text-align: left;
-	padding-bottom: 0px;
+#namelist {
+    margin-top: 20px;
+    margin-left: 0px;
+    width: 200px;
+    height: 180px;
 }
