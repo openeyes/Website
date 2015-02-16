@@ -48,7 +48,7 @@
             this.callBack = callBack;
             
             // Register for notifications with drawing object
-            this.drawing.registerForNotifications(this, 'callBack', ['ready', 'parameterChanged']);
+            this.drawing.registerForNotifications(this, 'callBack', []);
             
 			// Show doodle controls
 			this.drawing.showDoodleControls = true;
@@ -66,11 +66,50 @@
 				    	// Initial doodles
 				    	this.drawing.addDoodle('AntSeg');
 				        this.drawing.deselectDoodles();
+						addToReport();
 						break;
+						
+					case 'doodleAdded':
+						//console.log('doodle added');
+						addToReport();
+						break;					
+
+					case 'doodleDeleted':
+						//console.log('doodle deleted');
+						addToReport();
+						break;	
+												
+					case 'parameterChanged':
+						//console.log('parameterChanged');
+						break;
+						
+					case 'mouseup':
+						//console.log('mouseUp');
+						addToReport();
+						break;
+						
+					case 'setParameterWithAnimationComplete':
+						//console.log('setParameterWithAnimationComplete');
+						addToReport();
+						break;	
                 }
             }
         }
 
+       	function addToReport()
+        {
+        	// Get text from the applet and force into string type
+			var text = drawingEdit.report();
+		
+			// Use a RegEx to remove final comma and space
+			text = text.replace(/, +$/, '');
+			
+			// Get reference to report textarea
+			var repText = document.getElementById('report');
+
+			// Add to existing text in text area
+			repText.innerHTML = text;
+		}
 	            
     </script>
 
@@ -90,80 +129,94 @@
 		</div>
 
 		<!-- Edit mode section -->
-		<div class="section" style="height:540px;" align="left">
+		<div class="section" style="height:440px;" align="left">
+		            
+			<!-- Overall width -->
+			<div style ="width:800; float:left;">			
 			<h4>Edit mode:</h4>
-						
-			<!-- Right eye -->
-			<div style ="width: 640px; float:left;">
 			
-            	<!-- Doodle toolbar -->
-				<div class="toolbar">
-				<div class="toolbar">
-					<button class="ed-button" id="moveToFrontRPS" title="Move to front" onclick="drawingEdit.moveToFront(); return false;" ><img src="../../graphics//moveToFront.gif"/></button>
-	                <button class="ed-button" id="moveToBackRPS" title="Move to back" onclick="drawingEdit.moveToBack(); return false;" ><img src="../../graphics//moveToBack.gif" /></button>
-		            <button class="ed-button" id="deleteSelectedDoodleRPS" title="Delete" onclick="drawingEdit.deleteSelectedDoodle(); return false;" ><img src="../../graphics/delete.gif" /></button>
-                    <button class="ed-button" id="flipVerRPS" title="Flip around vertical axis" onclick="drawingEdit.flipVer(); return false;" ><img src="../../graphics/flipVer.gif" /></button>
-                    <button class="ed-button" id="flipHorRPS" title="Flip around horizontal axis" onclick="drawingEdit.flipHor(); return false;" ><img src="../../graphics/flipHor.gif" /></button>
-	                <button class="ed-button" id="lockRPS" title="Lock" onclick="drawingEdit.lock(); return false;" ><img src="../../graphics//lock.gif" /></button>
-	                <button class="ed-button" id="unlockRPS" title="Unlock" onclick="drawingEdit.unlock(); return false;" ><img src="../../graphics//unlock.gif" /></button>
-	                <br />
-                </div>
-                    
-				<!-- Doodle toolbar -->
-				<div class="toolbar">
-					<button class="imgbutton" title="Freehand drawing" onclick="drawingEdit.addDoodle('Freehand'); return false;" >
-						<img src="../../graphics/Freehand.gif" />
-					</button>
-					<button class="imgbutton" title="Label" onclick="drawingEdit.addDoodle('Label'); return false;" >
-						<img src="../../graphics/Label.gif" />
-					</button>
-					<button class="imgbutton" title="Ciliary Injection" onclick="drawingEdit.addDoodle('CiliaryInjection'); return false;" >
-						<img src="../../graphics/CiliaryInjection.gif" />
-					</button>
-					<button class="imgbutton" title="Corneal Oedema" onclick="drawingEdit.addDoodle('CornealOedema'); return false;" >
-						<img src="../../graphics/CornealOedema.gif" />
-					</button>
-					<button class="imgbutton" title="Keratic Precipitates" onclick="drawingEdit.addDoodle('KeraticPrecipitates'); return false;" >
-						<img src="../../graphics/KeraticPrecipitates.gif" />
-					</button>
-					<button class="imgbutton" title="PI" onclick="drawingEdit.addDoodle('PI'); return false;" >
-						<img src="../../graphics/PI.gif" />
-					</button>
-					<button class="imgbutton" title="Rubeosis" onclick="drawingEdit.addDoodle('Rubeosis'); return false;" >
-						<img src="../../graphics/Rubeosis.gif" />
-					</button>
-					<button class="imgbutton" title="Posterior Synechia" onclick="drawingEdit.addDoodle('PosteriorSynechia'); return false;" >
-						<img src="../../graphics/PosteriorSynechia.gif" />
-					</button>
-					<button class="imgbutton" title="Busacca Nodule" onclick="drawingEdit.addDoodle('BusaccaNodule'); return false;" >
-						<img src="../../graphics/BusaccaNodule.gif" />
-					</button>
-					<button class="imgbutton" title="Koeppe Nodule" onclick="drawingEdit.addDoodle('KoeppeNodule'); return false;" >
-						<img src="../../graphics/KoeppeNodule.gif" />
-					</button>
-				</div>
-			
-		        <!-- Canvas tooltip -->
-		        <span class="canvasTooltip" id="canvasEditTooltip"></span>
-	        			   				
-				<!-- Canvas -->
-				<div>
-				<span id="canvasTooltip"></span>
-                <canvas id="canvasEdit" class="ed-canvas" width="300" height="300" tabindex="1"></canvas>
+				<!-- Drawing -->
+				<div style ="width:660px; float:left;">	
+				
+		        	<!-- Doodle toolbar -->
+		        	<div class="toolbar">
+						<button class="ed-button" id="moveToFrontRPS" title="Move to front" onclick="drawingEdit.moveToFront(); return false;" ><img src="../../graphics//moveToFront.gif"/></button>
+			            <button class="ed-button" id="moveToBackRPS" title="Move to back" onclick="drawingEdit.moveToBack(); return false;" ><img src="../../graphics//moveToBack.gif" /></button>
+			            <button class="ed-button" id="deleteSelectedDoodleRPS" title="Delete" onclick="drawingEdit.deleteSelectedDoodle(); return false;" ><img src="../../graphics/delete.gif" /></button>
+			            <button class="ed-button" id="flipVerRPS" title="Flip around vertical axis" onclick="drawingEdit.flipVer(); return false;" ><img src="../../graphics/flipVer.gif" /></button>
+			            <button class="ed-button" id="flipHorRPS" title="Flip around horizontal axis" onclick="drawingEdit.flipHor(); return false;" ><img src="../../graphics/flipHor.gif" /></button>
+			            <button class="ed-button" id="lockRPS" title="Lock" onclick="drawingEdit.lock(); return false;" ><img src="../../graphics//lock.gif" /></button>
+			            <button class="ed-button" id="unlockRPS" title="Unlock" onclick="drawingEdit.unlock(); return false;" ><img src="../../graphics//unlock.gif" /></button>
+			            <br />
+		                
+					<!-- Doodle selection toolbar -->
+					<div class="toolbar">
+						<button class="imgbutton" title="Freehand drawing" onclick="drawingEdit.addDoodle('Freehand'); return false;" >
+							<img src="../../graphics/Freehand.gif" />
+						</button>
+						<button class="imgbutton" title="Label" onclick="drawingEdit.addDoodle('Label'); return false;" >
+							<img src="../../graphics/Label.gif" />
+						</button>
+						<button class="imgbutton" title="Ciliary Injection" onclick="drawingEdit.addDoodle('CiliaryInjection'); return false;" >
+							<img src="../../graphics/CiliaryInjection.gif" />
+						</button>
+						<button class="imgbutton" title="Corneal Oedema" onclick="drawingEdit.addDoodle('CornealOedema'); return false;" >
+							<img src="../../graphics/CornealOedema.gif" />
+						</button>
+						<button class="imgbutton" title="Keratic Precipitates" onclick="drawingEdit.addDoodle('KeraticPrecipitates'); return false;" >
+							<img src="../../graphics/KeraticPrecipitates.gif" />
+						</button>
+						<button class="imgbutton" title="PI" onclick="drawingEdit.addDoodle('PI'); return false;" >
+							<img src="../../graphics/PI.gif" />
+						</button>
+						<button class="imgbutton" title="Rubeosis" onclick="drawingEdit.addDoodle('Rubeosis'); return false;" >
+							<img src="../../graphics/Rubeosis.gif" />
+						</button>
+						<button class="imgbutton" title="Posterior Synechia" onclick="drawingEdit.addDoodle('PosteriorSynechia'); return false;" >
+							<img src="../../graphics/PosteriorSynechia.gif" />
+						</button>
+						<button class="imgbutton" title="Busacca Nodule" onclick="drawingEdit.addDoodle('BusaccaNodule'); return false;" >
+							<img src="../../graphics/BusaccaNodule.gif" />
+						</button>
+						<button class="imgbutton" title="Koeppe Nodule" onclick="drawingEdit.addDoodle('KoeppeNodule'); return false;" >
+							<img src="../../graphics/KoeppeNodule.gif" />
+						</button>
+						<button class="imgbutton" title="Hyphaema" onclick="drawingEdit.addDoodle('Hyphaema'); return false;" >
+							<img src="../../graphics/Hyphaema.gif" />
+						</button>
+						<button class="imgbutton" title="Hypopyon" onclick="drawingEdit.addDoodle('Hypopyon'); return false;" >
+							<img src="../../graphics/Hypopyon.gif" />
+						</button>
+					</div>
+
+		                <br /> 		                
+		            </div>
+	
+					<!-- Canvas -->
+					<div style="position:relative;">
+						<span id="canvasTooltip"></span>
+		                <canvas id="canvasEdit" class="ed-canvas" width="300" height="300" tabindex="1"></canvas>
+						<!-- Doodle control panel -->
+						<div id="canvasEdit_controls" class="ed-doodle-popup" style="background-color: #DAE6F1; float:left; position:absolute; top:20px; left:310px;">
+						</div>
+					</div>
+
 				</div>
 				
-                <!-- Doodle control panel -->
-		        <div id="canvasEdit_controls" class="ed-doodle-popup" style="background-color: #DAE6F1; float:left;">
-		        </div>
-		        
-		        <div style='float:left;'>
-			        <p>Free text</p>
-					<textarea rows="4" cols="50"></textarea>
-		        </div>			
-   			
+				<!-- Controls -->
+				<div style ="width:240px; float:left;">
+							
+					<!-- Controls -->
+					<div style='float:right; width: 300px;height: 320px;'>
+						<p class="lable">Description:</p>
+						<p id="report" style="color: #0000FF;"></p>
+						<p class="lable">Comments:</p>
+						<textarea rows = 5></textarea>
+						<!-- <input type="text" id="incisionMeridian" value='90'>; -->			
+					</div>
+				</div>
+				
 			</div>
-			
-		<!-- End of Edit mode section -->
 		</div>					
 
 		<!-- Steering Group -->			

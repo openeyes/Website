@@ -17662,8 +17662,14 @@ ED.CiliaryInjection = function(_drawing, _parameterJSON) {
 	// Set classname
 	this.className = "CiliaryInjection";
 
+	// Other parameters
+	this.severity = 'Medium';
+	
 	// Saved parameters
-	this.savedParameterArray = ['arc', 'rotation'];
+	this.savedParameterArray = ['arc', 'rotation', 'severity'];
+
+	// Parameters in doodle control bar (parameter name: parameter label)
+	this.controlParameterArray = {'severity':'Severity'};
 
 	// Call superclass constructor
 	ED.Doodle.call(this, _drawing, _parameterJSON);
@@ -17698,6 +17704,14 @@ ED.CiliaryInjection.prototype.setPropertyDefaults = function() {
 	this.parameterValidationArray['apexX']['range'].setMinAndMax(-0, +0);
 	this.parameterValidationArray['apexY']['range'].setMinAndMax(-334, -300);
 	this.parameterValidationArray['radius']['range'].setMinAndMax(250, 450);
+	
+	// Add complete validation arrays for other parameters
+	this.parameterValidationArray['severity'] = {
+		kind: 'other',
+		type: 'string',
+		list: ['Severe', 'Medium', 'Mild'],
+		animate: false
+	};
 }
 
 /**
@@ -17705,10 +17719,17 @@ ED.CiliaryInjection.prototype.setPropertyDefaults = function() {
  */
 ED.CiliaryInjection.prototype.setParameterDefaults = function() {
 	// Default arc
-	this.arc = 90 * Math.PI / 180;
+	this.arc = 60 * Math.PI / 180;
 
 	// Make a second one 90 degress to last one of same class
-	this.setRotationWithDisplacements(90, -120);
+	this.setRotationWithDisplacements(45, -90);
+	
+	// Match subsequent properties
+	var doodle = this.drawing.lastDoodleOfClass(this.className);
+	if (doodle) {
+		this.arc = doodle.arc
+		this.severity = doodle.severity
+	}
 }
 
 /**
@@ -17778,10 +17799,22 @@ ED.CiliaryInjection.prototype.draw = function(_point) {
 
 		ctx.beginPath();
 
-		// Radial lines
+		// Radial lines - adjust length to indicate severity
+		var rc
+		switch (this.severity) {
+			case 'Severe':
+				rc = ro - 0;
+				break;
+			case 'Medium':
+				rc = ro - 20;
+				break;
+			case 'Mild':
+				rc = ro - 40;
+				break;
+		}		
 		for (var i = 0; i < n; i++) {
 			var theta = Math.PI / 2 + arcEnd + i * phi;
-			sp.setWithPolars(ro, theta);
+			sp.setWithPolars(rc, theta);
 			ep.setWithPolars(ri, theta);
 
 			ctx.moveTo(sp.x, sp.y);
@@ -17789,7 +17822,20 @@ ED.CiliaryInjection.prototype.draw = function(_point) {
 		}
 
 		ctx.strokeStyle = "red";
-		ctx.lineWidth = 16;
+		
+		// Adjust thickness of line for severity
+		switch (this.severity) {
+			case 'Severe':
+				ctx.lineWidth = 16;
+				break;
+			case 'Medium':
+				ctx.lineWidth = 12;
+				break;
+			case 'Mild':
+				ctx.lineWidth = 8;
+				break;
+		}
+		
 		ctx.stroke();
 	}
 
@@ -17810,7 +17856,17 @@ ED.CiliaryInjection.prototype.draw = function(_point) {
  * @returns {String} Description of doodle
  */
 ED.CiliaryInjection.prototype.groupDescription = function() {
-	return "Ciliary injection ";
+	var returnString = this.severity + " ciliary injection";
+	
+	// Unless nearly complete, include quadrant
+	if (this.arc < 1.8 * Math.PI) {
+		returnString += " centred "
+		
+		// Use trigonometry on rotation field to determine quadrant
+		returnString += (Math.cos(this.rotation) > 0 ? "supero" : "infero");
+		returnString += (Math.sin(this.rotation) > 0 ? (this.drawing.eye == ED.eye.Right ? "nasally" : "temporally") : (this.drawing.eye == ED.eye.Right ? "temporally" : "nasally"));
+	}
+	return returnString
 }
 
 /**
@@ -31987,7 +32043,7 @@ ED.Patch = function(_drawing, _parameterJSON) {
 	this.material = 'Sclera';
 
 	// Saved parameters
-	this.savedParameterArray = ['originX', 'originY', 'width', 'height', 'apexX'];
+	this.savedParameterArray = ['originX', 'originY', 'width', 'height', 'apexX', 'material'];
 
 	// Parameters in doodle control bar (parameter name: parameter label)
 	this.controlParameterArray = {'material':'Material'};
@@ -32020,7 +32076,7 @@ ED.Patch.prototype.setPropertyDefaults = function() {
 	this.parameterValidationArray['material'] = {
 		kind: 'other',
 		type: 'string',
-		list: ['Sclera', 'Tenons', 'Tutoplast'],
+		list: ['Sclera', 'Tenons', 'Tutoplast', 'Cornea'],
 		animate: false
 	};
 }
@@ -39427,7 +39483,7 @@ ED.SubretinalPFCL.prototype.groupDescription = function() {
 ED.Supramid = function(_drawing, _parameterJSON) {
 	// Set classname
 	this.className = "Supramid";
-	
+
 	// Other parameters
 	this.percent = '80';
 
@@ -39436,22 +39492,22 @@ ED.Supramid = function(_drawing, _parameterJSON) {
 
 	// Parameters in doodle control bar (parameter name: parameter label)
 	this.controlParameterArray = {'percent':'Percentage of tube'};
-	
+
 	// Bezier segmentation is not linear, so can make fine adjustments here if required
 	this.adjustmentArray = {
-		'0':0, 
-		'10':10, 
-		'20':20, 
-		'30':30, 
-		'40':40, 
-		'50':50, 
-		'60':60, 
-		'70':70, 
-		'80':80, 
-		'90':90, 
+		'0':0,
+		'10':10,
+		'20':20,
+		'30':30,
+		'40':40,
+		'50':50,
+		'60':60,
+		'70':70,
+		'80':80,
+		'90':90,
 		'100':100
 	}
-	
+
 	// Call superclass constructor
 	ED.Doodle.call(this, _drawing, _parameterJSON);
 }
@@ -39480,7 +39536,7 @@ ED.Supramid.prototype.setPropertyDefaults = function() {
 	// Update component of validation array for simple parameters
 	this.parameterValidationArray['apexX']['range'].setMinAndMax(-800, +800);
 	this.parameterValidationArray['apexY']['range'].setMinAndMax(-800, +800);
-	
+
 	// Add complete validation arrays for derived parameters
 	this.parameterValidationArray['percent'] = {
 		kind: 'other',
@@ -39496,7 +39552,7 @@ ED.Supramid.prototype.setPropertyDefaults = function() {
 ED.Supramid.prototype.setParameterDefaults = function() {
 	this.apexX = -660;
 	this.apexY = 30;
-	
+
 	// Default value of insertion percentage
 	this.setParameterFromString('percent', '80');
 
@@ -39518,7 +39574,7 @@ ED.Supramid.prototype.draw = function(_point) {
 
 	// Call draw method in superclass
 	ED.Supramid.superclass.draw.call(this, _point);
-	
+
 	// Get Tube or TubeExtender doodle (Latter takes preference)
 	var doodle = this.drawing.lastDoodleOfClass("TubeExtender");
 
@@ -39532,7 +39588,7 @@ ED.Supramid.prototype.draw = function(_point) {
 			this.rotation = doodle.rotation;
 		}
 	}
-
+	
 	// Calculate key points for supramid bezier
 	var startPoint = new ED.Point(this.apexX, this.apexY);
 	var tubePoint = new ED.Point(0, -700);
@@ -39557,27 +39613,32 @@ ED.Supramid.prototype.draw = function(_point) {
 
 	// Non boundary paths
 	if (this.drawFunctionMode == ED.drawFunctionMode.Draw) {
-		if (doodle) {
+		ctx.beginPath();
+		if (doodle && doodle.bezierArray['sp']) {
 			// Suture
 			var xDev = startPoint.x/Math.abs(startPoint.x) * 100;
-			ctx.beginPath()
 			ctx.moveTo(startPoint.x, startPoint.y);
 			ctx.bezierCurveTo(startPoint.x + xDev, startPoint.y - 100, tubePoint.x + xDev, tubePoint.y, doodle.bezierArray['sp'].x, doodle.bezierArray['sp'].y);
 
 			// Number of bezier segments
 			var nb = 50;
-			
+
 			// Draw Bezier of appropriate length for corrected proportion along curve
 			var pc = this.adjustmentArray[this.percent];
 			for (var t = 0; t < 1/nb + pc/100; t = t + 1/nb) {
 				var nextPoint = doodle.bezierArray['sp'].bezierPointAtParameter(t, doodle.bezierArray['cp1'], doodle.bezierArray['cp2'], doodle.bezierArray['ep']);
 				ctx.lineTo(nextPoint.x, nextPoint.y);
 			}
-			
-			ctx.lineWidth = 4;
-			ctx.strokeStyle = "purple";
-			ctx.stroke();
+		} else {
+			// Just straight line to make it appear
+			ctx.moveTo(startPoint.x, startPoint.y);
+			ctx.lineTo(0, -400);
 		}
+
+		// Draw suture
+		ctx.lineWidth = 4;
+		ctx.strokeStyle = "purple";
+		ctx.stroke();
 	}
 
 	// Coordinates of handles (in canvas plane)
@@ -41024,14 +41085,30 @@ ED.TrabySuture.prototype.draw = function(_point) {
 }
 
 /**
+ * Returns a String which, if not empty, determines the root descriptions of multiple instances of the doodle
+ *
+ * @returns {String} Group description
+ */
+ED.TrabySuture.prototype.groupDescription = function() {
+	return "Flap sutures at ";
+}
+
+/**
  * Returns a string containing a text description of the doodle
  *
  * @returns {String} Description of doodle
  */
 ED.TrabySuture.prototype.description = function() {
-	var returnValue = this.size + " " + this.material + " " + this.type + " suture at " + this.clockHour() + " o'clock";
+	return this.clockHour();
+}
 
-	return returnValue;
+/**
+ * Returns a String which, if not empty, determines the root descriptions of multiple instances of the doodle
+ *
+ * @returns {String} Group description
+ */
+ED.TrabySuture.prototype.groupDescriptionEnd = function() {
+	return " o'clock";
 }
 
 /**
@@ -41705,7 +41782,7 @@ ED.Tube = function(_drawing, _parameterJSON) {
 	this.tubeExtender = false;
 
 	// Saved parameters
-	this.savedParameterArray = ['rotation', 'apexY', 'type'];
+	this.savedParameterArray = ['rotation', 'apexX', 'apexY', 'type'];
 	
 	// Parameters in doodle control bar (parameter name: parameter label)
 	this.controlParameterArray = {'type':'Type'};
@@ -42608,13 +42685,17 @@ ED.TubeLigation.prototype.setParameterDefaults = function() {
 	// If existing doodles, put in same meridian, but higher up
 	var number = this.drawing.numberOfDoodlesOfClass(this.className);
 	var doodle = this.drawing.firstDoodleOfClass(this.className);
+	var xSign = doodle.originX > 0?1:-1;
+	var ySign = doodle.originY > 0?1:-1;
 	
 	switch (number) {
 		case 1:
-			this.move(doodle.originX * 1.02, doodle.originY * 1.02);
+			this.originX = 400 * xSign;
+			this.originY = 400 * ySign;
 			break;
 		case 2:
-			this.move(doodle.originX * 0.5, doodle.originY * 0.5);
+			this.originX = 320 * xSign;
+			this.originY = 320 * ySign;
 			break;
 	}
 }
