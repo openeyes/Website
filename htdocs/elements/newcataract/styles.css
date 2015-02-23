@@ -115,7 +115,7 @@ p#RSS {
 
 /* Canvas element */
 canvas {
-	border: none; /*1px solid gray;*/
+	border: 1px solid gray;
     cursor: pointer;
 	margin: 0px;
 }
